@@ -1,7 +1,15 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
+"use client"
+import CoordinatesProvider from '@/Context/CoordinateContext'
+import { store } from '@/store/store'
+import '@/styles/globals.css'
+import { Poppins } from 'next/font/google'
+import { Provider } from 'react-redux'
 
-const inter = Inter({ subsets: ['latin'] })
+const pop = Poppins({
+  subsets: ['latin'],
+  display:"swap",
+  weight: ["100" , "200" , "300" , "400" , "500" , "600" , "700" , "800" , "900"]
+})
 
 export const metadata = {
   title: 'Create Next App',
@@ -15,7 +23,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={pop.className}>
+        <Provider store={store}>
+          {/* <CoordinatesProvider> */}
+            {children}
+          {/* </CoordinatesProvider> */}
+        </Provider>
+        </body>
     </html>
   )
 }
