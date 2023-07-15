@@ -1,99 +1,159 @@
+"use client"
 import { PivotControls } from "@/components/UI/pivotControls";
 import { selectPivotVisibility, selectTarget, setPivotVisibility, setTarget } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { Addition, Base, Geometry, Subtraction } from "@react-three/csg";
-import {
-  TransformControls,
-  useTexture,
-} from "@react-three/drei";
-import { FC, Fragment, ReactElement, useRef, useState } from "react";
+import { useTexture } from "@react-three/drei";
+import { FC, Fragment, ReactElement, useRef } from "react";
 import * as THREE from "three";
 
-interface StepsProps {
-  position: { x: number; y: number; z: number };
-  steps: number;
+enum sides{
+  Top = "Top",
+  Bottom= "Bottom",
+  Left = "Left",
+  Right = "Right",
+}
+interface Steps {
+  rotation:THREE.Euler;
+  position:THREE.Vector3;
+  scale:THREE.Vector3;
+  gap: number;
+  heightPerStep: number;
   width: number;
-  depthPerStep: number;
-  intersecting: boolean;
-  side?: "left" | "right" | "front" | "back";
-  poolWidth: number;
   poolHeight: number;
-  poolOutline: number;
+  side: sides;
+  poolWidth: number;
+  poolDepth: number;
+  // rotation?: number;
+  intersecting: boolean;
 }
 
-const Steps: FC<StepsProps> = ({
+const Steps: FC<Steps> = ({
   position,
-  steps,
-  width,
-  depthPerStep = 1 / steps,
-  side = "front",
-  poolWidth,
+  width=6,
+  rotation,
+  scale,
+  poolDepth,
+  heightPerStep=.4,
+  gap=.2,
+  side,
+  intersecting,
   poolHeight,
-  poolOutline,
+  poolWidth,
 }): ReactElement => {
+  const depthPerStep = 1;
+
+  // load tile texture
+  const tileTexture = useTexture("/textures/tiles.jpg");
+  tileTexture.wrapT = THREE.RepeatWrapping;
+  tileTexture.wrapS = THREE.RepeatWrapping;
+  const steps = Math.round(poolHeight / heightPerStep); 
   const stepsArray = new Array(steps).fill(0);
-
-  let positionZ = position.z;
-  let positionX = position.x;
-
-  switch (side) {
-    case "front":
-      positionZ = position.z - (depthPerStep * steps) / 2 + poolOutline / 2;
-      break;
-    case "back":
-      positionZ = position.z + (depthPerStep * steps) / 2 - poolOutline / 2;
-      break;
-    case "left":
-      positionX = position.x - poolWidth / 2 + width / 2 + poolOutline / 2;
-      break;
-    case "right":
-      positionX = position.x + poolWidth / 2 - width / 2 - poolOutline / 2;
-    default:
-      break;
-  }
-
-  const stepGroup = useRef<THREE.Group>(null);
-  const heightPerStep = poolHeight / steps;
-  const tl = useTexture("/textures/tiles2.jpg");
-  
   const dispatch = useAppDispatch();
   const target = useAppSelector(selectTarget);
   const groupRef = useRef<THREE.Group>(null)
   const visible = useAppSelector(selectPivotVisibility);
+  console.log(side)
+  let newOffset:[number,number,number] =[position.x, position.y, position.z]
+  switch (side) {
+    case "Left":
+      newOffset=[position.x, position.y, position.z]
+      break;
+    case "Right":
+      newOffset=[position.x , position.y, position.z]
+      break;
+    case "Top":
+      newOffset=[position.x, position.y, position.z]
+      break;
+    case "Bottom":
+      newOffset=[position.x , position.y, position.z]
+      break;
+  }
+  function multiplyByIndex(value: number, size: number): number {
+    const result: number[] = [];
+    
+    for (let i = 0; i < size; i++) {
+      result.push(value * i);
+    }
+    
+    return result[result.length-1];
+  }
+  
 
   return (
-    <>
-      <PivotControls
-       disableScaleAxes
-       snapTranslate={5}
-       visible={visible&& target?.uuid===groupRef.current?.uuid}
-       displayValues
-       scale={visible && target?.uuid===groupRef.current?.uuid ?75:0}
-       depthTest={false}
-       fixed
-       offset={[position.x, position.y, position.z]}
-       lineWidth={2}>
-        <group ref={stepGroup} onClick={(e)=>{
-        // console.log(target?.uuid,"::::",groupRef?.current?.uuid)
-        dispatch(setPivotVisibility(true))
-        if(target?.uuid!=groupRef?.current?.uuid){
-         dispatch(setTarget(groupRef.current))
-       }
-      }}>
-          {stepsArray.map((_, index)=>{
-            tl.wrapT = THREE.RepeatWrapping;
-            tl.wrapS = THREE.RepeatWrapping;
-            tl.repeat.set(depthPerStep * (steps/5), depthPerStep * (steps/5));
-            return ( 
-            <mesh key={index} position={[positionX, position.y + (index-2) * heightPerStep, positionZ- (depthPerStep / 2) * index ]}>
-              <boxGeometry args={[width, heightPerStep, depthPerStep * (steps-index)]} />
-              <meshStandardMaterial map={tl} color={"lightblue"} transparent opacity={1} />
-            </mesh>)
-          })}
-        </group>
-        </PivotControls>
-    </>
+    <PivotControls
+      disableScaleAxes
+      snapTranslate={5}
+      visible={visible && target?.uuid===groupRef.current?.uuid}
+      displayValues
+      scale={visible && target?.uuid===groupRef.current?.uuid ?75:0}
+      depthTest={false}
+      fixed
+      offset={newOffset}
+      lineWidth={2}>
+    <group ref={groupRef} rotation={rotation} position={position} scale={scale} onClick={(e)=>{
+       e.stopPropagation()
+            // console.log(target?.uuid,"::::",groupRef?.current?.uuid)
+            dispatch(setPivotVisibility(true))
+            if(target?.uuid!=groupRef?.current?.uuid){
+             dispatch(setTarget(groupRef.current))
+            }}
+          }
+    >
+      {stepsArray.map((step, idx) => {
+          let newPosition =[0,0 ,0]
+          switch (side) {
+            case "Left":
+              newPosition=[(gap * idx)/2 - 1.5+heightPerStep/2, poolHeight/2 - idx * heightPerStep, 0] //1.5 == boxWidth/2
+              break;
+            case "Right":
+              newPosition=[-(gap * idx)/2 + 1.5-heightPerStep/2 , poolHeight/2 - idx * heightPerStep, 0]
+              break;
+            case "Top":
+              newPosition=[0 , poolHeight/2 -  idx * heightPerStep, (gap * idx)/2 - 2 + heightPerStep/2]//2 == boxWidth/2
+              break;
+            case "Bottom":
+              newPosition=[0 , poolHeight/2 -  idx * heightPerStep, -(gap * idx)/2 + 2 - heightPerStep/2]
+              break;
+          }
+
+          let boxArgs=[poolWidth,poolWidth,poolWidth]
+          switch (side) {
+            case "Left":
+              boxArgs=[heightPerStep+ gap * idx , heightPerStep, poolDepth]
+              break;
+            case "Right":
+              boxArgs=[heightPerStep+ gap * idx , heightPerStep, poolDepth]
+              break;
+            case "Top":
+              boxArgs=[poolWidth, heightPerStep, heightPerStep+ gap * idx]
+              break;
+            case "Bottom":
+              boxArgs=[poolWidth, heightPerStep, heightPerStep+ gap * idx]
+              break;
+          }
+        return (
+          <mesh key={idx} position={new THREE.Vector3(...newPosition)}>
+              <boxGeometry
+                args={[
+                  boxArgs[0],
+                  boxArgs[1],
+                  boxArgs[2]
+                ]}
+               
+              />
+              <meshStandardMaterial
+                map={tileTexture}
+                metalness={0.2}
+                roughness={0.24}
+                // color={"lightblue"}
+              />
+          </mesh>
+        );
+      })}
+    </group>
+    </PivotControls>
   );
 };
 
 export default Steps;
+

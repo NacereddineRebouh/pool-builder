@@ -7,8 +7,9 @@ import * as THREE from 'three'
 import React, { useRef } from 'react'
 import { useGLTF, PerspectiveCamera } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
-import { selectTarget, setPivotVisibility, setTarget } from '@/slices/targetSlice'
+import { selectPivotVisibility, selectTarget, setPivotVisibility, setTarget } from '@/slices/targetSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { PivotControls } from '@/components/UI/pivotControls'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -19,22 +20,35 @@ type GLTFResult = GLTF & {
   }
 }
 
-export function InsetSteps(props: JSX.IntrinsicElements['group']) {
-  const { nodes, materials } = useGLTF('/models/insetSteps.glb') as GLTFResult
+export function InsetSteps({rotation, position, scale, ...props}:{rotation:THREE.Euler, position:THREE.Vector3, scale:THREE.Vector3, props?: JSX.IntrinsicElements["group"]}) {
+  const { nodes, materials } = useGLTF('/models/newModels/InsetSteps.glb') as GLTFResult
+  // const { nodes, materials } = useGLTF('/models/insetSteps.glb') as GLTFResult
   const groupRef = useRef<THREE.Group>(null)
   const dispatch = useAppDispatch();
   const target = useAppSelector(selectTarget);
+  const visible = useAppSelector(selectPivotVisibility);
   return (
-    <group {...props} dispose={null} ref={groupRef} onClick={(e)=>{
-      // console.log(target?.uuid,"::::",groupRef?.current?.uuid)
-      dispatch(setPivotVisibility(true))
-      if(target?.uuid!=groupRef?.current?.uuid){
-       dispatch(setTarget(groupRef.current))
-      }
-    }}>
-      <mesh castShadow receiveShadow geometry={nodes.Inset_steps.geometry} material={materials['Inset steps']} />
-    </group>
+    <PivotControls
+      disableScaleAxes
+      snapTranslate={5}
+      visible={visible && target?.uuid===groupRef.current?.uuid}
+      displayValues
+      scale={visible && target?.uuid===groupRef.current?.uuid ?75:0}
+      depthTest={false}
+      fixed
+      offset={[groupRef.current? groupRef.current.position.x : position.x , groupRef.current? groupRef.current.position.y : position.y, groupRef.current? groupRef.current.position.z : position.z]}
+      lineWidth={2}>
+        <group {...props} rotation={rotation} position={position} scale={scale} dispose={null} ref={groupRef} onClick={(e)=>{
+          e.stopPropagation()
+          dispatch(setPivotVisibility(true))
+          if(target?.uuid!=groupRef?.current?.uuid){
+           dispatch(setTarget(groupRef.current))
+          }
+        }}>
+          <mesh castShadow receiveShadow geometry={nodes.Inset_steps.geometry} material={materials['Inset steps']} />
+        </group>
+    </PivotControls>
   )
 }
 
-useGLTF.preload('/models/insetSteps.glb')
+useGLTF.preload('/models/newModels/insetSteps.glb')

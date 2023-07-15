@@ -40,7 +40,7 @@ export const SphereScale: React.FC<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }
     onDrag,
     onDragEnd,
     userData,
-    object
+    // object
   } = React.useContext(context)
 
   // @ts-expect-error new in @react-three/fiber@7.0.5
@@ -55,7 +55,8 @@ export const SphereScale: React.FC<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }
     (e: ThreeEvent<PointerEvent>) => {
       e.stopPropagation()
 
-      const target = resolveObject(object)
+      const target = resolveObject()
+      // const target = resolveObject(object)
       if (target) targetOrigin.setFromMatrixPosition(target.matrix)
       else targetOrigin.set(0, 0, 0)
 
@@ -70,7 +71,8 @@ export const SphereScale: React.FC<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }
       // @ts-ignore - setPointerCapture is not in the type definition
       e.target.setPointerCapture(e.pointerId)
     },
-    [direction, camControls, onDragStart, translation, axis, object]
+    [direction, camControls, onDragStart, translation, axis]
+    // [direction, camControls, onDragStart, translation, axis, object]
   )
 
   const vScale = new THREE.Vector3()

@@ -2,8 +2,8 @@ import { FC, Fragment, useRef } from "react";
 import { selectPivotVisibility, selectTarget, setPivotVisibility, setTarget } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
-import { SingleRoundStep } from "./SingleRoundStep";
 import * as THREE from "three";
+import { CornerRoundStep } from "./CornerRoundStep";
 
 enum sides{
   Top = "Top",
@@ -17,19 +17,19 @@ interface Props {
   scale:THREE.Vector3;
   poolHeight: number;
   gap: number;
-  heightPerStep: number;
+  heightPerStep?: number;
   width: number;
   side: sides;
   poolWidth: number;
 }
 
-const RoundSteps: FC<Props> = ({
+const CornerRoundSteps: FC<Props> = ({
   position,
   rotation,
   scale,
   gap,
   side,
-  heightPerStep,
+  heightPerStep=.63,
   poolHeight
 }) => {
  const dispatch = useAppDispatch();
@@ -41,7 +41,7 @@ const RoundSteps: FC<Props> = ({
  let newOffset:[number,number,number] =[position.x, position.y, position.z]
  switch (side) {
    case "Left":
-     newOffset=[position.x - steps*gap/2, position.y, position.z]
+     newOffset=[position.x, position.y, position.z]
      break;
    case "Right":
      newOffset=[position.x + steps*gap/2, position.y, position.z]
@@ -72,7 +72,7 @@ const RoundSteps: FC<Props> = ({
       scale={visible && target?.uuid===groupRef.current?.uuid ?75:0}
       depthTest={false}
       fixed
-      offset={[groupRef.current? groupRef.current.position.x : position.x , groupRef.current? groupRef.current.position.y : position.y, groupRef.current? groupRef.current.position.z : position.z]}
+      offset={newOffset}
       lineWidth={2}>
     <group ref={groupRef} rotation={rotation} position={position} scale={scale} onClick={(e)=>{
       // console.log(target?.uuid,"::::",groupRef?.current?.uuid)
@@ -83,10 +83,9 @@ const RoundSteps: FC<Props> = ({
       }
     }}>
       {stepsArray.map((step, idx) => {
-           let newPosition =[0, heightPerStep - idx * heightPerStep +poolHeight/2-heightPerStep , 0]
+          let newPosition =[0, heightPerStep - idx * heightPerStep , 0]
         return (
-          <SingleRoundStep key={idx} scale={new THREE.Vector3(1 + gap * idx, 5, 1 + gap * idx)} position={new THREE.Vector3(...newPosition)}/>
-
+          <CornerRoundStep key={idx} scale={new THREE.Vector3(1 + gap * idx, 5, 1 + gap * idx)} position={new THREE.Vector3(...newPosition)} rotation={new THREE.Euler(0,0,0)}/>
         );
       })}
       </group>
@@ -94,4 +93,4 @@ const RoundSteps: FC<Props> = ({
   );
 };
 
-export default RoundSteps;
+export default CornerRoundSteps;

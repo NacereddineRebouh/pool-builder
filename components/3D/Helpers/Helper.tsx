@@ -28,7 +28,7 @@ const Helper: React.FC<HelperProps> = ({}) => {
     default:
       //Coord.y+.5
        return( helper.dragging && <mesh position={[Coord.x, Coord.y, Coord.z]}> 
-        <boxGeometry args={[4,2,3]}/>
+        <boxGeometry args={[4,3,4]}/>
         <meshBasicMaterial color={"green"} transparent opacity={.7}/>
       </mesh>)
       break;

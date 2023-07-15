@@ -41,7 +41,8 @@ const SideBar: React.FC<ISideBarProps> = () => {
        <IconMenu icon={plus.src}>
         <div className='flex items-center justify-start gap-x-1'>
         <Icon icon={cornerRounded.src} onPointerDown={(e)=>OnMouseDownHandler(e,"cornerRounded")}/>
-        <Icon icon={roundSteps.src} onPointerDown={(e)=>OnMouseDownHandler(e,"roundSteps")}/>
+        {/* <Icon icon={roundSteps.src} onPointerDown={(e)=>OnMouseDownHandler(e,"roundSteps")}/> */}
+        <Icon icon={corner.src} onPointerDown={(e)=>OnMouseDownHandler(e,"SquareSteps")}/>
         </div>
         <div className='flex items-center justify-start gap-x-1'>
           <Icon icon={fountain.src} onPointerDown={(e)=>OnMouseDownHandler(e,"Fountain")}/>
@@ -50,16 +51,16 @@ const SideBar: React.FC<ISideBarProps> = () => {
         </div>
         <div className='flex items-center justify-start gap-x-1'>
           <Icon icon={swimjet.src} onPointerDown={(e)=>OnMouseDownHandler(e,"SwimJet")}/>
-          <Icon icon={corner.src} onPointerDown={(e)=>OnMouseDownHandler(e,"Steps")}/>
+          {/* <Icon icon={corner.src} onPointerDown={(e)=>OnMouseDownHandler(e,"Steps")}/> */}
+          <Icon icon={inset.src} onPointerDown={(e)=>OnMouseDownHandler(e,"insetSteps")}/>
         </div>
         <div className='flex items-center justify-start gap-x-1'>
           <Icon icon={waterblade.src} onPointerDown={(e)=>OnMouseDownHandler(e,"Waterblade")}/>
           <Icon icon={wallwater.src} onPointerDown={(e)=>OnMouseDownHandler(e,"WallWaterfall")}/>
         </div>
         <div className='flex items-center justify-start gap-x-1'>
-          <Icon icon={inset.src} onPointerDown={(e)=>OnMouseDownHandler(e,"insetSteps")}/>
-          <Icon icon={corner.src} onPointerDown={(e)=>OnMouseDownHandler(e,"SquareSteps")}/>
-          
+          <Icon icon={roundSteps.src} onPointerDown={(e)=>OnMouseDownHandler(e,"RoundSteps")}/>
+          <Icon icon={roundSteps.src} onPointerDown={(e)=>OnMouseDownHandler(e,"Steps")}/>
         </div>
        </IconMenu>
     </div>

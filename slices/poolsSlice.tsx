@@ -1,13 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "@/store/store";
-
+enum sides{
+  Top = "Top",
+  Bottom= "Bottom",
+  Left = "Left",
+  Right = "Right",
+}
 export interface ChildrensType {
     shapeType: string;
     position: number[];
     scale: number[];
+    rotation: number[];
     width: number;
     height: number;
     depth: number;
+    side: sides;
 }
 export interface PoolType {
     poolType: string;
@@ -39,8 +46,14 @@ export const PoolsSlice = createSlice({
     popPool: (state, action) => {
       state.pools.pop();
     },
+    ReplacePool: (state, action) => {
+      state.pools[action.payload.poolIndex]=action.payload.pool;
+    },
     addChildren: (state, action) => {
       state.pools[action.payload.poolIndex].childrens.push(action.payload.children);
+    },
+    ReplaceChildren: (state, action) => {
+      state.pools[action.payload.poolIndex].childrens[action.payload.modelIndex]=action.payload.model;
     },
     removeChildrenByIndex: (state, action) => {
       state.pools[action.payload.poolIndex].childrens.splice(action.payload.index,1)
@@ -53,5 +66,7 @@ export const PoolsSlice = createSlice({
 
 export const { addChildren, removeChildrenByIndex, popChildren, addPool, removePoolByIndex, popPool } = PoolsSlice.actions;
 export const selectPools = (state: RootState) => state.pools.pools;
-export const selectChildrens = (state: RootState,index:number) => state.pools.pools[index].childrens;
+export const selectPool = (state: RootState, poolIndex:number) => state.pools.pools[poolIndex];
+export const selectModel = (state: RootState, poolIndex:number,modelIndex:number) => state.pools.pools[poolIndex].childrens[modelIndex];
+export const selectModels = (state: RootState,index:number) => state.pools.pools[index].childrens;
 export default PoolsSlice.reducer;

@@ -16,7 +16,7 @@ type GLTFResult = GLTF & {
   };
 };
 
-const SwimJet = ({position, scale, ...props}:{position:THREE.Vector3, scale:THREE.Vector3, props?: JSX.IntrinsicElements["group"]}) => {
+const SwimJet = ({rotation, position, scale, ...props}:{rotation:THREE.Euler, position:THREE.Vector3, scale:THREE.Vector3, props?: JSX.IntrinsicElements["group"]}) => {
   const { nodes, materials } = useGLTF("/models/swim-jet.glb") as GLTFResult;
 
   const dispatch = useAppDispatch();
@@ -28,14 +28,14 @@ const SwimJet = ({position, scale, ...props}:{position:THREE.Vector3, scale:THRE
       <PivotControls
        disableScaleAxes
        snapTranslate={5}
-       visible={visible&& target!=null}
+       visible={visible&& target?.uuid===groupRef.current?.uuid}
        displayValues
        scale={visible && target?.uuid===groupRef.current?.uuid ?75:0}
        depthTest={false}
        fixed
        offset={[groupRef.current? groupRef.current.position.x : position.x , groupRef.current? groupRef.current.position.y : position.y,groupRef.current? groupRef.current.position.z : position.z]}
        lineWidth={2}>
-      <group ref={groupRef} {...props} dispose={null} onClick={(e)=>{
+      <group ref={groupRef} rotation={rotation} position={position} scale={scale} {...props} dispose={null} onClick={(e)=>{
         // console.log(target?.uuid,"::::",groupRef?.current?.uuid)
         dispatch(setPivotVisibility(true))
         if(target?.uuid!=groupRef?.current?.uuid){
@@ -43,6 +43,7 @@ const SwimJet = ({position, scale, ...props}:{position:THREE.Vector3, scale:THRE
        }
       }}>
         <mesh
+
           name="Swim_jet"
           geometry={nodes.Swim_jet.geometry}
           userData={{ name: "Swim jet" }}
