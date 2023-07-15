@@ -1,9 +1,14 @@
 import * as React from 'react';
 
 interface IRotationProps {
+  rotation:{
+    x: number;
+    y: number;
+    z: number;}|null;
+  setRotation:React.Dispatch<React.SetStateAction<{ x: number; y: number; z: number;} | null>>
 }
 
-const Rotation: React.FunctionComponent<IRotationProps> = (props) => {
+const Rotation: React.FunctionComponent<IRotationProps> = ({rotation, setRotation}) => {
   return ( 
     <div className='w-full flex items-center gap-x-6 justify-start'>
         <div className='text-slate-50 text-lg self-start w-full'>Rotation</div>
