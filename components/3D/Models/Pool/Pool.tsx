@@ -103,6 +103,7 @@ const Pool: FC<Props> = ({width=16, height=5,depth=12, position,sPosition, scale
      scale={visible && target?.uuid===groupRef.current?.uuid ?75:0}
      depthTest={false}
      fixed
+     disableSliders
      onDragEnd={(w)=>{
       var vec = new THREE.Vector3();
       vec.setFromMatrixPosition(w);

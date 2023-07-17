@@ -11,7 +11,7 @@ export type OnDragStartProps = {
 export type PivotContext = {
   onDragStart: (props: OnDragStartProps) => void
   onDrag: (mdW: THREE.Matrix4) => void
-  onDragEnd: (mdW: THREE.Matrix4) => void
+  onDragEnd: (mdW?: THREE.Matrix4) => void
   translation: { current: [number, number, number] }
   translationLimits?: [[number, number] | undefined, [number, number] | undefined, [number, number] | undefined]
   snapTranslate?: number
