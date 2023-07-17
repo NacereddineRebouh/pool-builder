@@ -228,11 +228,13 @@ export const PivotControls = React.forwardRef<THREE.Group, PivotControlsProps>(
           if (onDrag) onDrag(mL, mdL, mW, mdW)
           invalidate()
         },
-        onDragEnd: (mdW: THREE.Matrix4) => {
-          mW.copy(mW0).premultiply(mdW)
-          mL.copy(mW).premultiply(mPInv)
-          if (onDragEnd) onDragEnd(mW)
-          invalidate()
+        onDragEnd: (mdW?: THREE.Matrix4) => {
+          if(mdW){
+            mW.copy(mW0).premultiply(mdW)
+            mL.copy(mW).premultiply(mPInv)
+            if (onDragEnd) onDragEnd(mW)
+            invalidate()
+          }
         },
         translation,
         translationLimits,
