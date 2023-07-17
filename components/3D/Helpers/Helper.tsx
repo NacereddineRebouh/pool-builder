@@ -15,10 +15,11 @@ const Helper: React.FC<HelperProps> = ({}) => {
   const helper = useAppSelector((state:RootState)=>state.helper)
   // const Coord = useAppSelector(selectSnappingPosition)
   const Coord = useAppSelector(selectPointer)
+  const defaults = useAppSelector((state:RootState)=>state.defaults)
   
   switch (helper.type) {
     case "pool":
-      return( helper.dragging && <PoolHelper props={{ position: [Coord.x, -5/2 + .5, Coord.z] }} height={5} width={16} depth={12}/>)
+      return( helper.dragging && <PoolHelper props={{ position: [Coord.x, -5/2 + .5, Coord.z] }} height={defaults.pool.height} width={defaults.pool.width} depth={defaults.pool.depth}/>)
     case "poolWithSteps":
       return( helper.dragging && <PoolHelper props={{position:[Coord.x, -5/2+.5, Coord.z]}} height={5} width={16} depth={12}/>)
     case "L-Shape":

@@ -21,6 +21,7 @@ import SquareSteps from "./Models/squareSteps";
 import { InsetSteps } from "./Models/insetSteps/InsetSteps";
 import CornerRoundSteps from "./Models/CornerRoundSteps";
 import RoundSteps from "./Models/RoundSteps";
+import { RootState } from "@/store/store";
 type Props = {
 };
 enum sides{
@@ -34,13 +35,14 @@ export default function Scene({}: Props) {
   const shapes = useAppSelector(selectShapes)
   const pools = useAppSelector(selectPools)
   const Pools = useAppSelector(selectAllPools)
+  const defaults = useAppSelector((state:RootState)=>state.defaults)
 
-  const poolwidth=16
-  const poolheight=5
-  const pooldepth=12
+  const poolwidth=defaults.pool.width
+  const poolheight=defaults.pool.height
+  const pooldepth=defaults.pool.depth
   return (
     <Canvas>
-      <Perf />
+      <Perf position={"bottom-right"}/>
       <PerspectiveCamera ref={cameraRef} makeDefault={true} position={[0, 1, 2]} />
       <OrbitControls makeDefault maxPolarAngle={Math.PI / 2} />
       <Environment />
@@ -122,7 +124,7 @@ export default function Scene({}: Props) {
         switch (pool.poolType) {
           case "pool":
             return(
-              <Pool key={poolIndex} index={poolIndex} width={pool.width} height={pool.height} depth={pool.depth} scale={pool.scale} position={pool.position}>
+              <Pool key={poolIndex} pool={pool} index={poolIndex} width={pool.width} height={pool.height} depth={pool.depth} scale={pool.scale} position={pool.position} sPosition={pool.sPosition} sRotation={pool.sRotation} rotation={pool.rotation} sScale={pool.rotation} sWidth={pool.sWidth} sHeight={pool.sHeight} sDepth={pool.sDepth}>
                   {pool.childrens.length>0 && pool.childrens.map((shape, index)=>{
                       switch (shape.shapeType) {
                         case "SwimJet":
@@ -139,15 +141,15 @@ export default function Scene({}: Props) {
                           )
                         case "Steps":
                           return(
-                            <Steps rotation={new THREE.Euler(...shape.rotation)} scale={new THREE.Vector3(...shape.scale)} key={index} position={new THREE.Vector3(...shape.position)} width={3} poolHeight={5} poolWidth={16} side={shape.side} heightPerStep={.63} gap={0.8} poolDepth={pooldepth} intersecting={false} /> 
+                            <Steps rotation={new THREE.Euler(...shape.rotation)} scale={new THREE.Vector3(...shape.scale)} key={index} position={new THREE.Vector3(...shape.position)} width={3} poolHeight={pool.height} poolWidth={pool.width} side={shape.side} heightPerStep={.63} gap={0.8} poolDepth={pool.depth} intersecting={false} /> 
                           )
                         case "cornerRounded":
                           return(
-                            <CornerRoundSteps key={index} rotation={new THREE.Euler(...shape.rotation)} scale={new THREE.Vector3(...shape.scale)} position={new THREE.Vector3(...shape.position)} width={3} poolHeight={5} poolWidth={16} side={shape.side} heightPerStep={.63} gap={0.8}  /> 
+                            <CornerRoundSteps key={index} rotation={new THREE.Euler(...shape.rotation)} scale={new THREE.Vector3(...shape.scale)} position={new THREE.Vector3(...shape.position)} width={3} poolHeight={pool.height} poolWidth={pool.width} side={shape.side} heightPerStep={.63} gap={0.8}  /> 
                           )
                         case "RoundSteps":
                           return(
-                            <RoundSteps key={index} rotation={new THREE.Euler(...shape.rotation)} scale={new THREE.Vector3(...shape.scale)} position={new THREE.Vector3(...shape.position)} width={3} poolHeight={5} poolWidth={16} side={shape.side} heightPerStep={.63} gap={0.8}  /> 
+                            <RoundSteps key={index} rotation={new THREE.Euler(...shape.rotation)} scale={new THREE.Vector3(...shape.scale)} position={new THREE.Vector3(...shape.position)} width={3} poolHeight={pool.height} poolWidth={pool.width} side={shape.side} heightPerStep={.63} gap={0.8}  /> 
                           )
                         case "InfinityEdge":
                           return(
@@ -159,7 +161,7 @@ export default function Scene({}: Props) {
                           )
                         case "SquareSteps":
                           return(
-                            <SquareSteps gap={.8} key={index} rotation={new THREE.Euler(...shape.rotation)} scale={new THREE.Vector3(...shape.scale)} position={new THREE.Vector3(...shape.position)} width={3} intersecting={false} poolHeight={5} poolWidth={16} side={shape.side} heightPerStep={.7} /> 
+                            <SquareSteps gap={.8} key={index} rotation={new THREE.Euler(...shape.rotation)} scale={new THREE.Vector3(...shape.scale)} position={new THREE.Vector3(...shape.position)} width={3} intersecting={false} poolHeight={pool.height} poolWidth={pool.width} side={shape.side} heightPerStep={.7} /> 
                           )
                         case "insetSteps":
                           return(

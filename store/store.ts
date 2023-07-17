@@ -1,3 +1,4 @@
+import defaultsSlice from "@/slices/defaultsSlice";
 import helperSlice from "@/slices/helperSlice";
 import pointerSlice from "@/slices/pointerSlice";
 import poolsSlice from "@/slices/poolsSlice";
@@ -13,7 +14,8 @@ export const store = configureStore({
     snapPosition:snappingSlice,
     pools:poolsSlice,
     shapes:shapesSlice,
-    target:targetSlice
+    target:targetSlice,
+    defaults:defaultsSlice
   },
   middleware: (getDefaultMiddleware) =>
   getDefaultMiddleware({

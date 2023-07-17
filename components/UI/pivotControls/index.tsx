@@ -102,7 +102,7 @@ type PivotControlsProps = {
   /** Drag event */
   onDrag?: (local: THREE.Matrix4, deltaL: THREE.Matrix4, world: THREE.Matrix4, deltaW: THREE.Matrix4) => void
   /** Drag end event */
-  onDragEnd?: () => void
+  onDragEnd?: (world: THREE.Matrix4) => void
   /** Set this to false if you want the gizmo to be visible through faces */
   depthTest?: boolean
   displayValues?: boolean
@@ -228,8 +228,10 @@ export const PivotControls = React.forwardRef<THREE.Group, PivotControlsProps>(
           if (onDrag) onDrag(mL, mdL, mW, mdW)
           invalidate()
         },
-        onDragEnd: () => {
-          if (onDragEnd) onDragEnd()
+        onDragEnd: (mdW: THREE.Matrix4) => {
+          mW.copy(mW0).premultiply(mdW)
+          mL.copy(mW).premultiply(mPInv)
+          if (onDragEnd) onDragEnd(mW)
           invalidate()
         },
         translation,

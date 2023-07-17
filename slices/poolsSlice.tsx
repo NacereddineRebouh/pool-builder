@@ -9,20 +9,35 @@ enum sides{
 export interface ChildrensType {
     shapeType: string;
     position: number[];
-    scale: number[];
+    sPosition: number[];
+    FollowPosition: number[];
+    sRotation: number[];
     rotation: number[];
+    scale: number[];
+    sScale: number[];
     width: number;
+    sWidth: number;
     height: number;
+    sHeight: number;
     depth: number;
+    sDepth: number;
     side: sides;
 }
 export interface PoolType {
     poolType: string;
     position: number[];
+    sPosition: number[];
+    FollowPosition: number[];
+    sRotation: number[];
+    rotation: number[];
     scale: number[];
+    sScale: number[];
     width: number;
+    sWidth: number;
     height: number;
+    sHeight: number;
     depth: number;
+    sDepth: number;
     childrens:ChildrensType[]
 }
 interface PoolsState {
@@ -64,7 +79,7 @@ export const PoolsSlice = createSlice({
   },
 });
 
-export const { addChildren, removeChildrenByIndex, popChildren, addPool, removePoolByIndex, popPool } = PoolsSlice.actions;
+export const { addChildren,ReplacePool, ReplaceChildren, removeChildrenByIndex, popChildren, addPool, removePoolByIndex, popPool } = PoolsSlice.actions;
 export const selectPools = (state: RootState) => state.pools.pools;
 export const selectPool = (state: RootState, poolIndex:number) => state.pools.pools[poolIndex];
 export const selectModel = (state: RootState, poolIndex:number,modelIndex:number) => state.pools.pools[poolIndex].childrens[modelIndex];

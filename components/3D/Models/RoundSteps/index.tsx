@@ -36,7 +36,7 @@ const RoundSteps: FC<Props> = ({
  const target = useAppSelector(selectTarget);
  const groupRef = useRef<THREE.Group>(null)
  const visible = useAppSelector(selectPivotVisibility);
- const steps = Math.floor(poolHeight / heightPerStep); 
+ const steps = Math.ceil(poolHeight / heightPerStep); 
  const stepsArray = new Array(steps).fill(0);
  let newOffset:[number,number,number] =[position.x, position.y, position.z]
  switch (side) {

@@ -166,7 +166,7 @@ export const AxisRotator: React.FC<{ dir1: THREE.Vector3; dir2: THREE.Vector3; a
       e.stopPropagation()
       angle0.current = angle.current
       clickInfo.current = null
-      onDragEnd()
+      onDragEnd(rotMatrix)
       camControls && (camControls.enabled = true)
       // @ts-ignore
       e.target.releasePointerCapture(e.pointerId)

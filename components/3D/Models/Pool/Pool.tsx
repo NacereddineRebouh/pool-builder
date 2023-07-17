@@ -9,18 +9,64 @@ import Borders from "./Borders";
 import { selectPivotVisibility, selectTarget, setPivotVisibility, setTarget } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
+import { ReplacePool } from "@/slices/poolsSlice";
 interface Props {
   index?: number;
-  width?: number;
-  height?: number;
-  depth?: number;
-  scale: number[];
   position: number[];
+  sPosition: number[];
+  sRotation: number[];
+  rotation: number[];
+  scale: number[];
+  sScale: number[];
+  width: number;
+  sWidth: number;
+  height: number;
+  sHeight: number;
+  depth: number;
+  sDepth: number;
   key?: number;
   children?: React.ReactNode;
+  pool:PoolType;
 }
-
-const Pool: FC<Props> = ({width=16, height=5,depth=12, position, scale, index, children}) => {
+enum sides{
+  Top = "Top",
+  Bottom= "Bottom",
+  Left = "Left",
+  Right = "Right",
+}
+export interface ChildrensType {
+  shapeType: string;
+  position: number[];
+  sPosition: number[];
+  sRotation: number[];
+  rotation: number[];
+  scale: number[];
+  sScale: number[];
+  width: number;
+  sWidth: number;
+  height: number;
+  sHeight: number;
+  depth: number;
+  sDepth: number;
+  side: sides;
+}
+export interface PoolType {
+  poolType: string;
+  position: number[];
+  sPosition: number[];
+  sRotation: number[];
+  rotation: number[];
+  scale: number[];
+  sScale: number[];
+  width: number;
+  sWidth: number;
+  height: number;
+  sHeight: number;
+  depth: number;
+  sDepth: number;
+  childrens:ChildrensType[]
+}
+const Pool: FC<Props> = ({width=16, height=5,depth=12, position,sPosition, scale, sScale, sRotation, index, children,pool}) => {
   // load tile texture
   const texture = useTexture("/textures/tiles.jpg");
   texture.wrapT = THREE.RepeatWrapping;
@@ -50,16 +96,25 @@ const Pool: FC<Props> = ({width=16, height=5,depth=12, position, scale, index, c
   
   return (
     <PivotControls
-    disableScaleAxes
-    snapTranslate={10}
+     disableScaleAxes
+     snapTranslate={10}
      visible={visible&& target?.uuid===groupRef.current?.uuid}
      displayValues
      scale={visible && target?.uuid===groupRef.current?.uuid ?75:0}
      depthTest={false}
      fixed
-     offset={[groupRef.current? groupRef.current.position.x : position[0] , groupRef.current? groupRef.current.position.y : position[1],groupRef.current? groupRef.current.position.z : position[2]]}
+     onDragEnd={(w)=>{
+      var vec = new THREE.Vector3();
+      vec.setFromMatrixPosition(w);
+      console.log(vec)
+      const pl = {...pool}
+      pl.sPosition=[vec.x, vec.y, vec.z]
+      dispatch(ReplacePool({poolIndex:index, pool:pl}))
+
+    }}
+     offset={[groupRef.current? groupRef.current.position.x : position[0]+0 , groupRef.current? groupRef.current.position.y : position[1]+0 ,groupRef.current? groupRef.current.position.z : position[2]+0]}
      lineWidth={2}>
-      <group ref={groupRef} scale={new THREE.Vector3(...scale)} position={new THREE.Vector3(...position)} onClick={(e)=>{
+      <group ref={groupRef} scale={new THREE.Vector3(...scale)} position={new THREE.Vector3(position[0],position[1],position[2])} onClick={(e)=>{
     // console.log(target?.uuid,"::::",groupRef?.current?.uuid)
     dispatch(setPivotVisibility(true))
     if(target?.uuid!=groupRef?.current?.uuid){

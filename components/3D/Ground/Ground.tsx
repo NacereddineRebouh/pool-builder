@@ -1,6 +1,6 @@
 "use client"
 import { Instances, Instance, useMask } from "@react-three/drei";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectPointer, setPointer } from "@/slices/pointerSlice";
@@ -31,6 +31,7 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
   const help = useAppSelector((state: RootState)=>state.helper)
   const type = useAppSelector((state: RootState)=>state.helper.type)
   const visibility = useAppSelector((state: RootState)=>state.target.pivotVisibility)
+  const defaults = useAppSelector((state:RootState)=>state.defaults)
 
   const dispatch = useAppDispatch() 
   const coords =  useAppSelector((state: RootState)=>state.pointer)
@@ -39,9 +40,51 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
   const stencil = useMask(1, true)
 
   // ------- //
-  const poolwidth=16
-  const poolheight=5
-  const pooldepth=12
+  const poolwidth=defaults.pool.width
+  const poolheight=defaults.pool.height
+  const pooldepth=defaults.pool.depth
+  useEffect(() => {
+    // console.log("Corner::",Corner)
+    // console.log("defaults::",defaults)
+    // console.log("poolwidth::",poolwidth)
+    setCorner([
+      {position:[-poolwidth/2+3/2, -height+4/2, -pooldepth/2+3/2], used:false},//left
+      {position:[poolwidth/2-3/2,-height+4/2,-pooldepth/2+3/2], used:false},//right
+      {position:[-poolwidth/2+3/2,-height+4/2,pooldepth/2-3/2], used:false},//top
+      {position:[poolwidth/2-3/2,-height+4/2,pooldepth/2-3/2], used:false},   //bottom
+    ])
+    setstairs([
+      {position:[-poolwidth/2+boxWidth/2,-poolheight+boxHeight/2,0], used:false},//left
+      {position:[poolwidth/2-boxWidth/2,-poolheight+boxHeight/2,0], used:false},//right
+      {position:[0,-poolheight+boxHeight/2,-pooldepth/2+boxDepth/2], used:false},//top
+      {position:[0,-poolheight+boxHeight/2,pooldepth/2-boxDepth/2], used:false},   //bottom
+    ])
+    setswimJet([
+      {position:[-poolwidth/2+swimJetBoxWidth/2,-poolheight/2+swimJetBoxHeight/2,0], used:false},//left
+      {position:[poolwidth/2-swimJetBoxWidth/2,-poolheight/2+swimJetBoxHeight/2,0], used:false},//right
+      {position:[0,-poolheight/2+swimJetBoxHeight/2,-pooldepth/2+swimJetBoxWidth/2], used:false},//top
+      {position:[0,-poolheight/2+swimJetBoxHeight/2,pooldepth/2-swimJetBoxWidth/2], used:false},   //bottom
+    ])
+    setinfinityEdge([
+      {position:[-poolwidth/2-infinityEdgeBoxWidth,infinityEdgeBoxHeight/2,0], used:false},//left
+      {position:[poolwidth/2+infinityEdgeBoxWidth,infinityEdgeBoxHeight/2,0], used:false},//right
+      {position:[0,infinityEdgeBoxHeight/2,-pooldepth/2-infinityEdgeBoxWidth], used:false},//top
+      {position:[0,infinityEdgeBoxHeight/2,pooldepth/2+infinityEdgeBoxWidth], used:false},   //bottom
+    ])
+    setfountain([
+      {position:[-poolwidth/2-0,waterFallBoxHeight/2,0], used:false},//left
+      {position:[poolwidth/2+0,waterFallBoxHeight/2,0], used:false},//right
+      {position:[0,waterFallBoxHeight/2,-pooldepth/2-0], used:false},//top
+      {position:[0,waterFallBoxHeight/2,pooldepth/2+0], used:false},   //bottom
+    ])
+    setbeach([
+      {position:[-poolwidth/2-2,2/2,0], used:false},//left
+      {position:[poolwidth/2+2,2/2,0], used:false},//right
+      {position:[0,2/2,-pooldepth/2-2], used:false},//top
+      {position:[0,2/2,pooldepth/2+2], used:false},   //bottom
+    ])
+  }, [defaults])
+  
   const boxWidth = 3
   const boxHeight = poolheight
   const boxDepth = 4
@@ -60,10 +103,10 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
   const waterFallBoxHeight = 2
   const waterFallBoxDepth = 2
   const [stairs, setstairs] = useState([
-    {position:[-poolwidth/2+boxWidth/2,-poolheight+boxHeight/2,0], used:false},//left
-    {position:[poolwidth/2-boxWidth/2,-poolheight+boxHeight/2,0], used:false},//right
-    {position:[0,-poolheight+boxHeight/2,-pooldepth/2+boxDepth/2], used:false},//top
-    {position:[0,-poolheight+boxHeight/2,pooldepth/2-boxDepth/2], used:false},   //bottom
+    {position:[-poolwidth/2+boxWidth/2,-height+boxHeight/2,0], used:false},//left
+    {position:[poolwidth/2-boxWidth/2,-height+boxHeight/2,0], used:false},//right
+    {position:[0,-height+boxHeight/2,-pooldepth/2+boxDepth/2], used:false},//top
+    {position:[0,-height+boxHeight/2,pooldepth/2-boxDepth/2], used:false},   //bottom
   ])
   const [swimJet, setswimJet] = useState([
     {position:[-poolwidth/2+swimJetBoxWidth/2,-poolheight/2+swimJetBoxHeight/2,0], used:false},//left
@@ -113,11 +156,10 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
         let closestPool:PoolType= Pools[0];
         Pools?.map((pool, index)=>{
           const temp = Math.sqrt(
-            Math.pow(e.point.x - pool.position[0], 2) +
-            Math.pow(e.point.y - pool.position[1], 2) +
-            Math.pow(e.point.z - pool.position[2], 2)
+            Math.pow(e.point.x - pool.sPosition[0], 2) +
+            Math.pow(e.point.y - pool.sPosition[1], 2) +
+            Math.pow(e.point.z - pool.sPosition[2], 2)
           );
-          const temp_ =Math.sqrt(e.point.x * pool.position[0] + e.point.y * pool.position[1] + e.point.z * pool.position[2])
           if(temp<dist){
             dist=temp
             closestPool=pool
@@ -135,6 +177,42 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
         
         // find closest snap area according to type
         if(closestPool){
+          setCorner([
+            {position:[-closestPool.width/2+3/2, -height+4/2, -closestPool.depth/2+3/2], used:false},//left
+            {position:[closestPool.width/2-3/2,-height+4/2,-closestPool.depth/2+3/2], used:false},//right
+            {position:[-closestPool.width/2+3/2,-height+4/2,closestPool.depth/2-3/2], used:false},//top
+            {position:[closestPool.width/2-3/2,-height+4/2,closestPool.depth/2-3/2], used:false},   //bottom
+          ])
+          setstairs([
+            {position:[-closestPool.width/2+boxWidth/2,-closestPool.height+boxHeight/2,0], used:false},//left
+            {position:[closestPool.width/2-boxWidth/2,-closestPool.height+boxHeight/2,0], used:false},//right
+            {position:[0,-closestPool.height+boxHeight/2,-closestPool.depth/2+boxDepth/2], used:false},//top
+            {position:[0,-closestPool.height+boxHeight/2,closestPool.depth/2-boxDepth/2], used:false},   //bottom
+          ])
+          setswimJet([
+            {position:[-closestPool.width/2+swimJetBoxWidth/2,-closestPool.height/2+swimJetBoxHeight/2,0], used:false},//left
+            {position:[closestPool.width/2-swimJetBoxWidth/2,-closestPool.height/2+swimJetBoxHeight/2,0], used:false},//right
+            {position:[0,-closestPool.height/2+swimJetBoxHeight/2,-closestPool.depth/2+swimJetBoxWidth/2], used:false},//top
+            {position:[0,-closestPool.height/2+swimJetBoxHeight/2,closestPool.depth/2-swimJetBoxWidth/2], used:false},   //bottom
+          ])
+          setinfinityEdge([
+            {position:[-closestPool.width/2-infinityEdgeBoxWidth,infinityEdgeBoxHeight/2,0], used:false},//left
+            {position:[closestPool.width/2+infinityEdgeBoxWidth,infinityEdgeBoxHeight/2,0], used:false},//right
+            {position:[0,infinityEdgeBoxHeight/2,-closestPool.depth/2-infinityEdgeBoxWidth], used:false},//top
+            {position:[0,infinityEdgeBoxHeight/2,closestPool.depth/2+infinityEdgeBoxWidth], used:false},   //bottom
+          ])
+          setfountain([
+            {position:[-closestPool.width/2-0,waterFallBoxHeight/2,0], used:false},//left
+            {position:[closestPool.width/2+0,waterFallBoxHeight/2,0], used:false},//right
+            {position:[0,waterFallBoxHeight/2,-closestPool.depth/2-0], used:false},//top
+            {position:[0,waterFallBoxHeight/2,closestPool.depth/2+0], used:false},   //bottom
+          ])
+          setbeach([
+            {position:[-closestPool.width/2-2,2/2,0], used:false},//left
+            {position:[closestPool.width/2+2,2/2,0], used:false},//right
+            {position:[0,2/2,-closestPool.depth/2-2], used:false},//top
+            {position:[0,2/2,closestPool.depth/2+2], used:false},   //bottom
+          ])
           switch (true) {
           case type==="SquareSteps" || type==="RoundSteps" || type==="Steps":
             const available = stairs.filter(stair => stair.used===false);
@@ -142,15 +220,15 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               let closest = available[0]
               setClosestIndex(0)
               let newdist = Math.sqrt(
-                Math.pow(e.point.x - (closestPool.position[0] + available[0].position[0]), 2) +
-                Math.pow(e.point.y - (closestPool.position[1] + available[0].position[1]), 2) +
-                Math.pow(e.point.z - (closestPool.position[2] + available[0].position[2]), 2)
+                Math.pow(e.point.x - (closestPool.sPosition[0] + available[0].position[0]), 2) +
+                Math.pow(e.point.y - (closestPool.sPosition[1] + available[0].position[1]), 2) +
+                Math.pow(e.point.z - (closestPool.sPosition[2] + available[0].position[2]), 2)
               );
               available.map((stair, index) => {
                 const temp = Math.sqrt(
-                  Math.pow(e.point.x - (closestPool.position[0] + stair.position[0]), 2) +
-                  Math.pow(e.point.y - (closestPool.position[1] + stair.position[1]), 2) +
-                  Math.pow(e.point.z - (closestPool.position[2] + stair.position[2]), 2)
+                  Math.pow(e.point.x - (closestPool.sPosition[0] + stair.position[0]), 2) +
+                  Math.pow(e.point.y - (closestPool.sPosition[1] + stair.position[1]), 2) +
+                  Math.pow(e.point.z - (closestPool.sPosition[2] + stair.position[2]), 2)
                 );
                 if (temp < newdist) {
                   newdist = temp;
@@ -166,9 +244,9 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               };
               setSnappingPosition(pointer) 
               pointer  = {
-                x:  closestPool.position[0] +closest.position[0],
-                y:  closestPool.position[1] +closest.position[1],
-                z:   closestPool.position[2] +closest.position[2],
+                x:  closestPool.sPosition[0] +closest.position[0],
+                y:  closestPool.sPosition[1] +closest.position[1],
+                z:   closestPool.sPosition[2] +closest.position[2],
               };       
               
             }
@@ -179,15 +257,15 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               let closest = availableSwimJet[0]
               setClosestIndex(0)
               let newdist = Math.sqrt(
-                Math.pow(e.point.x - (closestPool.position[0] + availableSwimJet[0].position[0]), 2) +
-                Math.pow(e.point.y - (closestPool.position[1] + availableSwimJet[0].position[1]), 2) +
-                Math.pow(e.point.z - (closestPool.position[2] + availableSwimJet[0].position[2]), 2)
+                Math.pow(e.point.x - (closestPool.sPosition[0] + availableSwimJet[0].position[0]), 2) +
+                Math.pow(e.point.y - (closestPool.sPosition[1] + availableSwimJet[0].position[1]), 2) +
+                Math.pow(e.point.z - (closestPool.sPosition[2] + availableSwimJet[0].position[2]), 2)
               );
               availableSwimJet.map((swimjet, index) => {
                 const temp = Math.sqrt(
-                  Math.pow(e.point.x - (closestPool.position[0] + swimjet.position[0]), 2) +
-                  Math.pow(e.point.y - (closestPool.position[1] + swimjet.position[1]), 2) +
-                  Math.pow(e.point.z - (closestPool.position[2] + swimjet.position[2]), 2)
+                  Math.pow(e.point.x - (closestPool.sPosition[0] + swimjet.position[0]), 2) +
+                  Math.pow(e.point.y - (closestPool.sPosition[1] + swimjet.position[1]), 2) +
+                  Math.pow(e.point.z - (closestPool.sPosition[2] + swimjet.position[2]), 2)
                 );
                 if (temp < newdist) {
                   newdist = temp;
@@ -203,9 +281,9 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               };
               setSnappingPosition(pointer) 
               pointer  = {
-                x:  closestPool.position[0] +closest.position[0],
-                y:  closestPool.position[1] +closest.position[1],
-                z:   closestPool.position[2] +closest.position[2],
+                x:  closestPool.sPosition[0] +closest.position[0],
+                y:  closestPool.sPosition[1] +closest.position[1],
+                z:   closestPool.sPosition[2] +closest.position[2],
               };          
             }
             break;
@@ -215,15 +293,15 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               let closest = availableInfinityEdge[0]
               setClosestIndex(0)
               let newdist = Math.sqrt(
-                Math.pow(e.point.x - (closestPool.position[0] + availableInfinityEdge[0].position[0]), 2) +
-                Math.pow(e.point.y - (closestPool.position[1] + availableInfinityEdge[0].position[1]), 2) +
-                Math.pow(e.point.z - (closestPool.position[2] + availableInfinityEdge[0].position[2]), 2)
+                Math.pow(e.point.x - (closestPool.sPosition[0] + availableInfinityEdge[0].position[0]), 2) +
+                Math.pow(e.point.y - (closestPool.sPosition[1] + availableInfinityEdge[0].position[1]), 2) +
+                Math.pow(e.point.z - (closestPool.sPosition[2] + availableInfinityEdge[0].position[2]), 2)
               );
               availableInfinityEdge.map((ifEdge, index) => {
                 const temp = Math.sqrt(
-                  Math.pow(e.point.x - (closestPool.position[0] + ifEdge.position[0]), 2) +
-                  Math.pow(e.point.y - (closestPool.position[1] + ifEdge.position[1]), 2) +
-                  Math.pow(e.point.z - (closestPool.position[2] + ifEdge.position[2]), 2)
+                  Math.pow(e.point.x - (closestPool.sPosition[0] + ifEdge.position[0]), 2) +
+                  Math.pow(e.point.y - (closestPool.sPosition[1] + ifEdge.position[1]), 2) +
+                  Math.pow(e.point.z - (closestPool.sPosition[2] + ifEdge.position[2]), 2)
                 );
                 if (temp < newdist) {
                   newdist = temp;
@@ -239,9 +317,9 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               };
               setSnappingPosition(pointer) 
               pointer  = {
-                x:  closestPool.position[0] +closest.position[0],
-                y:  closestPool.position[1] +closest.position[1],
-                z:   closestPool.position[2] +closest.position[2],
+                x:  closestPool.sPosition[0] +closest.position[0],
+                y:  closestPool.sPosition[1] +closest.position[1],
+                z:  closestPool.sPosition[2] +closest.position[2],
               };          
             }
             break;
@@ -252,15 +330,15 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               let closest = availableFountain[0]
               setClosestIndex(0)
               let newdist = Math.sqrt(
-                Math.pow(e.point.x - (closestPool.position[0] + availableFountain[0].position[0]), 2) +
-                Math.pow(e.point.y - (closestPool.position[1] + availableFountain[0].position[1]), 2) +
-                Math.pow(e.point.z - (closestPool.position[2] + availableFountain[0].position[2]), 2)
+                Math.pow(e.point.x - (closestPool.sPosition[0] + availableFountain[0].position[0]), 2) +
+                Math.pow(e.point.y - (closestPool.sPosition[1] + availableFountain[0].position[1]), 2) +
+                Math.pow(e.point.z - (closestPool.sPosition[2] + availableFountain[0].position[2]), 2)
               );
               availableFountain.map((fountain, index) => {
                 const temp = Math.sqrt(
-                  Math.pow(e.point.x - (closestPool.position[0] + fountain.position[0]), 2) +
-                  Math.pow(e.point.y - (closestPool.position[1] + fountain.position[1]), 2) +
-                  Math.pow(e.point.z - (closestPool.position[2] + fountain.position[2]), 2)
+                  Math.pow(e.point.x - (closestPool.sPosition[0] + fountain.position[0]), 2) +
+                  Math.pow(e.point.y - (closestPool.sPosition[1] + fountain.position[1]), 2) +
+                  Math.pow(e.point.z - (closestPool.sPosition[2] + fountain.position[2]), 2)
                 );
                 if (temp < newdist) {
                   newdist = temp;
@@ -276,9 +354,9 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               };
               setSnappingPosition(pointer) 
               pointer  = {
-                x:  closestPool.position[0] +closest.position[0],
-                y:  closestPool.position[1] +closest.position[1],
-                z:   closestPool.position[2] +closest.position[2],
+                x:  closestPool.sPosition[0] +closest.position[0],
+                y:  closestPool.sPosition[1] +closest.position[1],
+                z:   closestPool.sPosition[2] +closest.position[2],
               };          
             }
             break;
@@ -288,15 +366,15 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               let closest = availableCorner[0]
               setClosestIndex(0)
               let newdist = Math.sqrt(
-                Math.pow(e.point.x - (closestPool.position[0] + availableCorner[0].position[0]), 2) +
-                Math.pow(e.point.y - (closestPool.position[1] + availableCorner[0].position[1]), 2) +
-                Math.pow(e.point.z - (closestPool.position[2] + availableCorner[0].position[2]), 2)
+                Math.pow(e.point.x - (closestPool.sPosition[0] + availableCorner[0].position[0]), 2) +
+                Math.pow(e.point.y - (closestPool.sPosition[1] + availableCorner[0].position[1]), 2) +
+                Math.pow(e.point.z - (closestPool.sPosition[2] + availableCorner[0].position[2]), 2)
               );
               availableCorner.map((corner, index) => {
                 const temp = Math.sqrt(
-                  Math.pow(e.point.x - (closestPool.position[0] + corner.position[0]), 2) +
-                  Math.pow(e.point.y - (closestPool.position[1] + corner.position[1]), 2) +
-                  Math.pow(e.point.z - (closestPool.position[2] + corner.position[2]), 2)
+                  Math.pow(e.point.x - (closestPool.sPosition[0] + corner.position[0]), 2) +
+                  Math.pow(e.point.y - (closestPool.sPosition[1] + corner.position[1]), 2) +
+                  Math.pow(e.point.z - (closestPool.sPosition[2] + corner.position[2]), 2)
                 );
                 if (temp < newdist) {
                   newdist = temp;
@@ -312,9 +390,9 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               };
               setSnappingPosition(pointer) 
               pointer  = {
-                x:  closestPool.position[0] +closest.position[0],
-                y:  closestPool.position[1] +closest.position[1],
-                z:   closestPool.position[2] +closest.position[2],
+                x:  closestPool.sPosition[0] +closest.position[0],
+                y:  closestPool.sPosition[1] +closest.position[1],
+                z:   closestPool.sPosition[2] +closest.position[2],
               };          
             }
             break;
@@ -325,15 +403,15 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               let closest = availableBeach[0]
               setClosestIndex(0)
               let newdist = Math.sqrt(
-                Math.pow(e.point.x - (closestPool.position[0] + availableBeach[0].position[0]), 2) +
-                Math.pow(e.point.y - (closestPool.position[1] + availableBeach[0].position[1]), 2) +
-                Math.pow(e.point.z - (closestPool.position[2] + availableBeach[0].position[2]), 2)
+                Math.pow(e.point.x - (closestPool.sPosition[0] + availableBeach[0].position[0]), 2) +
+                Math.pow(e.point.y - (closestPool.sPosition[1] + availableBeach[0].position[1]), 2) +
+                Math.pow(e.point.z - (closestPool.sPosition[2] + availableBeach[0].position[2]), 2)
               );
               availableBeach.map((beach, index) => {
                 const temp = Math.sqrt(
-                  Math.pow(e.point.x - (closestPool.position[0] + beach.position[0]), 2) +
-                  Math.pow(e.point.y - (closestPool.position[1] + beach.position[1]), 2) +
-                  Math.pow(e.point.z - (closestPool.position[2] + beach.position[2]), 2)
+                  Math.pow(e.point.x - (closestPool.sPosition[0] + beach.position[0]), 2) +
+                  Math.pow(e.point.y - (closestPool.sPosition[1] + beach.position[1]), 2) +
+                  Math.pow(e.point.z - (closestPool.sPosition[2] + beach.position[2]), 2)
                 );
                 if (temp < newdist) {
                   newdist = temp;
@@ -349,9 +427,9 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
               };
               setSnappingPosition(pointer) 
               pointer  = {
-                x:  closestPool.position[0] +closest.position[0],
-                y:  closestPool.position[1] +closest.position[1],
-                z:   closestPool.position[2] +closest.position[2],
+                x:  closestPool.sPosition[0] +closest.position[0],
+                y:  closestPool.sPosition[1] +closest.position[1],
+                z:   closestPool.sPosition[2] +closest.position[2],
               };          
             }
             break;
@@ -371,7 +449,8 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
       switch (type) {
         case "pool":
           // dispatch(addPool({shapeType:type, position:[coords.x,coords.y,coords.z], scale:[1,1,1]}))
-          dispatch(addNewPool({poolType:type, width:16, height:5, depth:12, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1],childrens:[]}))
+          dispatch(addNewPool({poolType:type, width:defaults.pool.width, height:defaults.pool.height, depth:defaults.pool.depth, sWidth:16, sHeight:5, sDepth:12, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1], sPosition:[e.point.x,e.point.y,e.point.z], sScale:[1,1,1], sRotation:[0,0,0], rotation:[0,0,0], childrens:[]}))
+          // dispatch(addNewPool({poolType:type, width:16, height:5, depth:12, sWidth:16, sHeight:5, sDepth:12, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1], sPosition:[0,0,0], sScale:[1,1,1], sRotation:[0,0,0], rotation:[0,0,0], childrens:[]}))
           break;
         case "poolWithSteps":
           dispatch(addNewPool({poolType:type, width:16, height:5, depth:12, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1],childrens:[]}))
@@ -380,7 +459,7 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
           dispatch(addNewPool({poolType:type, width:16, height:5, depth:12, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1],childrens:[]}))
           break;
         case "cyl":
-          dispatch(addNewPool({poolType:type, width:16, height:5, depth:12, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1],childrens:[]}))
+          dispatch(addNewPool({poolType:type,  width:defaults.cyl.top, height:defaults.cyl.height, depth:defaults.cyl.bottom, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1],childrens:[]}))
           break;
 
           case "SwimJet":
@@ -643,23 +722,23 @@ const Grid = ({ number = 23, lineWidth = 0.026, height = 0.5 }) => {
                 case 0:
                   //left
                   rotation =0 // 90
-                  position[0]=1.3
+                  position[0]=0
                   side=sides.Left
                   break;
                 case 1:
                   //right
                   rotation = 0 //-90
-                  position[0]=-1.3
+                  position[0]=0
                   side=sides.Right
                   break;
                 case 2:
                   rotation = 0 //180
-                  position[2]= 0
+                  position[2]= -.45
                   side=sides.Top
                   break;
                   case 3:
                   rotation = 0 //0
-                  position[2]= 0
+                  position[2]= .45
                   side=sides.Bottom
                   break;
               

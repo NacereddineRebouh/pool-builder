@@ -97,19 +97,21 @@ const SquareSteps: FC<squareStepsProps> = ({
           }
     >
       {stepsArray.map((step, idx) => {
-          let newPosition =[position.x, position.y, position.z]
+          let newPosition =[0, 0, 0]
           switch (side) {
             case "Left":
-              newPosition=[position.x+(multiplyByIndex(gap/2,stepsArray.length)) + gap/2 * idx, position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, position.z]
+              newPosition=[0 + gap/2 * idx, position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, 0]
+              // newPosition=[0-(multiplyByIndex(gap/2,stepsArray.length)) + gap/2 * idx, position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, 0]
               break;
             case "Right":
-              newPosition=[position.x-(multiplyByIndex(gap/2,stepsArray.length)) - gap/2 * idx, position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, position.z]
+              newPosition=[0 - gap/2 * idx, position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, 0]
+              // newPosition=[0-(multiplyByIndex(gap/2,stepsArray.length)) - gap/2 * idx, position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, 0]
               break;
             case "Top":
-              newPosition=[position.x, position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, position.z+(multiplyByIndex(gap/2,stepsArray.length)) + gap/2 * idx]
+              newPosition=[0, position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, 0+ gap/2 * idx]
               break;
             case "Bottom":
-              newPosition=[position.x , position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, position.z -(multiplyByIndex(gap/2,stepsArray.length)) - gap/2 * idx]
+              newPosition=[0 , position.y +((stepsArray.length-1)*heightPerStep) - idx * heightPerStep, 0 - gap/2 * idx]
               break;
           }
         return (

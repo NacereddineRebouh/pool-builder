@@ -111,7 +111,7 @@ export const AxisArrow: React.FC<{
       if (displayValues) divRef.current.style.display = 'none'
       e.stopPropagation()
       clickInfo.current = null
-      onDragEnd()
+      onDragEnd(offsetMatrix)
       camControls && (camControls.enabled = true)
       // @ts-ignore - releasePointerCapture & PointerEvent#pointerId is not in the type definition
       e.target.releasePointerCapture(e.pointerId)
