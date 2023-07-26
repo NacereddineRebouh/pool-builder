@@ -1,24 +1,185 @@
-import * as React from 'react';
+"use client";
+import { PoolType, ReplaceChildren, ReplacePool } from "@/slices/poolsSlice";
+import { useAppDispatch } from "@/store/hooks";
+import { NumberInput } from "@mantine/core";
+import * as React from "react";
 
 interface IScaleProps {
-  scale:{
+  scale: {
     x: number;
     y: number;
-    z: number;}|null;
-  setScale:React.Dispatch<React.SetStateAction<{ x: number; y: number; z: number;} | null>>
+    z: number;
+  } | null;
+  targetPool: number | null;
+  pools: PoolType[];
+  targetModel: { pool: number; model: number } | null;
 }
 
-const Scale: React.FunctionComponent<IScaleProps> = ({scale, setScale}) => {
-  return ( 
-    <div className='w-full flex items-center gap-x-6 justify-start'>
-        <div className='text-slate-50 text-lg self-start w-full'>Scale</div>
-        <div className='flex items-center gap-x-2 justify-start w-full'>
-            <input type='number' className='max-w-[35px] bg-transparent text-slate-50' step={0.1} defaultValue={scale?.x && 1}/>
-            <input type='number' className='max-w-[35px] bg-transparent text-slate-50' step={0.1} defaultValue={scale?.y && 1}/>
-            <input type='number' className='max-w-[35px] bg-transparent text-slate-50' step={0.1} defaultValue={scale?.z && 1}/>
-        </div>
+const Scale: React.FunctionComponent<IScaleProps> = ({
+  scale,
+  targetPool,
+  pools,
+  targetModel,
+}) => {
+  const dispatch = useAppDispatch();
+
+  return (
+    <div className="flex w-full items-center justify-start gap-x-3">
+      <div className="w-1/5 self-start text-lg text-slate-50">Scale</div>
+      <div className="flex w-4/5 flex-row flex-wrap items-center justify-start gap-x-2">
+        <NumberInput
+          value={scale?.x}
+          onChange={(e) => {
+            if (scale && targetPool != null) {
+              const pool = { ...pools[targetPool] };
+              if (
+                pool?.sScale &&
+                scale &&
+                (pool.sScale[0] != +e ||
+                  pool.sScale[2] != scale.y ||
+                  pool.sScale[3] != scale.z)
+              ) {
+                const updatedSScale = [...pool.sScale]; // Create a copy of the array
+                updatedSScale[0] = +e;
+                updatedSScale[1] = scale.y;
+                updatedSScale[2] = scale.z;
+                pool.sScale = updatedSScale;
+                dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
+                // Assign the updated array back to pool.sPosition
+              }
+            } else if (scale && targetModel != null) {
+              const model = {
+                ...pools[targetModel.pool].childrens[targetModel.model],
+              };
+              if (
+                model?.sScale &&
+                scale &&
+                (model.sScale[0] != +e ||
+                  model.sScale[2] != scale.y ||
+                  model.sScale[3] != scale.z)
+              ) {
+                const updatedsScale = [...model.sScale]; // Create a copy of the array
+                updatedsScale[0] = +e;
+                updatedsScale[1] = scale.y;
+                updatedsScale[2] = scale.z;
+                model.sScale = updatedsScale; // Assign the updated array back to model.sscale
+                dispatch(
+                  ReplaceChildren({
+                    poolIndex: targetModel.pool,
+                    modelIndex: targetModel.model,
+                    model: model,
+                  })
+                );
+              }
+            }
+          }}
+          className="w-[75px] max-w-[90px]"
+          step={0.05}
+          precision={2}
+        />
+        <NumberInput
+          value={scale?.y}
+          onChange={(e) => {
+            if (scale && targetPool != null) {
+              const pool = { ...pools[targetPool] };
+              if (
+                pool?.sScale &&
+                scale &&
+                (pool.sScale[0] != scale.x ||
+                  pool.sScale[2] != +e ||
+                  pool.sScale[3] != scale.z)
+              ) {
+                const updatedSScale = [...pool.sScale]; // Create a copy of the array
+                updatedSScale[0] = scale.x;
+                updatedSScale[1] = +e;
+                updatedSScale[2] = scale.z;
+                pool.sScale = updatedSScale;
+                dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
+                // Assign the updated array back to pool.sPosition
+              }
+            } else if (scale && targetModel != null) {
+              const model = {
+                ...pools[targetModel.pool].childrens[targetModel.model],
+              };
+              if (
+                model?.sScale &&
+                scale &&
+                (model.sScale[0] != scale.x ||
+                  model.sScale[2] != +e ||
+                  model.sScale[3] != scale.z)
+              ) {
+                const updatedsScale = [...model.sScale]; // Create a copy of the array
+                updatedsScale[0] = scale.x;
+                updatedsScale[1] = +e;
+                updatedsScale[2] = scale.z;
+                model.sScale = updatedsScale; // Assign the updated array back to model.sscale
+                dispatch(
+                  ReplaceChildren({
+                    poolIndex: targetModel.pool,
+                    modelIndex: targetModel.model,
+                    model: model,
+                  })
+                );
+              }
+            }
+          }}
+          className="w-[75px] max-w-[90px]"
+          step={0.05}
+          precision={2}
+        />
+        <NumberInput
+          value={scale?.z}
+          onChange={(e) => {
+            if (scale && targetPool != null) {
+              const pool = { ...pools[targetPool] };
+              if (
+                pool?.sScale &&
+                scale &&
+                (pool.sScale[0] != scale.x ||
+                  pool.sScale[2] != +e ||
+                  pool.sScale[3] != +e)
+              ) {
+                const updatedSScale = [...pool.sScale]; // Create a copy of the array
+                updatedSScale[0] = scale.x;
+                updatedSScale[1] = scale.y;
+                updatedSScale[2] = +e;
+                pool.sScale = updatedSScale;
+                dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
+                // Assign the updated array back to pool.sPosition
+              }
+            } else if (scale && targetModel != null) {
+              const model = {
+                ...pools[targetModel.pool].childrens[targetModel.model],
+              };
+              if (
+                model?.sScale &&
+                scale &&
+                (model.sScale[0] != scale.x ||
+                  model.sScale[2] != scale.y ||
+                  model.sScale[3] != +e)
+              ) {
+                const updatedsScale = [...model.sScale]; // Create a copy of the array
+                updatedsScale[0] = scale.x;
+                updatedsScale[1] = scale.y;
+                updatedsScale[2] = +e;
+                model.sScale = updatedsScale; // Assign the updated array back to model.sscale
+                dispatch(
+                  ReplaceChildren({
+                    poolIndex: targetModel.pool,
+                    modelIndex: targetModel.model,
+                    model: model,
+                  })
+                );
+              }
+            }
+          }}
+          className="w-[75px] max-w-[90px]"
+          step={0.05}
+          precision={2}
+        />
+      </div>
     </div>
-   );
+  );
 };
 
 export default Scale;

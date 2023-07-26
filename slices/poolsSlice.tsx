@@ -10,7 +10,6 @@ export interface ChildrensType {
     shapeType: string;
     position: number[];
     sPosition: number[];
-    FollowPosition: number[];
     sRotation: number[];
     rotation: number[];
     scale: number[];
@@ -27,7 +26,6 @@ export interface PoolType {
     poolType: string;
     position: number[];
     sPosition: number[];
-    FollowPosition: number[];
     sRotation: number[];
     rotation: number[];
     scale: number[];
@@ -62,13 +60,15 @@ export const PoolsSlice = createSlice({
       state.pools.pop();
     },
     ReplacePool: (state, action) => {
-      state.pools[action.payload.poolIndex]=action.payload.pool;
+      if(state.pools[action.payload.poolIndex])
+        state.pools[action.payload.poolIndex]=action.payload.pool;
     },
     addChildren: (state, action) => {
       state.pools[action.payload.poolIndex].childrens.push(action.payload.children);
     },
     ReplaceChildren: (state, action) => {
-      state.pools[action.payload.poolIndex].childrens[action.payload.modelIndex]=action.payload.model;
+      if(state.pools[action.payload.poolIndex]?.childrens)
+        state.pools[action.payload.poolIndex].childrens[action.payload.modelIndex]=action.payload.model;
     },
     removeChildrenByIndex: (state, action) => {
       state.pools[action.payload.poolIndex].childrens.splice(action.payload.index,1)

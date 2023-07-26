@@ -24,13 +24,14 @@ export interface Defaults {
 
 const initialState: Defaults = {
     cyl:{
-      top: 6,
-      height: 5,
-      bottom: 6,},
+      top: 3,
+      height: 1.5,
+      bottom: 3,},
     pool:{
-      width: 16,
-      height: 5,
-      depth: 12,}  
+    width : 5,
+    height : 1.5,
+    depth : 3
+  }
 };
 
 export const defaultsSlice = createSlice({

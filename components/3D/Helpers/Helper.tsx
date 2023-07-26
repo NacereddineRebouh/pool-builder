@@ -19,17 +19,17 @@ const Helper: React.FC<HelperProps> = ({}) => {
   
   switch (helper.type) {
     case "pool":
-      return( helper.dragging && <PoolHelper props={{ position: [Coord.x, -5/2 + .5, Coord.z] }} height={defaults.pool.height} width={defaults.pool.width} depth={defaults.pool.depth}/>)
+      return( helper.dragging && <PoolHelper props={{ position: [Coord.x, -defaults.pool.height/2 + .2, Coord.z] }} height={defaults.pool.height} width={defaults.pool.width} depth={defaults.pool.depth}/>)
     case "poolWithSteps":
       return( helper.dragging && <PoolHelper props={{position:[Coord.x, -5/2+.5, Coord.z]}} height={5} width={16} depth={12}/>)
     case "L-Shape":
       return( helper.dragging && <PoolHelper props={{position:[Coord.x, -5/2+.5, Coord.z]}} height={5} width={16} depth={12}/>)
     case "cyl":
-      return( helper.dragging && <CylinderHelper props={{position:[Coord.x, -5/2+.5, Coord.z]}} bottom={6} top={6} height={5} />)
+      return( helper.dragging && <CylinderHelper props={{position:[Coord.x, -defaults.cyl.height/2+.5, Coord.z]}} bottom={defaults.cyl.bottom} top={defaults.cyl.top} height={defaults.cyl.height} />)
     default:
       //Coord.y+.5
        return( helper.dragging && <mesh position={[Coord.x, Coord.y, Coord.z]}> 
-        <boxGeometry args={[4,3,4]}/>
+        <boxGeometry args={[4/5,3/5,4/5]}/>
         <meshBasicMaterial color={"green"} transparent opacity={.7}/>
       </mesh>)
       break;

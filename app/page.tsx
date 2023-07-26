@@ -15,8 +15,8 @@ export default function Home() {
     <div className="h-screen w-screen bg-sky-200">
       {/* 3d Builder */}
       {/* <Scene HelperObject={helperObject}/> */}
-      <MemoisedScene/>
-
+      {/* <MemoisedScene/> */}
+      <Scene/>
       {/* Left-Side Bars */}
       <SideBar />
       {/* Right-Side Bars */}
