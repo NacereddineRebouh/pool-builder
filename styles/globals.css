@@ -25,3 +25,7 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.mantine-Tabs-tab{
+  @apply !text-stone-50 hover:!text-slate-900;
+}

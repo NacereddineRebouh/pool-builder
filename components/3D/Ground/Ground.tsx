@@ -1359,7 +1359,7 @@ const Grid = ({
                   sPosition: [0, 0, 0],
                   sScale: [1, 1, 1],
                   sRotation: [0, 0, 0],
-                  scale: [1, 1, 1],
+                  scale: [.3, .3, .3],
                   side: side,
                 },
               })

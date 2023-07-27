@@ -159,9 +159,9 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
       setHeight(pools[targetModel.pool].childrens[targetModel.model].sHeight);
       setWidth(pools[targetModel.pool].childrens[targetModel.model].sWidth);
       setScale({
-        x: pools[targetModel.pool].childrens[targetModel.model].scale[0],
-        y: pools[targetModel.pool].childrens[targetModel.model].scale[1],
-        z: pools[targetModel.pool].childrens[targetModel.model].scale[2],
+        x: pools[targetModel.pool].childrens[targetModel.model].sScale[0],
+        y: pools[targetModel.pool].childrens[targetModel.model].sScale[1],
+        z: pools[targetModel.pool].childrens[targetModel.model].sScale[2],
       });
       setRotation({
         x: pools[targetModel.pool].childrens[targetModel.model].sRotation[0],
@@ -182,7 +182,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         <Tabs.List>
           <Tabs.Tab
             key={0}
-            className="text-stone-50 hover:text-slate-900"
+            className="!text-stone-50 hover:text-slate-900"
             value="scene"
             icon={<MdOutlineGrid3X3 size="0.8rem" />}
           >
@@ -190,7 +190,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
           </Tabs.Tab>
           <Tabs.Tab
             key={1}
-            className="text-stone-50 hover:text-slate-900"
+            className="!text-stone-50 hover:text-slate-900"
             value="defaults"
             icon={<HiMiniAdjustmentsHorizontal size="0.8rem" />}
           >

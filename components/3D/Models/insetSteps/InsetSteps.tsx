@@ -83,6 +83,7 @@ export function InsetSteps({
     <PivotControls
       disableScaleAxes
       snapTranslate={5}
+      disableSliders
       visible={visible && target?.uuid === groupRef.current?.uuid}
       displayValues
       scale={visible && target?.uuid === groupRef.current?.uuid ? 75 : 0}

@@ -15,7 +15,7 @@
     "@mantine/core": "^6.0.16",
     "@mantine/hooks": "^6.0.16",
     "@mantine/next": "^6.0.16",
-    "@react-three/csg": "^2.2.0",
+    "@react-three/csg": "^3.0.0",
     "@react-three/drei": "^9.77.11",
     "@react-three/fiber": "^8.13.4",
     "@reduxjs/toolkit": "^1.9.5",
