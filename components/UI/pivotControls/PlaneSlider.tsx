@@ -137,7 +137,7 @@ export const PlaneSlider: React.FC<{ dir1: THREE.Vector3; dir2: THREE.Vector3; a
       }
       e.stopPropagation()
       clickInfo.current = null
-      onDragEnd()
+      onDragEnd(offsetMatrix)
       camControls && (camControls.enabled = true)
       // @ts-ignore
       e.target.releasePointerCapture(e.pointerId)

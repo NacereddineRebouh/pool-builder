@@ -107,7 +107,7 @@ export const SphereScale: React.FC<{ direction: THREE.Vector3; axis: 0 | 1 | 2 }
     (e: ThreeEvent<PointerEvent>) => {
       e.stopPropagation()
       clickInfo.current = null
-      onDragEnd()
+      onDragEnd(scaleMatrix)
       if (camControls) camControls.enabled = true
       // @ts-ignore - releasePointerCapture & PointerEvent#pointerId is not in the type definition
       e.target.releasePointerCapture(e.pointerId)
