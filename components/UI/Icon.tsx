@@ -1,19 +1,32 @@
-"use client"
-import Image, { StaticImageData } from 'next/image';
-import * as React from 'react';
+"use client";
+import Image, { StaticImageData } from "next/image";
+import * as React from "react";
 
-interface IconProps extends React.HTMLProps<HTMLDivElement> {
-    icon: string,
+interface IconProps extends React.HTMLProps<HTMLButtonElement> {
+  icon: string;
 }
 
-const Icon: React.FC<IconProps> = ({icon,...props}) => {
+const Icon: React.FC<IconProps> = ({ icon, ...props }) => {
   return (
-    <div {...props} draggable="false" className='cursor-pointer overflow-hidden select-none flex items-center justify-center relative w-12 h-12 rounded-md p-2 active:scale-95 bg-stone-200 transition-transform duration-150 group/hover'>
-        {/* <input type='image' alt='ButtonIcon' className='object-cover w-10 h-10' src={icon}/> */}
-        <Image fill alt='ButtonIcon' draggable="false" className='object-cover w-10 h-10' src={icon}/>
-        <div className='bg-slate-950/0 group-hover/hover:bg-slate-950/10 duration-150 absolute top-0 left-0 w-full h-full transition-all'></div>
-    </div>
-  ) ;
+    <button
+      {...props}
+      type="button"
+      className="group/hover pointer-events-auto relative flex h-12 w-12 cursor-pointer select-none items-center justify-center overflow-hidden rounded-md bg-stone-200 p-2 transition-transform duration-150 active:scale-95 disabled:pointer-events-none"
+    >
+      {/* <input type='image' alt='ButtonIcon' className='object-cover w-10 h-10' src={icon}/> */}
+      <Image
+        fill
+        alt="ButtonIcon"
+        draggable="false"
+        className="h-10 w-10 object-cover"
+        src={icon}
+      />
+      {/* HOVER */}
+      <div className="absolute left-0 top-0 h-full w-full bg-slate-950/0 transition-all duration-150 group-hover/hover:bg-slate-950/10"></div>
+      {/* DISABLED */}
+      <div className="pointer-events-none absolute left-0 top-0 hidden h-full w-full transition-all duration-150 group-disabled/hover:flex group-disabled/hover:bg-stone-800/80"></div>
+    </button>
+  );
 };
 
 export default Icon;

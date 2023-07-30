@@ -30,7 +30,7 @@ const Scale: React.FunctionComponent<IScaleProps> = ({
         <NumberInput
           value={scale?.x}
           onChange={(e) => {
-            if (scale && targetPool != null) {
+            if (scale && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               if (
                 pool?.sScale &&
@@ -47,7 +47,12 @@ const Scale: React.FunctionComponent<IScaleProps> = ({
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
                 // Assign the updated array back to pool.sPosition
               }
-            } else if (scale && targetModel != null) {
+            } else if (
+              scale &&
+              targetModel != null &&
+              pools[targetModel.pool] &&
+              pools[targetModel.pool].childrens[targetModel.model]
+            ) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };
@@ -80,7 +85,7 @@ const Scale: React.FunctionComponent<IScaleProps> = ({
         <NumberInput
           value={scale?.y}
           onChange={(e) => {
-            if (scale && targetPool != null) {
+            if (scale && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               if (
                 pool?.sScale &&
@@ -97,7 +102,12 @@ const Scale: React.FunctionComponent<IScaleProps> = ({
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
                 // Assign the updated array back to pool.sPosition
               }
-            } else if (scale && targetModel != null) {
+            } else if (
+              scale &&
+              targetModel != null &&
+              pools[targetModel.pool] &&
+              pools[targetModel.pool].childrens[targetModel.model]
+            ) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };
@@ -130,7 +140,7 @@ const Scale: React.FunctionComponent<IScaleProps> = ({
         <NumberInput
           value={scale?.z}
           onChange={(e) => {
-            if (scale && targetPool != null) {
+            if (scale && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               if (
                 pool?.sScale &&
@@ -147,7 +157,12 @@ const Scale: React.FunctionComponent<IScaleProps> = ({
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
                 // Assign the updated array back to pool.sPosition
               }
-            } else if (scale && targetModel != null) {
+            } else if (
+              scale &&
+              targetModel != null &&
+              pools[targetModel.pool] &&
+              pools[targetModel.pool].childrens[targetModel.model]
+            ) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };

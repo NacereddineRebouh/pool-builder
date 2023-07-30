@@ -26,6 +26,9 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-.mantine-Tabs-tab{
+.mantine-Tabs-tab {
   @apply !text-stone-50 hover:!text-slate-900;
+}
+.mantine-Checkbox-label {
+  @apply !text-slate-50;
 }

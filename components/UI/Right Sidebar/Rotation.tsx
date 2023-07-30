@@ -21,7 +21,6 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
   targetPool,
   pools,
 }) => {
-  console.log("NewRotation::", rotation);
   const dispatch = useAppDispatch();
 
   return (
@@ -33,7 +32,7 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
           itemID="rotX"
           value={rotation?.x}
           onChange={(e) => {
-            if (rotation && targetPool != null) {
+            if (rotation && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // rotation
               if (
@@ -51,7 +50,7 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
                 pool.sRotation = updatedsRotation; // Assign the updated array back to pool.sRotation
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
-            } else if (rotation && targetModel != null) {
+            } else if (rotation && targetModel != null && pools[targetModel.pool] && pools[targetModel.pool].childrens[targetModel.model]) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };
@@ -86,7 +85,7 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
           itemID="rotY"
           value={rotation?.y}
           onChange={(e) => {
-            if (rotation && targetPool != null) {
+            if (rotation && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // rotation
               if (
@@ -104,7 +103,7 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
                 pool.sRotation = updatedsRotation; // Assign the updated array back to pool.sRotation
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
-            } else if (rotation && targetModel != null) {
+            } else if (rotation && targetModel != null && pools[targetModel.pool] && pools[targetModel.pool].childrens[targetModel.model]) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };
@@ -139,7 +138,7 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
           itemID="rotZ"
           value={rotation?.z}
           onChange={(e) => {
-            if (rotation && targetPool != null) {
+            if (rotation && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // rotation
               if (
@@ -157,7 +156,7 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
                 pool.sRotation = updatedsRotation; // Assign the updated array back to pool.sRotation
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
-            } else if (rotation && targetModel != null) {
+            } else if (rotation && targetModel != null && pools[targetModel.pool] && pools[targetModel.pool].childrens[targetModel.model]) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };

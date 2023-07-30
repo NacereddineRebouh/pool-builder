@@ -32,7 +32,7 @@ const Position: React.FunctionComponent<IPositionProps> = ({
           itemID="posX"
           value={position?.x}
           onChange={(e) => {
-            if (position && targetPool != null) {
+            if (position && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // position
               if (
@@ -49,7 +49,12 @@ const Position: React.FunctionComponent<IPositionProps> = ({
                 pool.sPosition = updatedSPosition; // Assign the updated array back to pool.sPosition
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
-            } else if (position && targetModel != null) {
+            } else if (
+              position &&
+              targetModel != null &&
+              pools[targetModel.pool] &&
+              pools[targetModel.pool].childrens[targetModel.model]
+            ) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };
@@ -84,7 +89,7 @@ const Position: React.FunctionComponent<IPositionProps> = ({
           itemID="posY"
           value={position?.y}
           onChange={(e) => {
-            if (position && targetPool != null) {
+            if (position && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // position
               if (
@@ -101,7 +106,12 @@ const Position: React.FunctionComponent<IPositionProps> = ({
                 pool.sPosition = updatedSPosition; // Assign the updated array back to pool.sPosition
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
-            } else if (position && targetModel != null) {
+            } else if (
+              position &&
+              targetModel != null &&
+              pools[targetModel.pool] &&
+              pools[targetModel.pool].childrens[targetModel.model]
+            ) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };
@@ -136,7 +146,7 @@ const Position: React.FunctionComponent<IPositionProps> = ({
           itemID="posZ"
           value={position?.z}
           onChange={(e) => {
-            if (position && targetPool != null) {
+            if (position && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // position
               if (
@@ -153,7 +163,12 @@ const Position: React.FunctionComponent<IPositionProps> = ({
                 pool.sPosition = updatedSPosition; // Assign the updated array back to pool.sPosition
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
-            } else if (position && targetModel != null) {
+            } else if (
+              position &&
+              targetModel != null &&
+              pools[targetModel.pool] &&
+              pools[targetModel.pool].childrens[targetModel.model]
+            ) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };

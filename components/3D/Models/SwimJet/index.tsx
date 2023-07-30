@@ -12,6 +12,7 @@ import {
 } from "@/slices/targetSlice";
 import { PivotControls } from "@/components/UI/pivotControls";
 import { ChildrensType, ReplaceChildren } from "@/slices/poolsSlice";
+import { getActiveAxis } from "@/utils/getActiveAxis";
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -79,6 +80,7 @@ const SwimJet = ({
       disableScaleAxes
       snapTranslate={5}
       disableSliders
+      activeAxes={getActiveAxis(model.side)}
       visible={visible && target?.uuid === groupRef.current?.uuid}
       displayValues
       scale={visible && target?.uuid === groupRef.current?.uuid ? 75 : 0}

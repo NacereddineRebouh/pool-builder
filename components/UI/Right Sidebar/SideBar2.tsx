@@ -21,6 +21,10 @@ import {
   setDefaultHeightPool,
   setDefaultBottomCyl,
   setDefaultWidthPool,
+  setDefaultWidthHottub,
+  setDefaultDepthHottub,
+  setDefaultHeightHottub,
+  setDefaultNbSwimJetsHottub,
 } from "@/slices/defaultsSlice";
 import Properties2 from "./Properties2";
 interface ISideBarProps {}
@@ -31,6 +35,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   const [Dwidth, setDWidth] = useState<number | null>(16);
   const [Dheight, setDHeight] = useState<number | null>(5);
   const [Ddepth, setDDepth] = useState<number | null>(12);
+  const [DnbSwimjet, setDnbSwimjet] = useState<number | null>(1);
   const defaults = useAppSelector((state: RootState) => state.defaults);
   const dispatch = useAppDispatch();
 
@@ -49,6 +54,12 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         setDHeight(defaults.pool.height);
         setDDepth(defaults.pool.depth);
         break;
+      case "hottub":
+        setDWidth(defaults.hottub.width);
+        setDHeight(defaults.hottub.height);
+        setDDepth(defaults.hottub.depth);
+        setDnbSwimjet(defaults.hottub.nbSwimJet);
+        break;
     }
   }, [Default]);
 
@@ -66,8 +77,14 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         dispatch(setDefaultHeightPool(Dheight));
         dispatch(setDefaultDepthPool(Ddepth));
         break;
+      case "hottub":
+        dispatch(setDefaultWidthHottub(Dwidth));
+        dispatch(setDefaultHeightHottub(Dheight));
+        dispatch(setDefaultDepthHottub(Ddepth));
+        dispatch(setDefaultNbSwimJetsHottub(DnbSwimjet));
+        break;
     }
-  }, [Dwidth, Dheight, Ddepth]);
+  }, [Dwidth, Dheight, Ddepth, DnbSwimjet]);
 
   // ------------ Scene props ------------
 
@@ -86,17 +103,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
     y: number;
     z: number;
   } | null>(null);
-  const [displayPosition, setDisplayPosition] = useState<{
-    x: number;
-    y: number;
-    z: number;
-  } | null>(null);
   const [scale, setScale] = useState<{
-    x: number;
-    y: number;
-    z: number;
-  } | null>(null);
-  const [displayScale, setDisplayScale] = useState<{
     x: number;
     y: number;
     z: number;
@@ -106,17 +113,10 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
     y: number;
     z: number;
   } | null>(null);
-  const [displayRotation, setDisplayRotation] = useState<{
-    x: number;
-    y: number;
-    z: number;
-  } | null>(null);
   const [width, setWidth] = useState<number | null>(null);
-  const [displayWidth, setDisplayWidth] = useState<number | null>(null);
   const [height, setHeight] = useState<number | null>(null);
-  const [displayHeight, setDisplayHeight] = useState<number | null>(null);
   const [depth, setDepth] = useState<number | null>(null);
-  const [displayDepth, setDisplayDepth] = useState<number | null>(null);
+  const [nbSwimJet, setnbSwimJet] = useState<number | null>(null);
 
   // ----- Fetch props from models ------
   // setting dimension on Mount
@@ -124,24 +124,25 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   useEffect(() => {
     if (targetPool != null) {
       console.log("fetching POOL", targetPool, pools[targetPool]);
-      setDepth(pools[targetPool].sDepth);
-      setHeight(pools[targetPool].sHeight);
-      setWidth(pools[targetPool].sWidth);
+      setDepth(pools[targetPool]?.sDepth);
+      setHeight(pools[targetPool]?.sHeight);
+      setWidth(pools[targetPool]?.sWidth);
+      setnbSwimJet(pools[targetPool]?.nbSwimJet ?? 1);
 
       setScale({
-        x: pools[targetPool].sScale[0],
-        y: pools[targetPool].sScale[1],
-        z: pools[targetPool].sScale[2],
+        x: pools[targetPool]?.sScale[0],
+        y: pools[targetPool]?.sScale[1],
+        z: pools[targetPool]?.sScale[2],
       });
       setRotation({
-        x: pools[targetPool].sRotation[0],
-        y: pools[targetPool].sRotation[1],
-        z: pools[targetPool].sRotation[2],
+        x: pools[targetPool]?.sRotation[0],
+        y: pools[targetPool]?.sRotation[1],
+        z: pools[targetPool]?.sRotation[2],
       });
       setPosition({
-        x: pools[targetPool].sPosition[0],
-        y: pools[targetPool].sPosition[1],
-        z: pools[targetPool].sPosition[2],
+        x: pools[targetPool]?.sPosition[0],
+        y: pools[targetPool]?.sPosition[1],
+        z: pools[targetPool]?.sPosition[2],
       });
     }
   }, [targetPool, pools]);
@@ -152,26 +153,26 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
     if (targetModel) {
       console.log(
         "fetching Model2",
-        pools[targetModel.pool].childrens[targetModel.model]
+        pools[targetModel.pool]?.childrens[targetModel.model]
       );
 
-      setDepth(pools[targetModel.pool].childrens[targetModel.model].sDepth);
-      setHeight(pools[targetModel.pool].childrens[targetModel.model].sHeight);
-      setWidth(pools[targetModel.pool].childrens[targetModel.model].sWidth);
+      setDepth(pools[targetModel.pool]?.childrens[targetModel.model]?.sDepth);
+      setHeight(pools[targetModel.pool]?.childrens[targetModel.model]?.sHeight);
+      setWidth(pools[targetModel.pool]?.childrens[targetModel.model]?.sWidth);
       setScale({
-        x: pools[targetModel.pool].childrens[targetModel.model].sScale[0],
-        y: pools[targetModel.pool].childrens[targetModel.model].sScale[1],
-        z: pools[targetModel.pool].childrens[targetModel.model].sScale[2],
+        x: pools[targetModel.pool]?.childrens[targetModel.model]?.sScale[0],
+        y: pools[targetModel.pool]?.childrens[targetModel.model]?.sScale[1],
+        z: pools[targetModel.pool]?.childrens[targetModel.model]?.sScale[2],
       });
       setRotation({
-        x: pools[targetModel.pool].childrens[targetModel.model].sRotation[0],
-        y: pools[targetModel.pool].childrens[targetModel.model].sRotation[1],
-        z: pools[targetModel.pool].childrens[targetModel.model].sRotation[2],
+        x: pools[targetModel.pool]?.childrens[targetModel.model]?.sRotation[0],
+        y: pools[targetModel.pool]?.childrens[targetModel.model]?.sRotation[1],
+        z: pools[targetModel.pool]?.childrens[targetModel.model]?.sRotation[2],
       });
       setPosition({
-        x: pools[targetModel.pool].childrens[targetModel.model].sPosition[0],
-        y: pools[targetModel.pool].childrens[targetModel.model].sPosition[1],
-        z: pools[targetModel.pool].childrens[targetModel.model].sPosition[2],
+        x: pools[targetModel.pool]?.childrens[targetModel.model]?.sPosition[0],
+        y: pools[targetModel.pool]?.childrens[targetModel.model]?.sPosition[1],
+        z: pools[targetModel.pool]?.childrens[targetModel.model]?.sPosition[2],
       });
     }
   }, [targetModel, pools]);
@@ -207,44 +208,46 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
               </div>
               <div className="flex aspect-[3/2] max-h-60 w-full flex-col items-start justify-start gap-y-1 overflow-auto rounded-md bg-stone-200 p-1 text-slate-900 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-stone-600 scrollbar-track-rounded-full scrollbar-thumb-rounded-full">
                 {/* scene elements */}
-                {pools.map((pool, index) => {
-                  return (
-                    <Fragment key={index}>
-                      <SceneElement
-                        index={index}
-                        selectedElement={selectedElement}
-                        setSelectedElement={setSelectedElement}
-                        setTargetModel={setTargetModel}
-                        targetModel={targetModel}
-                        setTargetPool={setTargetPool}
-                        targetPool={targetPool}
-                        setType={setType}
-                        type={pool.poolType}
-                        icon={rectangle}
-                        title={pool.poolType + " " + index}
-                      />
-                      {pool.childrens.map((child, index2) => {
-                        return (
-                          <SceneElement
-                            index={index}
-                            setTargetModel={setTargetModel}
-                            selectedElement={selectedElement}
-                            setSelectedElement={setSelectedElement}
-                            targetModel={targetModel}
-                            setTargetPool={setTargetPool}
-                            targetPool={targetPool}
-                            index2={index2}
-                            setType={setType}
-                            type={child.shapeType}
-                            key={index2}
-                            icon={rectangle}
-                            title={child.shapeType + " " + index + index2}
-                          />
-                        );
-                      })}
-                    </Fragment>
-                  );
-                })}
+                {pools.length > 0 &&
+                  pools.map((pool, index) => {
+                    return (
+                      <Fragment key={index}>
+                        <SceneElement
+                          index={index}
+                          selectedElement={selectedElement}
+                          setSelectedElement={setSelectedElement}
+                          setTargetModel={setTargetModel}
+                          targetModel={null}
+                          setTargetPool={setTargetPool}
+                          targetPool={targetPool}
+                          setType={setType}
+                          type={pool.poolType}
+                          icon={rectangle}
+                          title={pool.poolType + " " + index}
+                        />
+                        {pool.childrens.length > 0 &&
+                          pool.childrens.map((child, index2) => {
+                            return (
+                              <SceneElement
+                                index={index}
+                                setTargetModel={setTargetModel}
+                                selectedElement={selectedElement}
+                                setSelectedElement={setSelectedElement}
+                                targetModel={targetModel}
+                                setTargetPool={setTargetPool}
+                                targetPool={null}
+                                index2={index2}
+                                setType={setType}
+                                type={child.shapeType}
+                                key={index2}
+                                icon={rectangle}
+                                title={child.shapeType + " " + index + index2}
+                              />
+                            );
+                          })}
+                      </Fragment>
+                    );
+                  })}
               </div>
             </div>
 
@@ -297,6 +300,8 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
                 targetPool={targetPool}
                 targetModel={targetModel}
                 pools={pools}
+                nbSwimjet={nbSwimJet}
+                setnbSwimjet={setnbSwimJet}
               />
             </div>
           </div>
@@ -310,6 +315,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
               data={[
                 { value: "pool", label: "Pool" },
                 { value: "cyl", label: "Cylinder Pool" },
+                { value: "hottub", label: "Hottub" },
                 // { value: 'Fountain', label: 'Fountain' },
               ]}
               onChange={(e) => {
@@ -331,6 +337,8 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
                 setDepth={setDDepth}
                 height={Dheight}
                 setHeight={setDHeight}
+                nbSwimjet={DnbSwimjet}
+                setnbSwimjet={setDnbSwimjet}
               />
             </div>
           </div>

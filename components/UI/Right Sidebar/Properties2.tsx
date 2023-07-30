@@ -1,7 +1,8 @@
 "use client";
 import { PoolType, ReplaceChildren, ReplacePool } from "@/slices/poolsSlice";
 import { useAppDispatch } from "@/store/hooks";
-import { NumberInput } from "@mantine/core";
+import { IgnoreOrderCompare } from "@/utils/getActiveAxis";
+import { Checkbox, Group, NumberInput, Radio } from "@mantine/core";
 import * as React from "react";
 
 interface IPropertiesProps {
@@ -12,7 +13,8 @@ interface IPropertiesProps {
   depth: number | null;
   setDepth: React.Dispatch<React.SetStateAction<number | null>>;
   defaults: string | null;
-
+  nbSwimjet: number | null;
+  setnbSwimjet: React.Dispatch<React.SetStateAction<number | null>>;
   targetPool: number | null;
   targetModel: { pool: number; model: number } | null;
   pools: PoolType[];
@@ -29,9 +31,10 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
   setHeight,
   depth,
   setDepth,
+  nbSwimjet,
+  setnbSwimjet,
 }) => {
   const dispatch = useAppDispatch();
-
   return (
     <div className="flex w-full flex-col items-start justify-start">
       {/* Width */}
@@ -44,14 +47,18 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
             type="number"
             name="width"
             onChange={(e) => {
-              if (targetPool != null) {
+              if (targetPool != null && pools[targetPool]) {
                 const pool = { ...pools[targetPool] };
                 if (e != pool.sWidth) {
                   pool.sWidth = +e; // Assign the updated array back to pool.sRotation
                   dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
                 }
                 // setWidth(e.currentTarget.value as unknown as number)
-              } else if (targetModel) {
+              } else if (
+                targetModel &&
+                pools[targetModel.pool] &&
+                pools[targetModel.pool].childrens[targetModel.model]
+              ) {
                 const model = {
                   ...pools[targetModel.pool].childrens[targetModel.model],
                 };
@@ -81,14 +88,18 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
             type="number"
             name="height"
             onChange={(e) => {
-              if (targetPool != null) {
+              if (targetPool != null && pools[targetPool]) {
                 const pool = { ...pools[targetPool] };
                 if (+e != pool.sHeight) {
                   pool.sHeight = +e; // Assign the updated array back to pool.sRotation
                   dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
                 }
                 // height(e.currentTarget.value as unknown as number)
-              } else if (targetModel) {
+              } else if (
+                targetModel &&
+                pools[targetModel.pool] &&
+                pools[targetModel.pool].childrens[targetModel.model]
+              ) {
                 const model = {
                   ...pools[targetModel.pool].childrens[targetModel.model],
                 };
@@ -119,14 +130,18 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
           <NumberInput
             type="number"
             onChange={(e) => {
-              if (targetPool != null) {
+              if (targetPool != null && pools[targetPool]) {
                 const pool = { ...pools[targetPool] };
                 if (+e != pool.sDepth) {
                   pool.sDepth = +e; // Assign the updated array back to pool.sRotation
                   dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
                 }
                 // setdepth(e.currentTarget.value as unknown as number)
-              } else if (targetModel) {
+              } else if (
+                targetModel &&
+                pools[targetModel.pool] &&
+                pools[targetModel.pool].childrens[targetModel.model]
+              ) {
                 const model = {
                   ...pools[targetModel.pool].childrens[targetModel.model],
                 };
@@ -149,6 +164,91 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
           />
         </div>
       </div>
+      {/* nbSwimjet */}
+      {targetPool != null &&
+        pools[targetPool] &&
+        pools[targetPool].poolType === "hottub" && (
+          <div className="flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              Swimjets
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2">
+              <NumberInput
+                type="number"
+                onChange={(e) => {
+                  if (targetPool != null && pools[targetPool]) {
+                    const pool = { ...pools[targetPool] };
+                    if (+e != pool.nbSwimJet) {
+                      pool.nbSwimJet = +e; // Assign the updated array back to pool.sRotation
+                      dispatch(
+                        ReplacePool({ poolIndex: targetPool, pool: pool })
+                      );
+                    }
+                    // setdepth(e.currentTarget.value as unknown as number)
+                  }
+                }}
+                name="nbSwimJet"
+                className="max-w-[80px] bg-transparent text-slate-50"
+                step={0.1}
+                value={nbSwimjet ? nbSwimjet : 0}
+              />
+            </div>
+          </div>
+        )}
+      {/* BenchSeating */}
+      {targetPool != null &&
+        pools[targetPool] &&
+        pools[targetPool].poolType === "hottub" && (
+          <div className="flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              BenchSeatings
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2 text-slate-50">
+              <Checkbox.Group
+                onChange={(value) => {
+                  const pool = { ...pools[targetPool] };
+                  if (!IgnoreOrderCompare(value, pool.BenchSeatings)) {
+                    pool.BenchSeatings = value; // Assign the updated array back to pool.sRotation
+                    dispatch(
+                      ReplacePool({ poolIndex: targetPool, pool: pool })
+                    );
+                  }
+                }}
+              >
+                <Group mt="xs">
+                  <Checkbox
+                    checked={pools[targetPool]?.BenchSeatings?.includes("left")}
+                    color="gray"
+                    value="left"
+                    label="Left"
+                  />
+                  <Checkbox
+                    checked={pools[targetPool]?.BenchSeatings?.includes("top")}
+                    color="gray"
+                    value="top"
+                    label="Top"
+                  />
+                  <Checkbox
+                    checked={pools[targetPool]?.BenchSeatings?.includes(
+                      "right"
+                    )}
+                    color="gray"
+                    value="right"
+                    label="Right"
+                  />
+                  <Checkbox
+                    checked={pools[targetPool]?.BenchSeatings?.includes(
+                      "bottom"
+                    )}
+                    color="gray"
+                    value="bottom"
+                    label="Bottom"
+                  />
+                </Group>
+              </Checkbox.Group>
+            </div>
+          </div>
+        )}
     </div>
   );
 };

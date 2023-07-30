@@ -5,12 +5,14 @@ interface PointerSlice {
   x: number;
   y: number;
   z: number;
+  RotationY: number;
 }
 
 const initialState: PointerSlice = {
-    x: 0,
-    y: 0,
-    z: 0,
+  x: 0,
+  y: 0,
+  z: 0,
+  RotationY: 0,
 };
 
 export const pointerSlice = createSlice({
@@ -22,9 +24,12 @@ export const pointerSlice = createSlice({
       state.y = action.payload.y;
       state.z = action.payload.z;
     },
+    setRotation: (state, action) => {
+      state.RotationY = action.payload;
+    },
   },
 });
 
-export const { setPointer } = pointerSlice.actions;
+export const { setPointer, setRotation } = pointerSlice.actions;
 export const selectPointer = (state: RootState) => state.pointer;
 export default pointerSlice.reducer;

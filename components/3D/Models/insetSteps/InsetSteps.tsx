@@ -5,7 +5,7 @@ Command: npx gltfjsx@6.2.5 public/models/insetSteps.glb -ts s
 
 import * as THREE from "three";
 import React, { useEffect, useRef, useState } from "react";
-import { useGLTF, PerspectiveCamera } from "@react-three/drei";
+import { useGLTF, PerspectiveCamera, Mask } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
 import {
   selectPivotVisibility,
@@ -20,9 +20,11 @@ import { ChildrensType, ReplaceChildren } from "@/slices/poolsSlice";
 type GLTFResult = GLTF & {
   nodes: {
     Inset_steps: THREE.Mesh;
+    mask: THREE.Mesh;
   };
   materials: {
     ["Inset steps"]: THREE.MeshStandardMaterial;
+    mask: THREE.MeshStandardMaterial;
   };
 };
 
@@ -50,7 +52,7 @@ export function InsetSteps({
   props?: JSX.IntrinsicElements["group"];
 }) {
   const { nodes, materials } = useGLTF(
-    "/models/newModels/InsetSteps.glb"
+    "/models/newModels/InsetSteps3.glb"
   ) as GLTFResult;
   // const { nodes, materials } = useGLTF('/models/insetSteps.glb') as GLTFResult
   const groupRef = useRef<THREE.Group>(null);
@@ -145,10 +147,27 @@ export function InsetSteps({
           receiveShadow
           geometry={nodes.Inset_steps.geometry}
           material={materials["Inset steps"]}
-        />
+        >
+        </mesh>
+          <Mask id={1} >
+         {/* <primitive name="mask" object={nodes.mask.geometry} dispose={null} scale={[2*2.129, 2*1, 2*1]} ></primitive> */}
+         <primitive object={nodes.mask.geometry} dispose={null} scale={[2.129, 1, 1]}/>
+          {/* <planeGeometry args={[5,5]} /> */}
+           {/* <mesh name="mask" geometry={nodes.mask.geometry}  scale={[2.129, 1, 1]} >
+            <meshStandardMaterial color={"pink"}/>
+           </mesh> */}
+        </Mask>
+          <Mask id={1} >
+         {/* <primitive name="mask" object={nodes.mask.geometry} dispose={null} scale={[2*2.129, 2*1, 2*1]} ></primitive> */}
+         <primitive object={nodes.mask.geometry} dispose={null} scale={[2.129, 1, 1]}/>
+          {/* <planeGeometry args={[5,5]} /> */}
+           {/* <mesh name="mask" geometry={nodes.mask.geometry}  scale={[2.129, 1, 1]} >
+            <meshStandardMaterial color={"pink"}/>
+           </mesh> */}
+        </Mask>
       </group>
     </PivotControls>
   );
 }
 
-useGLTF.preload("/models/newModels/insetSteps.glb");
+useGLTF.preload("/models/newModels/InsetSteps3.glb");

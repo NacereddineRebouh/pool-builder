@@ -1,8 +1,9 @@
 import Image, { StaticImageData } from "next/image";
 import * as React from "react";
 import rectangle from "@/public/icons/rectangle.png";
-import { off } from "process";
-
+import { MdOutlineDeleteForever } from "react-icons/md";
+import { useAppDispatch } from "@/store/hooks";
+import { removeChildrenByIndex, removePoolByIndex } from "@/slices/poolsSlice";
 interface SceneElementProps {
   icon?: StaticImageData;
   title: string;
@@ -34,6 +35,8 @@ const SceneElement: React.FunctionComponent<SceneElementProps> = ({
   index2,
   title = "Pool",
 }) => {
+  const dispatch = useAppDispatch();
+
   return (
     <div
       onClick={(e) => {
@@ -43,6 +46,7 @@ const SceneElement: React.FunctionComponent<SceneElementProps> = ({
         console.log(type);
         if (
           type === "pool" ||
+          type === "hottub" ||
           type === "poolWithSteps" ||
           type === "L-Shape" ||
           type === "cyl"
@@ -86,16 +90,38 @@ const SceneElement: React.FunctionComponent<SceneElementProps> = ({
         selectedElement == title
           ? "scale-[.98] bg-slate-900/10 shadow-md"
           : "scale-100 shadow-none"
-      } relative flex h-8 w-full cursor-pointer items-center justify-start gap-x-2 rounded-md border-[1px] border-slate-800 transition-all duration-75 hover:bg-slate-900/10 active:bg-slate-900/20`}
+      } relative flex h-8 w-full cursor-pointer items-center justify-between gap-x-2 rounded-md border-[1px] border-slate-800 transition-all duration-75 hover:bg-slate-900/10 active:bg-slate-900/20`}
     >
-      <Image
-        src={rectangle.src}
-        width={30}
-        alt={"Icon"}
-        height={100}
-        className="aspect-auto h-full object-scale-down"
+      <div className="flex items-center justify-start gap-x-2">
+        <Image
+          src={rectangle.src}
+          width={30}
+          alt={"Icon"}
+          height={100}
+          className="aspect-auto h-full object-scale-down"
+        />
+        <div>{title}</div>
+      </div>
+      <MdOutlineDeleteForever
+        className={
+          "h-7 w-7 scale-100 text-stone-800 transition-all duration-150 hover:scale-105 hover:text-red-800 active:scale-100"
+        }
+        onClick={() => {
+          if (
+            type === "pool" ||
+            type === "hottub" ||
+            type === "poolWithSteps" ||
+            type === "L-Shape" ||
+            type === "cyl"
+          ) {
+            dispatch(removePoolByIndex({ index: index }));
+          } else {
+            dispatch(
+              removeChildrenByIndex({ index: index2, poolIndex: index })
+            );
+          }
+        }}
       />
-      <div>{title}</div>
     </div>
   );
 };

@@ -11,7 +11,7 @@ import {
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
-import { ChildrensType, ReplacePool } from "@/slices/poolsSlice";
+import { ChildrensType, PoolType, ReplacePool } from "@/slices/poolsSlice";
 interface Props {
   index?: number;
   position: number[];
@@ -29,28 +29,6 @@ interface Props {
   key?: number;
   children?: React.ReactNode;
   pool: PoolType;
-}
-enum sides {
-  Top = "Top",
-  Bottom = "Bottom",
-  Left = "Left",
-  Right = "Right",
-}
-export interface PoolType {
-  poolType: string;
-  position: number[];
-  sPosition: number[];
-  sRotation: number[];
-  rotation: number[];
-  scale: number[];
-  sScale: number[];
-  width: number;
-  sWidth: number;
-  height: number;
-  sHeight: number;
-  depth: number;
-  sDepth: number;
-  childrens: ChildrensType[];
 }
 const Pool: FC<Props> = ({
   width = 5,
@@ -70,6 +48,7 @@ const Pool: FC<Props> = ({
   texture.wrapT = THREE.RepeatWrapping;
   texture.wrapS = THREE.RepeatWrapping;
   texture.repeat.set(2, 1);
+
   const groupRef = useRef<THREE.Group>(null);
   const gp = useRef<THREE.Group>(null);
   const dispatch = useAppDispatch();
@@ -96,8 +75,6 @@ const Pool: FC<Props> = ({
   // useEffect(() => {
   const [Mat, setMat] = useState(new THREE.Matrix4());
   useEffect(() => {
-    console.log("useffect pool:", sPosition);
-
     const pos = new THREE.Vector3(
       0 + sPosition[0],
       0 + sPosition[1],
@@ -158,108 +135,110 @@ const Pool: FC<Props> = ({
         {/* Pool */}
         <mesh position={[0, -height / 2, 0]}>
           <boxGeometry args={[width, height, depth]} />
-          <meshStandardMaterial
-            metalness={0.2}
-            roughness={0.24}
-            map={texture}
-            attach={"material-0"}
-            side={2}
-            color={"lightblue"}
-          />
-          <meshStandardMaterial
-            metalness={0.2}
-            roughness={0.24}
-            map={texture}
-            attach={"material-1"}
-            side={2}
-            color={"lightblue"}
-          />
-          <meshStandardMaterial
-            metalness={0.2}
-            roughness={0.24}
-            map={texture}
-            attach={"material-3"}
-            side={2}
-            color={"lightblue"}
-          />
-          <meshStandardMaterial
-            metalness={0.2}
-            roughness={0.24}
-            map={texture}
-            attach={"material-4"}
-            side={2}
-            color={"lightblue"}
-          />
-          <meshStandardMaterial
-            metalness={0.2}
-            roughness={0.24}
-            map={texture}
-            attach={"material-5"}
-            side={2}
-            color={"lightblue"}
-          />
-          <meshStandardMaterial
-            metalness={0.2}
-            roughness={0.24}
-            map={texture}
-            attach={"material-2"}
-            side={1}
-            colorWrite={false}
-            color={"lightblue"}
-            // transparent
-            // opacity={0}
-          />
+          <>
+            <meshStandardMaterial
+              metalness={0.2}
+              roughness={0.24}
+              map={texture}
+              attach={"material-0"}
+              side={2}
+              color={"lightblue"}
+            />
+            <meshStandardMaterial
+              metalness={0.2}
+              roughness={0.24}
+              map={texture}
+              attach={"material-1"}
+              side={2}
+              color={"lightblue"}
+            />
+            <meshStandardMaterial
+              metalness={0.2}
+              roughness={0.24}
+              map={texture}
+              attach={"material-3"}
+              side={2}
+              color={"lightblue"}
+            />
+            <meshStandardMaterial
+              metalness={0.2}
+              roughness={0.24}
+              map={texture}
+              attach={"material-4"}
+              side={2}
+              color={"lightblue"}
+            />
+            <meshStandardMaterial
+              metalness={0.2}
+              roughness={0.24}
+              map={texture}
+              attach={"material-5"}
+              side={2}
+              color={"lightblue"}
+            />
+            <meshStandardMaterial
+              metalness={0.2}
+              roughness={0.24}
+              map={texture}
+              attach={"material-2"}
+              side={1}
+              colorWrite={false}
+              color={"lightblue"}
+              // transparent
+              // opacity={0}
+            />
+          </>
         </mesh>
 
         {/* Mask */}
-        <Mask id={1} rotation={[-Math.PI / 2, 0, 0]} position={[0, .025, 0]}>
+        <Mask id={1} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.025, 0]}>
           <planeGeometry args={[width, depth]} />
           {/* <meshBasicMaterial color={"salmon"}/> */}
         </Mask>
 
         {/* Borders */}
-        <Borders
-          width={width}
-          height={0.05}
-          depth={height}
-          outline={2}
-          position={new THREE.Vector3(0, 0, 0)}
-          side={"left"}
-          poolWidth={width}
-          poolDepth={depth}
-        />
-        <Borders
-          width={width}
-          height={0.05}
-          depth={height}
-          outline={2}
-          position={new THREE.Vector3(0, 0, 0)}
-          side={"top"}
-          poolWidth={width}
-          poolDepth={depth}
-        />
-        <Borders
-          width={width}
-          height={0.05}
-          depth={height}
-          outline={2}
-          position={new THREE.Vector3(0, 0, 0)}
-          side={"bottom"}
-          poolWidth={width}
-          poolDepth={depth}
-        />
-        <Borders
-          width={width}
-          height={0.05}
-          depth={height}
-          outline={2}
-          position={new THREE.Vector3(0, 0, 0)}
-          side={"right"}
-          poolWidth={width}
-          poolDepth={depth}
-        />
-
-        {}
+        <>
+          <Borders
+            width={width}
+            height={0.05}
+            depth={height}
+            outline={2}
+            position={new THREE.Vector3(0, 0, 0)}
+            side={"left"}
+            poolWidth={width}
+            poolDepth={depth}
+          />
+          <Borders
+            width={width}
+            height={0.05}
+            depth={height}
+            outline={2}
+            position={new THREE.Vector3(0, 0, 0)}
+            side={"top"}
+            poolWidth={width}
+            poolDepth={depth}
+          />
+          <Borders
+            width={width}
+            height={0.05}
+            depth={height}
+            outline={2}
+            position={new THREE.Vector3(0, 0, 0)}
+            side={"bottom"}
+            poolWidth={width}
+            poolDepth={depth}
+          />
+          <Borders
+            width={width}
+            height={0.05}
+            depth={height}
+            outline={2}
+            position={new THREE.Vector3(0, 0, 0)}
+            side={"right"}
+            poolWidth={width}
+            poolDepth={depth}
+          />
+        </>
         {/* ------------------- Snapping areas " stairs helper boxes "  ---------------- */}
         {/* #left */}
         <mesh
