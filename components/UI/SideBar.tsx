@@ -37,24 +37,29 @@ const SideBar: React.FC<ISideBarProps> = () => {
   return (
     <div className="absolute left-0 top-0 flex h-screen select-none flex-col items-center justify-start gap-y-1 bg-slate-950/90 p-2">
       <Icon
+      disabled={false}
         icon={box.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "hottub")}
       />
       <Icon
+      disabled={false}
         icon={rectangle.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "pool")}
       />
       <Icon
+      disabled={false}
         icon={cyl.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "cyl")}
       />
       <Icon
+      disabled={false}
         icon={poolWithSteps.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "poolWithSteps")}
       />
       <Icon
+      disabled={false}
         icon={LShape.src}
-        onPointerDown={(e) => OnMouseDownHandler(e, "L-Shape")}
+        onPointerDown={(e) => OnMouseDownHandler(e, "lshape")}
       />
       <IconMenu icon={plus.src}>
         <div className="flex items-center justify-start gap-x-1">

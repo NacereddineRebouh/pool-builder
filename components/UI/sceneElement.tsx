@@ -48,7 +48,7 @@ const SceneElement: React.FunctionComponent<SceneElementProps> = ({
           type === "pool" ||
           type === "hottub" ||
           type === "poolWithSteps" ||
-          type === "L-Shape" ||
+          type === "lshape" ||
           type === "cyl"
         ) {
           setTargetModel(null);
@@ -111,7 +111,7 @@ const SceneElement: React.FunctionComponent<SceneElementProps> = ({
             type === "pool" ||
             type === "hottub" ||
             type === "poolWithSteps" ||
-            type === "L-Shape" ||
+            type === "lshape" ||
             type === "cyl"
           ) {
             dispatch(removePoolByIndex({ index: index }));

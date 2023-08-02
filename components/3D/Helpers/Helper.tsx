@@ -9,6 +9,7 @@ import PoolHelper from "./poolHelper";
 import CylinderHelper from "./cylinderHelper";
 import { selectSnappingPosition } from "@/slices/snappingSlice";
 import { MathUtils } from "three";
+import LShapeHelper from "./lshapeHelper";
 interface HelperProps {}
 
 const Helper: React.FC<HelperProps> = ({}) => {
@@ -16,7 +17,6 @@ const Helper: React.FC<HelperProps> = ({}) => {
   // const Coord = useAppSelector(selectSnappingPosition)
   const Coord = useAppSelector(selectPointer);
   const defaults = useAppSelector((state: RootState) => state.defaults);
-  console.log("Coord.RotationY::", Coord.RotationY);
   switch (helper.type) {
     case "pool":
       return (
@@ -42,14 +42,15 @@ const Helper: React.FC<HelperProps> = ({}) => {
           />
         )
       );
-    case "L-Shape":
+    case "lshape":
       return (
         helper.dragging && (
-          <PoolHelper
+          <LShapeHelper
+            width={4}
+            theight={16}
+            bheight={12}
+            depth={2}
             props={{ position: [Coord.x, -5 / 2 + 0.5, Coord.z] }}
-            height={5}
-            width={16}
-            depth={12}
           />
         )
       );

@@ -18,6 +18,10 @@ interface IPropertiesProps {
   targetPool: number | null;
   targetModel: { pool: number; model: number } | null;
   pools: PoolType[];
+  theight: number | null;
+  settHeight: React.Dispatch<React.SetStateAction<number | null>>;
+  bheight: number | null;
+  setbHeight: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const Properties2: React.FunctionComponent<IPropertiesProps> = ({
@@ -33,6 +37,10 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
   setDepth,
   nbSwimjet,
   setnbSwimjet,
+  theight,
+  settHeight,
+  bheight,
+  setbHeight,
 }) => {
   const dispatch = useAppDispatch();
   return (
@@ -81,46 +89,112 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
         </div>
       </div>
       {/* Height */}
-      <div className="flex w-full items-center justify-start gap-x-6">
-        <div className="w-full self-start text-lg text-slate-50">Height</div>
-        <div className="flex w-full items-center justify-start gap-x-2">
-          <NumberInput
-            type="number"
-            name="height"
-            onChange={(e) => {
-              if (targetPool != null && pools[targetPool]) {
-                const pool = { ...pools[targetPool] };
-                if (+e != pool.sHeight) {
-                  pool.sHeight = +e; // Assign the updated array back to pool.sRotation
-                  dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
-                }
-                // height(e.currentTarget.value as unknown as number)
-              } else if (
-                targetModel &&
-                pools[targetModel.pool] &&
-                pools[targetModel.pool].childrens[targetModel.model]
-              ) {
-                const model = {
-                  ...pools[targetModel.pool].childrens[targetModel.model],
-                };
-                if (+e != model.sHeight) {
-                  model.sHeight = +e; // Assign the updated array back to pool.sRotation
-                  dispatch(
-                    ReplaceChildren({
-                      poolIndex: targetModel.pool,
-                      modelIndex: targetModel.model,
-                      model: model,
-                    })
-                  );
-                }
-              }
-            }}
-            className="max-w-[80px] bg-transparent text-slate-50"
-            step={0.1}
-            value={height ? height : 0}
-          />
-        </div>
-      </div>
+      {targetPool != null &&
+      pools[targetPool] &&
+      pools[targetPool].poolType === "lshape" ? (
+        <>
+          <div className="flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              Top Height
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2">
+              <NumberInput
+                type="number"
+                name="theight"
+                onChange={(e) => {
+                  if (targetPool != null && pools[targetPool]) {
+                    const pool = { ...pools[targetPool] };
+                    if (+e != pool.stHeight) {
+                      pool.sHeight = +e; // Assign the updated array back to pool.sRotation
+                      dispatch(
+                        ReplacePool({ poolIndex: targetPool, pool: pool })
+                      );
+                    }
+                    // height(e.currentTarget.value as unknown as number)
+                  }
+                }}
+                className="max-w-[80px] bg-transparent text-slate-50"
+                step={0.1}
+                value={theight ? theight : 0}
+              />
+            </div>
+          </div>
+          <div className="flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              Bottom Height
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2">
+              <NumberInput
+                type="number"
+                name="nheight"
+                onChange={(e) => {
+                  if (targetPool != null && pools[targetPool]) {
+                    const pool = { ...pools[targetPool] };
+                    if (+e != pool.sbHeight) {
+                      pool.sHeight = +e; // Assign the updated array back to pool.sRotation
+                      dispatch(
+                        ReplacePool({ poolIndex: targetPool, pool: pool })
+                      );
+                    }
+                    // height(e.currentTarget.value as unknown as number)
+                  }
+                }}
+                className="max-w-[80px] bg-transparent text-slate-50"
+                step={0.1}
+                value={bheight ? bheight : 0}
+              />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              Height
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2">
+              <NumberInput
+                type="number"
+                name="height"
+                onChange={(e) => {
+                  if (targetPool != null && pools[targetPool]) {
+                    const pool = { ...pools[targetPool] };
+                    if (+e != pool.sHeight) {
+                      pool.sHeight = +e; // Assign the updated array back to pool.sRotation
+                      dispatch(
+                        ReplacePool({ poolIndex: targetPool, pool: pool })
+                      );
+                    }
+                    // height(e.currentTarget.value as unknown as number)
+                  } else if (
+                    targetModel &&
+                    pools[targetModel.pool] &&
+                    pools[targetModel.pool].childrens[targetModel.model]
+                  ) {
+                    const model = {
+                      ...pools[targetModel.pool].childrens[targetModel.model],
+                    };
+                    if (+e != model.sHeight) {
+                      model.sHeight = +e; // Assign the updated array back to pool.sRotation
+                      dispatch(
+                        ReplaceChildren({
+                          poolIndex: targetModel.pool,
+                          modelIndex: targetModel.model,
+                          model: model,
+                        })
+                      );
+                    }
+                  }
+                }}
+                className="max-w-[80px] bg-transparent text-slate-50"
+                step={0.1}
+                value={height ? height : 0}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
       {/* Depth */}
       <div className="flex w-full items-center justify-start gap-x-6">
         <div className="w-full self-start text-lg text-slate-50">

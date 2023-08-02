@@ -7,13 +7,8 @@ import { Perf } from "r3f-perf";
 import Ground from "./Ground/Ground";
 import Helper from "./Helpers/Helper";
 import { AllModels } from "./All Models/AllModels";
+import LShape from "./Models/L-Shape/L-Shape";
 type Props = {};
-enum sides {
-  Top = "Top",
-  Bottom = "Bottom",
-  Left = "Left",
-  Right = "Right",
-}
 export default function Scene({}: Props) {
   const cameraRef = useRef<any>(null);
   return (
@@ -33,6 +28,7 @@ export default function Scene({}: Props) {
       <Helper />
       {/* <House/> */}
       <AllModels />
+      {/* <TestLShape width={4} theight={16} bheight={12} depth={2} /> */}
       {/* <CustomBox width={5} height={2} depth={4} /> */}
     </Canvas>
   );

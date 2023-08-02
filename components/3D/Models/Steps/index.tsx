@@ -1,6 +1,6 @@
 "use client";
 import { PivotControls } from "@/components/UI/pivotControls";
-import { ChildrensType, ReplaceChildren } from "@/slices/poolsSlice";
+import { ChildrensType, ReplaceChildren, sides } from "@/slices/poolsSlice";
 import {
   selectPivotVisibility,
   selectTarget,
@@ -12,12 +12,6 @@ import { useTexture } from "@react-three/drei";
 import { FC, Fragment, ReactElement, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
-enum sides {
-  Top = "Top",
-  Bottom = "Bottom",
-  Left = "Left",
-  Right = "Right",
-}
 interface Steps {
   rotation: THREE.Euler;
   position: THREE.Vector3;
@@ -37,8 +31,8 @@ interface Steps {
   poolIndex: number;
   intersecting: boolean;
 }
-
-const Steps: FC<Steps> = ({
+import React from "react";
+export default function Steps({
   position,
   width = 6,
   rotation,
@@ -56,7 +50,7 @@ const Steps: FC<Steps> = ({
   intersecting,
   poolHeight,
   poolWidth,
-}): ReactElement => {
+}: Steps) {
   const depthPerStep = 1;
 
   // load tile texture
@@ -64,6 +58,7 @@ const Steps: FC<Steps> = ({
   tileTexture.wrapT = THREE.RepeatWrapping;
   tileTexture.wrapS = THREE.RepeatWrapping;
   const steps = Math.ceil(poolHeight / heightPerStep);
+  console.log("nb Steps", poolHeight, heightPerStep, "res:", steps);
   const stepsArray = new Array(steps).fill(0);
   const dispatch = useAppDispatch();
   const target = useAppSelector(selectTarget);
@@ -169,56 +164,58 @@ const Steps: FC<Steps> = ({
       >
         {stepsArray.map((step, idx) => {
           // boxwidth/2 + gap/2 // set step to the edge
-          const offset = -3/5/2+gap/2
-          const offsetZ = 3/5/2
-          const offsetY = gap/2
+          const offset = -3 / 5 / 2 + gap / 2;
+          const offsetZ = 3 / 5 / 2;
+          const offsetY = gap / 2;
           let newPosition = [0, 0, 0];
-          switch (side) {
-            case "Left":
+          switch (true) {
+            case side === "Left" || side === "tLeft":
               newPosition = [
                 offset + (gap / 2) * idx,
-                -offsetY-idx * heightPerStep,
+                -offsetY - idx * heightPerStep,
                 0,
               ]; //1.5 == boxWidth/2
               break;
-            case "Right":
+            case side === "tRight":
               newPosition = [
-                -offset-(gap / 2) * idx,
-                -offsetY-idx * heightPerStep,
+                -offset - (gap / 2) * idx,
+                -offsetY - idx * heightPerStep,
                 0,
               ];
               break;
-            case "Top":
+            case side === "Top" || side === "tTop":
               newPosition = [
                 0,
-                -offsetY-idx * heightPerStep,
-                -offsetZ+(gap / 2) * idx,
+                -offsetY - idx * heightPerStep,
+                -offsetZ + (gap / 2) * idx,
               ]; //2 == boxWidth/2
               break;
-            case "Bottom":
+            case side === "Bottom":
               newPosition = [
                 0,
-                -offsetY-idx * heightPerStep,
-                offsetZ-(gap / 2) * idx,
+                -offsetY - idx * heightPerStep,
+                offsetZ - (gap / 2) * idx,
               ];
               break;
           }
 
           let boxArgs = [poolWidth, poolWidth, poolWidth];
-          switch (side) {
-            case "Left":
+          switch (true) {
+            case side === "Left" || side === "tLeft":
               boxArgs = [heightPerStep + gap * idx, heightPerStep, poolDepth];
               break;
-            case "Right":
+            case side === "tRight":
               boxArgs = [heightPerStep + gap * idx, heightPerStep, poolDepth];
               break;
-            case "Top":
+            case side === "Top" || side === "tTop":
               boxArgs = [poolWidth, heightPerStep, heightPerStep + gap * idx];
               break;
-            case "Bottom":
+            case side === "Bottom":
               boxArgs = [poolWidth, heightPerStep, heightPerStep + gap * idx];
               break;
           }
+          console.log("boxArgs:", boxArgs);
+          console.log("newPosition:", newPosition);
           return (
             <mesh key={idx} position={new THREE.Vector3(...newPosition)}>
               <boxGeometry args={[boxArgs[0], boxArgs[1], boxArgs[2]]} />
@@ -234,6 +231,4 @@ const Steps: FC<Steps> = ({
       </group>
     </PivotControls>
   );
-};
-
-export default Steps;
+}

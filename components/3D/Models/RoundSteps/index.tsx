@@ -11,13 +11,8 @@ import { PivotControls } from "@/components/UI/pivotControls";
 import { SingleRoundStep } from "./SingleRoundStep";
 import * as THREE from "three";
 import { ChildrensType, ReplaceChildren } from "@/slices/poolsSlice";
+import { sides } from "@/slices/defaultsSlice";
 
-enum sides {
-  Top = "Top",
-  Bottom = "Bottom",
-  Left = "Left",
-  Right = "Right",
-}
 interface Props {
   rotation: THREE.Euler;
   position: THREE.Vector3;
@@ -155,12 +150,14 @@ const RoundSteps: FC<Props> = ({
       >
         {stepsArray.map((step, idx) => {
           // boxwidth/2 // set step to the edge
-          const offset = -3/5/2
+          const offset = -3 / 5 / 2;
           let newPosition = [0, -idx * heightPerStep, 0];
           return (
             <SingleRoundStep
               key={idx}
-              scale={new THREE.Vector3(.16 + gap * idx, 1.24, .16 + gap * idx)}
+              scale={
+                new THREE.Vector3(0.16 + gap * idx, 1.24, 0.16 + gap * idx)
+              }
               position={new THREE.Vector3(...newPosition)}
             />
           );

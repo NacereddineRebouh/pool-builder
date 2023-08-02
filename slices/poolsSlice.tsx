@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "@/store/store";
-enum sides {
+export enum sides {
   Top = "Top",
   Bottom = "Bottom",
   Left = "Left",
   Right = "Right",
+  tTop = "tTop",
+  tLeft = "tLeft",
+  tRight = "tRight",
 }
 export interface ChildrensType {
   shapeType: string;
@@ -32,6 +35,10 @@ export interface PoolType {
   sScale: number[];
   width: number;
   sWidth: number;
+  tHeight: number;
+  stHeight: number;
+  bHeight: number;
+  sbHeight: number;
   height: number;
   sHeight: number;
   depth: number;

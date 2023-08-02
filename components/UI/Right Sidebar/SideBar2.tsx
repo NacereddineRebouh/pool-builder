@@ -25,6 +25,10 @@ import {
   setDefaultDepthHottub,
   setDefaultHeightHottub,
   setDefaultNbSwimJetsHottub,
+  setDefaultDepthLShape,
+  setDefaultWidthLShape,
+  setDefaultTHeightLShape,
+  setDefaultBHeightLShape,
 } from "@/slices/defaultsSlice";
 import Properties2 from "./Properties2";
 interface ISideBarProps {}
@@ -34,6 +38,8 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   const [Default, setDefault] = useState<string | null>("pool");
   const [Dwidth, setDWidth] = useState<number | null>(16);
   const [Dheight, setDHeight] = useState<number | null>(5);
+  const [Dbheight, setDbHeight] = useState<number | null>(5);
+  const [Dtheight, setDtHeight] = useState<number | null>(5);
   const [Ddepth, setDDepth] = useState<number | null>(12);
   const [DnbSwimjet, setDnbSwimjet] = useState<number | null>(1);
   const defaults = useAppSelector((state: RootState) => state.defaults);
@@ -60,6 +66,12 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         setDDepth(defaults.hottub.depth);
         setDnbSwimjet(defaults.hottub.nbSwimJet);
         break;
+      case "lshape":
+        setDWidth(defaults.lshape.width);
+        setDtHeight(defaults.lshape.theight);
+        setDbHeight(defaults.lshape.bheight);
+        setDDepth(defaults.lshape.depth);
+        break;
     }
   }, [Default]);
 
@@ -83,8 +95,14 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         dispatch(setDefaultDepthHottub(Ddepth));
         dispatch(setDefaultNbSwimJetsHottub(DnbSwimjet));
         break;
+      case "lshape":
+        dispatch(setDefaultWidthLShape(Dwidth));
+        dispatch(setDefaultTHeightLShape(Dtheight));
+        dispatch(setDefaultBHeightLShape(Dbheight));
+        dispatch(setDefaultDepthLShape(Ddepth));
+        break;
     }
-  }, [Dwidth, Dheight, Ddepth, DnbSwimjet]);
+  }, [Dwidth, Dheight, Ddepth, DnbSwimjet, Dtheight, Dbheight]);
 
   // ------------ Scene props ------------
 
@@ -115,6 +133,8 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   } | null>(null);
   const [width, setWidth] = useState<number | null>(null);
   const [height, setHeight] = useState<number | null>(null);
+  const [bheight, setbHeight] = useState<number | null>(null);
+  const [theight, settHeight] = useState<number | null>(null);
   const [depth, setDepth] = useState<number | null>(null);
   const [nbSwimJet, setnbSwimJet] = useState<number | null>(null);
 
@@ -125,9 +145,14 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
     if (targetPool != null) {
       console.log("fetching POOL", targetPool, pools[targetPool]);
       setDepth(pools[targetPool]?.sDepth);
-      setHeight(pools[targetPool]?.sHeight);
+      if (pools[targetPool] && pools[targetPool]?.poolType === "lshape") {
+        setbHeight(pools[targetPool]?.bHeight);
+        settHeight(pools[targetPool]?.tHeight);
+      } else {
+        setHeight(pools[targetPool]?.sHeight);
+        setnbSwimJet(pools[targetPool]?.nbSwimJet ?? 1);
+      }
       setWidth(pools[targetPool]?.sWidth);
-      setnbSwimJet(pools[targetPool]?.nbSwimJet ?? 1);
 
       setScale({
         x: pools[targetPool]?.sScale[0],
@@ -302,6 +327,10 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
                 pools={pools}
                 nbSwimjet={nbSwimJet}
                 setnbSwimjet={setnbSwimJet}
+                theight={Dtheight}
+                settHeight={setDtHeight}
+                bheight={Dbheight}
+                setbHeight={setDbHeight}
               />
             </div>
           </div>
@@ -316,6 +345,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
                 { value: "pool", label: "Pool" },
                 { value: "cyl", label: "Cylinder Pool" },
                 { value: "hottub", label: "Hottub" },
+                { value: "lshape", label: "LShape" },
                 // { value: 'Fountain', label: 'Fountain' },
               ]}
               onChange={(e) => {
@@ -339,6 +369,10 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
                 setHeight={setDHeight}
                 nbSwimjet={DnbSwimjet}
                 setnbSwimjet={setDnbSwimjet}
+                theight={Dtheight}
+                settHeight={setDtHeight}
+                bheight={Dbheight}
+                setbHeight={setDbHeight}
               />
             </div>
           </div>

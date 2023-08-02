@@ -22,12 +22,6 @@ type GLTFResult = GLTF & {
     Mesh_0010: THREE.MeshStandardMaterial;
   };
 };
-enum sides {
-  Top = "Top",
-  Bottom = "Bottom",
-  Left = "Left",
-  Right = "Right",
-}
 const Fountain = ({
   sPosition,
   sRotation,

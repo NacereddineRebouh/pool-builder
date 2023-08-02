@@ -10,13 +10,7 @@ import { PivotControls } from "@/components/UI/pivotControls";
 import * as THREE from "three";
 import { CornerRoundStep } from "./CornerRoundStep";
 import { ChildrensType, ReplaceChildren } from "@/slices/poolsSlice";
-
-enum sides {
-  Top = "Top",
-  Bottom = "Bottom",
-  Left = "Left",
-  Right = "Right",
-}
+import { sides } from "@/slices/defaultsSlice";
 interface Props {
   rotation: THREE.Euler;
   position: THREE.Vector3;
@@ -158,7 +152,7 @@ const CornerRoundSteps: FC<Props> = ({
           return (
             <CornerRoundStep
               key={idx}
-              scale={new THREE.Vector3(.16 + gap * idx, 1.2, .16 + gap * idx)}
+              scale={new THREE.Vector3(0.16 + gap * idx, 1.2, 0.16 + gap * idx)}
               position={new THREE.Vector3(...newPosition)}
               rotation={new THREE.Euler(0, 0, 0)}
             />

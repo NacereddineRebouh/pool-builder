@@ -27,6 +27,7 @@ interface Props {
   depth: number;
   sDepth: number;
   key?: number;
+  Texture?: THREE.Texture;
   children?: React.ReactNode;
   pool: PoolType;
 }
@@ -42,12 +43,27 @@ const Pool: FC<Props> = ({
   index,
   children,
   pool,
+  Texture,
 }) => {
   // load tile texture
-  const texture = useTexture("/textures/tiles.jpg");
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.repeat.set(2, 1);
+  // const [Texture, setTexture] = useState<THREE.Texture>();
+  // const [Texture2, setTexture2] = useState<THREE.Texture>();
+  // const textureLoader = new THREE.TextureLoader();
+
+  // useEffect(() => {
+  //   textureLoader.load("/textures/tiles.jpg", (t) => {
+  //     // Texture loaded callback
+  //     setTexture(t);
+  //   });
+  //   textureLoader.load("/textures/tiles.jpg", (t) => {
+  //     // Texture loaded callback
+  //     setTexture2(t);
+  //   });
+  // }, []);
+  // const texture = useTexture("/textures/tiles.jpg");
+  // texture.wrapT = THREE.RepeatWrapping;
+  // texture.wrapS = THREE.RepeatWrapping;
+  // texture.repeat.set(2, 1);
 
   const groupRef = useRef<THREE.Group>(null);
   const gp = useRef<THREE.Group>(null);
@@ -139,7 +155,7 @@ const Pool: FC<Props> = ({
             <meshStandardMaterial
               metalness={0.2}
               roughness={0.24}
-              map={texture}
+              map={Texture}
               attach={"material-0"}
               side={2}
               color={"lightblue"}
@@ -147,7 +163,7 @@ const Pool: FC<Props> = ({
             <meshStandardMaterial
               metalness={0.2}
               roughness={0.24}
-              map={texture}
+              map={Texture}
               attach={"material-1"}
               side={2}
               color={"lightblue"}
@@ -155,7 +171,7 @@ const Pool: FC<Props> = ({
             <meshStandardMaterial
               metalness={0.2}
               roughness={0.24}
-              map={texture}
+              map={Texture}
               attach={"material-3"}
               side={2}
               color={"lightblue"}
@@ -163,7 +179,7 @@ const Pool: FC<Props> = ({
             <meshStandardMaterial
               metalness={0.2}
               roughness={0.24}
-              map={texture}
+              map={Texture}
               attach={"material-4"}
               side={2}
               color={"lightblue"}
@@ -171,7 +187,7 @@ const Pool: FC<Props> = ({
             <meshStandardMaterial
               metalness={0.2}
               roughness={0.24}
-              map={texture}
+              map={Texture}
               attach={"material-5"}
               side={2}
               color={"lightblue"}
@@ -179,7 +195,7 @@ const Pool: FC<Props> = ({
             <meshStandardMaterial
               metalness={0.2}
               roughness={0.24}
-              map={texture}
+              map={Texture}
               attach={"material-2"}
               side={1}
               colorWrite={false}

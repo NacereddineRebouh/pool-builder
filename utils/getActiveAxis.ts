@@ -41,3 +41,14 @@ export const IgnoreOrderCompare = (a: string[], b: string[]) => {
   }
   return true;
 };
+
+function gcd(a: number, b: number): number {
+  return b === 0 ? a : gcd(b, a % b);
+}
+
+export const AspectRatio = (x: number, y: number)=>{
+  const gcdValue = gcd(x, y);
+  const aspectRatioX = x / gcdValue;
+  const aspectRatioY = y / gcdValue;
+  return {aspectRatioX, aspectRatioY}
+}

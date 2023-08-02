@@ -1,5 +1,6 @@
 "use client";
 import { PivotControls } from "@/components/UI/pivotControls";
+import { sides } from "@/slices/defaultsSlice";
 import { ChildrensType, ReplaceChildren } from "@/slices/poolsSlice";
 import {
   selectPivotVisibility,
@@ -11,13 +12,6 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useTexture } from "@react-three/drei";
 import { FC, Fragment, ReactElement, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-
-enum sides {
-  Top = "Top",
-  Bottom = "Bottom",
-  Left = "Left",
-  Right = "Right",
-}
 
 interface squareStepsProps {
   rotation: THREE.Euler;
@@ -74,17 +68,17 @@ const SquareSteps: FC<squareStepsProps> = ({
     position.y,
     position.z,
   ];
-  switch (side) {
-    case "Left":
+  switch (true) {
+    case side === "Left" || side === "tLeft":
       newOffset = [position.x - (steps * gap) / 2, position.y, position.z];
       break;
-    case "Right":
+    case side === "tRight":
       newOffset = [position.x + (steps * gap) / 2, position.y, position.z];
       break;
-    case "Top":
+    case side === "Top" || side === "tTop":
       newOffset = [position.x, position.y, position.z - (steps * gap) / 2];
       break;
-    case "Bottom":
+    case side === "Bottom":
       newOffset = [position.x, position.y, position.z + (steps * gap) / 2];
       break;
   }
@@ -166,31 +160,65 @@ const SquareSteps: FC<squareStepsProps> = ({
       >
         {stepsArray.map((step, idx) => {
           let newPosition = [0, 0, 0];
-          let boxArgs = [width + (gap/2) * idx, heightPerStep, width + (gap/2) * idx];
+          let boxArgs = [
+            width + (gap / 2) * idx,
+            heightPerStep,
+            width + (gap / 2) * idx,
+          ];
 
-          switch (side) {
-            case "Left":
-              newPosition = [-gap / 4 + (gap / 2) * idx, -heightPerStep/2 - idx * heightPerStep, 0];
-              boxArgs = [width + gap * idx, heightPerStep, width + (gap*2) * idx];
+          switch (true) {
+            case side === "Left" || side === "tLeft":
+              newPosition = [
+                -gap / 4 + (gap / 2) * idx,
+                -heightPerStep / 2 - idx * heightPerStep,
+                0,
+              ];
+              boxArgs = [
+                width + gap * idx,
+                heightPerStep,
+                width + gap * 2 * idx,
+              ];
               break;
-            case "Right":
-              newPosition = [+gap / 4 - (gap / 2) * idx, -heightPerStep/2 - idx * heightPerStep, 0];
-              boxArgs = [width + gap * idx, heightPerStep, width + (gap*2) * idx];
+            case side === "tRight":
+              newPosition = [
+                +gap / 4 - (gap / 2) * idx,
+                -heightPerStep / 2 - idx * heightPerStep,
+                0,
+              ];
+              boxArgs = [
+                width + gap * idx,
+                heightPerStep,
+                width + gap * 2 * idx,
+              ];
               break;
-            case "Top":
-              newPosition = [0, -heightPerStep/2 - idx * heightPerStep, -gap+ (gap / 2) * idx];
-              boxArgs = [width + (gap*2) * idx, heightPerStep, width + gap * idx];
+            case side === "Top" || side === "tTop":
+              newPosition = [
+                0,
+                -heightPerStep / 2 - idx * heightPerStep,
+                -gap + (gap / 2) * idx,
+              ];
+              boxArgs = [
+                width + gap * 2 * idx,
+                heightPerStep,
+                width + gap * idx,
+              ];
               break;
-            case "Bottom":
-              newPosition = [0, -heightPerStep/2 - idx * heightPerStep, gap - (gap / 2) * idx];
-              boxArgs = [width + (gap*2) * idx, heightPerStep, width + gap * idx];
+            case side === "Bottom":
+              newPosition = [
+                0,
+                -heightPerStep / 2 - idx * heightPerStep,
+                gap - (gap / 2) * idx,
+              ];
+              boxArgs = [
+                width + gap * 2 * idx,
+                heightPerStep,
+                width + gap * idx,
+              ];
               break;
           }
           return (
             <mesh key={idx} position={new THREE.Vector3(...newPosition)}>
-              <boxGeometry
-                args={[boxArgs[0], boxArgs[1], boxArgs[2]]}
-              />
+              <boxGeometry args={[boxArgs[0], boxArgs[1], boxArgs[2]]} />
               <meshStandardMaterial
                 map={tileTexture}
                 color={"lightblue"}
