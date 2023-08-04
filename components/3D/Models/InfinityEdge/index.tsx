@@ -38,7 +38,10 @@ const InfinityEdge = ({
   model,
   poolWidth,
   poolHeight,
+  poolbHeight = 0,
+  pooltHeight = 0,
   poolDepth,
+  poolType,
   rotation,
   position,
   scale,
@@ -52,7 +55,10 @@ const InfinityEdge = ({
   model: ChildrensType;
   poolWidth: number;
   poolHeight: number;
+  pooltHeight: number;
+  poolbHeight: number;
   poolDepth: number;
+  poolType: string;
   rotation: THREE.Euler;
   position: THREE.Vector3;
   scale: THREE.Vector3;
@@ -68,10 +74,36 @@ const InfinityEdge = ({
   const dispatch = useAppDispatch();
   const target = useAppSelector(selectTarget);
   const visible = useAppSelector(selectPivotVisibility);
-  const width =
+  let width =
     rotation.y == Math.PI / 2 || rotation.y == -Math.PI / 2
       ? poolDepth
       : poolWidth;
+  switch (true) {
+    case model.side === "Left":
+      if (poolType === "lshape") width = poolWidth;
+      else width = poolDepth;
+      break;
+    case model.side === "Top":
+      if (poolType === "lshape") width = poolbHeight - poolWidth;
+      else width = poolWidth;
+      break;
+    case model.side === "Bottom":
+      if (poolType === "lshape") width = poolbHeight;
+      else width = poolWidth;
+      break;
+    case model.side === "Right":
+      width = poolDepth;
+      break;
+    case model.side === "tLeft":
+      width = pooltHeight - poolWidth;
+      break;
+    case model.side === "tRight":
+      width = pooltHeight;
+      break;
+    case model.side === "tTop":
+      width = poolWidth;
+      break;
+  }
   const texture = useTexture("/textures/grass.jpeg");
   texture.wrapT = THREE.RepeatWrapping;
   texture.wrapS = THREE.RepeatWrapping;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { Suspense, useRef } from "react";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import Environment from "../Environment";
@@ -25,7 +25,9 @@ export default function Scene({}: Props) {
       <Environment />
 
       <Ground />
-      <Helper />
+      <Suspense>
+        <Helper />
+      </Suspense>
       {/* <House/> */}
       <AllModels />
       {/* <TestLShape width={4} theight={16} bheight={12} depth={2} /> */}

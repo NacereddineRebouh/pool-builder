@@ -4,6 +4,7 @@ import { useAppDispatch } from "@/store/hooks";
 import { IgnoreOrderCompare } from "@/utils/getActiveAxis";
 import { Checkbox, Group, NumberInput, Radio } from "@mantine/core";
 import * as React from "react";
+import { useEffect, useState } from "react";
 
 interface IPropertiesProps {
   width: number | null;
@@ -43,6 +44,12 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
   setbHeight,
 }) => {
   const dispatch = useAppDispatch();
+  const [BenchSeatings, setBenchSeatings] = useState<string[]>([]);
+  useEffect(() => {
+    if (targetPool != null) {
+      setBenchSeatings(pools[targetPool]?.BenchSeatings);
+    }
+  }, [pools, targetPool, targetModel]);
   return (
     <div className="flex w-full flex-col items-start justify-start">
       {/* Width */}
@@ -105,7 +112,7 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                   if (targetPool != null && pools[targetPool]) {
                     const pool = { ...pools[targetPool] };
                     if (+e != pool.stHeight) {
-                      pool.sHeight = +e; // Assign the updated array back to pool.sRotation
+                      pool.stHeight = +e; // Assign the updated array back to pool.sRotation
                       dispatch(
                         ReplacePool({ poolIndex: targetPool, pool: pool })
                       );
@@ -129,9 +136,11 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 name="nheight"
                 onChange={(e) => {
                   if (targetPool != null && pools[targetPool]) {
+                    console.log("bHeight, lshape: ", pools[targetPool]);
                     const pool = { ...pools[targetPool] };
                     if (+e != pool.sbHeight) {
-                      pool.sHeight = +e; // Assign the updated array back to pool.sRotation
+                      console.log("changing ....");
+                      pool.sbHeight = +e; // Assign the updated array back to pool.sRotation
                       dispatch(
                         ReplacePool({ poolIndex: targetPool, pool: pool })
                       );
@@ -279,10 +288,13 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
             </div>
             <div className="flex w-full items-center justify-start gap-x-2 text-slate-50">
               <Checkbox.Group
+                value={BenchSeatings}
                 onChange={(value) => {
                   const pool = { ...pools[targetPool] };
                   if (!IgnoreOrderCompare(value, pool.BenchSeatings)) {
-                    pool.BenchSeatings = value; // Assign the updated array back to pool.sRotation
+                    console.log(pool.BenchSeatings);
+                    console.log(value);
+                    pool.BenchSeatings = value;
                     dispatch(
                       ReplacePool({ poolIndex: targetPool, pool: pool })
                     );
@@ -290,34 +302,10 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 }}
               >
                 <Group mt="xs">
-                  <Checkbox
-                    checked={pools[targetPool]?.BenchSeatings?.includes("left")}
-                    color="gray"
-                    value="left"
-                    label="Left"
-                  />
-                  <Checkbox
-                    checked={pools[targetPool]?.BenchSeatings?.includes("top")}
-                    color="gray"
-                    value="top"
-                    label="Top"
-                  />
-                  <Checkbox
-                    checked={pools[targetPool]?.BenchSeatings?.includes(
-                      "right"
-                    )}
-                    color="gray"
-                    value="right"
-                    label="Right"
-                  />
-                  <Checkbox
-                    checked={pools[targetPool]?.BenchSeatings?.includes(
-                      "bottom"
-                    )}
-                    color="gray"
-                    value="bottom"
-                    label="Bottom"
-                  />
+                  <Checkbox color="gray" value="left" label="Left" />
+                  <Checkbox color="gray" value="top" label="Top" />
+                  <Checkbox color="gray" value="right" label="Right" />
+                  <Checkbox color="gray" value="bottom" label="Bottom" />
                 </Group>
               </Checkbox.Group>
             </div>

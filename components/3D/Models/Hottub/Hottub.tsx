@@ -58,7 +58,7 @@ const Hottub: FC<Props> = ({
     roughness: 0.15,
     map: texture,
     side: 2,
-    color: "lightblue",
+    color: new THREE.Color("lightblue"),
   });
   if (material.map) {
     material.map.wrapS = THREE.RepeatWrapping;

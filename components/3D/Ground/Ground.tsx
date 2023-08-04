@@ -277,6 +277,8 @@ const Grid = ({
     ]);
   }, [defaults]);
 
+  const borderHeight = 0.1;
+
   const boxWidth = 3 / 5;
   const boxHeight = poolheight;
   const boxDepth = 4 / 5;
@@ -521,6 +523,151 @@ const Grid = ({
       used: false,
     }, //Right Top (tRight)
   ]);
+  const [fountainLShape, setfountainLShape] = useState([
+    {
+      position: [LshapeBXPosition - lShapeTHeight / 2, 0, 0],
+      used: false,
+    }, //BOTTOM - left
+    // {
+    //   position: [poolwidth / 2 - boxWidth / 2, 0, 0],
+    //   used: false,
+    // }, //BOTTOM - right Doesnt Exist
+    {
+      position: [LshapeBXPosition, 0, -lShapeWidth / 2 + boxDepth / 2],
+      used: false,
+    }, //BOTTOM - top
+    {
+      position: [LshapeBXPosition, 0, lShapeWidth / 2 - boxDepth / 2],
+      used: false,
+    }, //BOTTOM - bottom
+    // ---------------------------------------------------------------------- //
+    {
+      position: [-lShapeWidth / 2, 0, LshapeTZPosition],
+      used: false,
+    }, //TOP - left
+    {
+      position: [lShapeWidth / 2, 0, LshapeTZPosition],
+      used: false,
+    }, //TOP - right
+    {
+      position: [
+        0,
+        lShapeDepth / 2,
+        LshapeTZPosition - lShapeTHeight / 2 + boxDepth / 2,
+      ],
+      used: false,
+    }, //TOP - top
+    // {
+    //   position: [
+    //     0,
+    //     lShapeDepth / 2,
+    //     LshapeTZPosition + lShapeTHeight / 2 - boxDepth / 2,
+    //   ],
+    //   used: false,
+    // }, //TOP - bottom Doesnt Exist
+  ]);
+  const [swimJetLShape, setswimJetLShape] = useState([
+    {
+      position: [
+        LshapeBXPosition - lShapeTHeight / 2 + swimJetBoxWidth / 2,
+        -lShapeDepth / 2 + swimJetBoxHeight / 2,
+        0,
+      ],
+      used: false,
+    }, //BOTTOM - left
+    {
+      position: [
+        LshapeBXPosition,
+        -lShapeDepth / 2 + swimJetBoxHeight / 2,
+        -lShapeWidth / 2 + swimJetBoxWidth / 2,
+      ],
+      used: false,
+    }, //BOTTOM - top
+    {
+      position: [
+        LshapeBXPosition,
+        -lShapeDepth / 2 + swimJetBoxHeight / 2,
+        -lShapeWidth / 2 + swimJetBoxWidth / 2,
+      ],
+      used: false,
+    }, //BOTTOM - bottom
+    // ---------------------------------------------------------------------- //
+    {
+      position: [
+        -lShapeWidth / 2 + swimJetBoxWidth / 2,
+        -lShapeDepth / 2 + swimJetBoxHeight / 2,
+        LshapeTZPosition,
+      ],
+      used: false,
+    }, //TOP - left
+    {
+      position: [
+        lShapeWidth / 2 - swimJetBoxWidth / 2,
+        -lShapeDepth / 2 + swimJetBoxHeight / 2,
+        LshapeTZPosition,
+      ],
+      used: false,
+    }, //TOP - right
+    {
+      position: [
+        0,
+        -lShapeDepth / 2 + swimJetBoxHeight / 2,
+        LshapeTZPosition - lShapeTHeight / 2 + swimJetBoxWidth / 2,
+      ],
+      used: false,
+    }, //TOP - top
+  ]);
+  const [infinityEdgeLShape, setinfinityEdgeLShape] = useState([
+    {
+      position: [
+        LshapeBXPosition - lShapeTHeight / 2 + infinityEdgeBoxWidth / 2,
+        infinityEdgeBoxHeight / 2,
+        0,
+      ],
+      used: false,
+    }, //BOTTOM - left
+    {
+      position: [
+        LshapeBXPosition,
+        infinityEdgeBoxHeight / 2,
+        -lShapeWidth / 2 - infinityEdgeBoxWidth / 2,
+      ],
+      used: false,
+    }, //BOTTOM - top
+    {
+      position: [
+        LshapeBXPosition,
+        infinityEdgeBoxHeight / 2,
+        lShapeWidth / 2 + infinityEdgeBoxWidth / 2,
+      ],
+      used: false,
+    }, //BOTTOM - bottom
+    // ---------------------------------------------------------------------- //
+    {
+      position: [
+        -lShapeWidth / 2 - infinityEdgeBoxWidth / 2,
+        infinityEdgeBoxHeight / 2,
+        LshapeTZPosition,
+      ],
+      used: false,
+    }, //TOP - left
+    {
+      position: [
+        lShapeWidth / 2 + infinityEdgeBoxWidth / 2,
+        infinityEdgeBoxHeight / 2,
+        LshapeTZPosition,
+      ],
+      used: false,
+    }, //TOP - right
+    {
+      position: [
+        0,
+        infinityEdgeBoxHeight / 2,
+        LshapeTZPosition - lShapeTHeight / 2 - infinityEdgeBoxWidth / 2,
+      ],
+      used: false,
+    }, //TOP - top
+  ]);
   const [SnappingPosition, setSnappingPosition] = useState<{
     x: number;
     y: number;
@@ -575,52 +722,46 @@ const Grid = ({
           // console.log("closestPool ::", closestPool);
           RotationY = closestPool.sRotation[1];
           if (closestPool.poolType === "lshape") {
-            LshapeTZPosition =
-              -closestPool.stHeight / 2 + closestPool.sWidth / 2;
-            LshapeBXPosition =
-              -closestPool.sbHeight / 2 + closestPool.sWidth / 2;
+            LshapeTZPosition = -closestPool.tHeight / 2 + closestPool.width / 2;
+            LshapeBXPosition = -closestPool.bHeight / 2 + closestPool.width / 2;
             setstairsLShape([
               {
                 position: [
-                  LshapeBXPosition - closestPool.sbHeight / 2,
-                  -closestPool.sDepth / 2,
+                  LshapeBXPosition - closestPool.bHeight / 2,
+                  -closestPool.depth / 2,
                   0,
                 ],
                 used: false,
               }, //BOTTOM - left
-              // {
-              //   position: [poolwidth / 2 - boxWidth / 2, closestPool.sDepth / 2, 0],
-              //   used: false,
-              // }, //BOTTOM - right Doesnt Exist
               {
                 position: [
-                  LshapeBXPosition - closestPool.sWidth / 2,
-                  -closestPool.sDepth / 2,
-                  -closestPool.sWidth / 2 + boxDepth / 2,
+                  LshapeBXPosition - closestPool.width / 2,
+                  -closestPool.depth / 2,
+                  -closestPool.width / 2 + boxDepth / 2,
                 ],
                 used: false,
               }, //BOTTOM - top
               {
                 position: [
                   LshapeBXPosition,
-                  -closestPool.sDepth / 2,
-                  closestPool.sWidth / 2 - boxDepth / 2,
+                  -closestPool.depth / 2,
+                  closestPool.width / 2 - boxDepth / 2,
                 ],
                 used: false,
               }, //BOTTOM - bottom
               // ---------------------------------------------------------------------- //
               {
                 position: [
-                  -closestPool.sWidth / 2,
-                  -closestPool.sDepth / 2,
-                  LshapeTZPosition - closestPool.sWidth / 2,
+                  -closestPool.width / 2,
+                  -closestPool.depth / 2,
+                  LshapeTZPosition - closestPool.width / 2,
                 ],
                 used: false,
               }, //TOP - left
               {
                 position: [
-                  closestPool.sWidth / 2,
-                  -closestPool.sDepth / 2,
+                  closestPool.width / 2,
+                  -closestPool.depth / 2,
                   LshapeTZPosition,
                 ],
                 used: false,
@@ -628,61 +769,210 @@ const Grid = ({
               {
                 position: [
                   0,
-                  -closestPool.sDepth / 2,
-                  LshapeTZPosition - closestPool.stHeight / 2 + boxDepth / 2,
+                  -closestPool.depth / 2,
+                  LshapeTZPosition - closestPool.tHeight / 2 + boxDepth / 2,
                 ],
                 used: false,
               }, //TOP - top
-              // {
-              //   position: [
-              //     0,
-              //     -closestPool.sDepth / 2,
-              //     LshapeTZPosition + closestPool.stHeight / 2 - boxDepth / 2,
-              //   ],
-              //   used: false,
-              // }, //TOP - bottom doesnt exist
             ]);
             setCornerLShape([
               {
                 position: [
-                  LshapeBXPosition - closestPool.sbHeight / 2,
+                  LshapeBXPosition - closestPool.bHeight / 2,
                   -height - 4 / 2 / 5 - 0.3,
-                  -closestPool.sWidth / 2,
+                  -closestPool.width / 2,
                 ],
                 used: false,
               }, //left top  (TOP)
               {
                 position: [
-                  LshapeBXPosition - closestPool.sbHeight / 2,
+                  LshapeBXPosition - closestPool.bHeight / 2,
                   -height - 4 / 2 / 5 - 0.3,
-                  closestPool.sWidth / 2,
+                  closestPool.width / 2,
                 ],
                 used: false,
               }, //left bottom (LEFT)
               {
                 position: [
-                  LshapeBXPosition + closestPool.sbHeight / 2,
+                  LshapeBXPosition + closestPool.bHeight / 2,
                   -height - 4 / 2 / 5 - 0.3,
-                  closestPool.sWidth / 2,
+                  closestPool.width / 2,
                 ],
                 used: false,
               }, //right bottom (RIGHT)
               {
                 position: [
-                  -closestPool.sWidth / 2,
+                  -closestPool.width / 2,
                   -height - 4 / 2 / 5 - 0.3,
-                  LshapeTZPosition - closestPool.stHeight / 2,
+                  LshapeTZPosition - closestPool.tHeight / 2,
                 ],
                 used: false,
               }, //Left Top (tLeft)
               {
                 position: [
-                  closestPool.sWidth / 2,
+                  closestPool.width / 2,
                   -height - 4 / 2 / 5 - 0.3,
-                  LshapeTZPosition - closestPool.stHeight / 2,
+                  LshapeTZPosition - closestPool.tHeight / 2,
                 ],
                 used: false,
               }, //Right Top (tRight)
+            ]);
+            setfountainLShape([
+              {
+                position: [
+                  LshapeBXPosition - closestPool.bHeight / 2,
+                  borderHeight / 2,
+                  0,
+                ],
+                used: false,
+              }, //BOTTOM - left
+              {
+                position: [
+                  LshapeBXPosition - closestPool.width / 2,
+                  borderHeight / 2,
+                  -closestPool.width / 2 + 0,
+                ],
+                used: false,
+              }, //BOTTOM - top
+              {
+                position: [
+                  LshapeBXPosition,
+                  borderHeight / 2,
+                  closestPool.width / 2 - 0,
+                ],
+                used: false,
+              }, //BOTTOM - bottom
+              // ---------------------------------------------------------------------- //
+              {
+                position: [
+                  -closestPool.width / 2,
+                  borderHeight / 2,
+                  LshapeTZPosition - closestPool.width / 2,
+                ],
+                used: false,
+              }, //TOP - left
+              {
+                position: [
+                  closestPool.width / 2,
+                  borderHeight / 2,
+                  LshapeTZPosition,
+                ],
+                used: false,
+              }, //TOP - right
+              {
+                position: [
+                  0,
+                  borderHeight / 2,
+                  LshapeTZPosition - closestPool.tHeight / 2 + 0,
+                ],
+                used: false,
+              }, //TOP - top
+            ]);
+            setswimJetLShape([
+              {
+                position: [
+                  LshapeBXPosition - closestPool.bHeight / 2,
+                  -closestPool.depth / 2 + swimJetBoxHeight / 2,
+                  0,
+                ],
+                used: false,
+              }, //BOTTOM - left
+              {
+                position: [
+                  LshapeBXPosition - closestPool.width / 2,
+                  -closestPool.depth / 2 + swimJetBoxHeight / 2,
+                  -closestPool.width / 2,
+                ],
+                used: false,
+              }, //BOTTOM - top
+              {
+                position: [
+                  LshapeBXPosition,
+                  -closestPool.depth / 2 + swimJetBoxHeight / 2,
+                  closestPool.width / 2,
+                ],
+                used: false,
+              }, //BOTTOM - bottom
+              // ---------------------------------------------------------------------- //
+              {
+                position: [
+                  -closestPool.width / 2,
+                  -closestPool.depth / 2 + swimJetBoxHeight / 2,
+                  LshapeTZPosition - closestPool.width / 2,
+                ],
+                used: false,
+              }, //TOP - left
+              {
+                position: [
+                  closestPool.width / 2,
+                  -closestPool.depth / 2 + swimJetBoxHeight / 2,
+                  LshapeTZPosition,
+                ],
+                used: false,
+              }, //TOP - right
+              {
+                position: [
+                  0,
+                  -closestPool.depth / 2 + swimJetBoxHeight / 2,
+                  LshapeTZPosition - closestPool.tHeight / 2,
+                ],
+                used: false,
+              }, //TOP - top
+            ]);
+            setinfinityEdgeLShape([
+              {
+                position: [
+                  LshapeBXPosition -
+                    closestPool.bHeight / 2 -
+                    infinityEdgeBoxWidth / 2,
+                  infinityEdgeBoxHeight / 2,
+                  0,
+                ],
+                used: false,
+              }, //BOTTOM - left
+              {
+                position: [
+                  LshapeBXPosition - closestPool.width / 2,
+                  infinityEdgeBoxHeight / 2,
+                  -closestPool.width / 2 - infinityEdgeBoxWidth / 2,
+                ],
+                used: false,
+              }, //BOTTOM - top
+              {
+                position: [
+                  LshapeBXPosition,
+                  infinityEdgeBoxHeight / 2,
+                  closestPool.width / 2 + infinityEdgeBoxWidth / 2,
+                ],
+                used: false,
+              }, //BOTTOM - bottom
+              // ---------------------------------------------------------------------- //
+              {
+                position: [
+                  -closestPool.width / 2 - infinityEdgeBoxWidth / 2,
+                  infinityEdgeBoxHeight / 2,
+                  LshapeTZPosition - closestPool.width / 2,
+                ],
+                used: false,
+              }, //TOP - left
+              {
+                position: [
+                  closestPool.width / 2 + infinityEdgeBoxWidth / 2,
+                  infinityEdgeBoxHeight / 2,
+                  LshapeTZPosition,
+                ],
+                used: false,
+              }, //TOP - right
+              {
+                position: [
+                  0,
+                  infinityEdgeBoxHeight / 2,
+                  LshapeTZPosition -
+                    closestPool.tHeight / 2 -
+                    infinityEdgeBoxWidth / 2,
+                ],
+                used: false,
+              }, //TOP - top
             ]);
             switch (true) {
               case type === "SquareSteps" ||
@@ -716,8 +1006,82 @@ const Grid = ({
                   (obj) => obj.used === false
                 );
                 if (availableCorner.length > 0) {
-                  const res = GetClosestLShape(
+                  const res = GetClosestLShapeCorner(
                     availableCorner,
+                    closestPool,
+                    setClosestIndex,
+                    e
+                  );
+                  pointer = {
+                    x: res.closest.position[0],
+                    y: res.closest.position[1],
+                    z: res.closest.position[2],
+                  };
+                  setSnappingPosition(pointer);
+                  pointer = {
+                    x: res.closestObj.position.x,
+                    y: res.closestObj.position.y,
+                    z: res.closestObj.position.z,
+                  };
+                }
+                break;
+              case type === "Fountain" ||
+                type === "WallWaterfall" ||
+                type === "Waterblade":
+                const availableFountain = fountainLShape.filter(
+                  (obj) => obj.used === false
+                );
+                if (availableFountain.length > 0) {
+                  const res = GetClosestLShape(
+                    availableFountain,
+                    closestPool,
+                    setClosestIndex,
+                    e
+                  );
+                  pointer = {
+                    x: res.closest.position[0],
+                    y: res.closest.position[1],
+                    z: res.closest.position[2],
+                  };
+                  setSnappingPosition(pointer);
+                  pointer = {
+                    x: res.closestObj.position.x,
+                    y: res.closestObj.position.y,
+                    z: res.closestObj.position.z,
+                  };
+                }
+                break;
+              case type === "SwimJet":
+                const availableSwimJet = swimJetLShape.filter(
+                  (obj) => obj.used === false
+                );
+                if (availableSwimJet.length > 0) {
+                  const res = GetClosestLShape(
+                    availableSwimJet,
+                    closestPool,
+                    setClosestIndex,
+                    e
+                  );
+                  pointer = {
+                    x: res.closest.position[0],
+                    y: res.closest.position[1],
+                    z: res.closest.position[2],
+                  };
+                  setSnappingPosition(pointer);
+                  pointer = {
+                    x: res.closestObj.position.x,
+                    y: res.closestObj.position.y,
+                    z: res.closestObj.position.z,
+                  };
+                }
+                break;
+              case type === "InfinityEdge":
+                const availableInfinityEdge = infinityEdgeLShape.filter(
+                  (obj) => obj.used === false
+                );
+                if (availableInfinityEdge.length > 0) {
+                  const res = GetClosestLShape(
+                    availableInfinityEdge,
                     closestPool,
                     setClosestIndex,
                     e
@@ -1057,11 +1421,21 @@ const Grid = ({
     dispatch(setRotation(RotationY));
   };
   const OnPointerUpHandler = (e: ThreeEvent<PointerEvent>) => {
-    // console.log("type;;", type);
+    console.log("type;;", type);
     // console.log("ClosestPoolType;;", ClosestPoolType);
+
     if (help.mouseDown) {
+      console.log("mouseDown;;", help.mouseDown);
+
       dispatch(setHelper({ mouseDown: false, dragging: false }));
-      if (ClosestPoolType === "lshape") {
+      if (
+        type != "pool" &&
+        type != "hottub" &&
+        type != "cyl" &&
+        type != "poolWithSteps" &&
+        type != "lshape" &&
+        ClosestPoolType === "lshape"
+      ) {
         switch (type) {
           case "Steps": // will be replaced
             if (SnappingPosition) {
@@ -1328,6 +1702,363 @@ const Grid = ({
                     sRotation: [0, 0, 0],
                     side: side,
                     scale: [1, 1, 1],
+                  },
+                })
+              );
+            }
+            break;
+          case "Fountain":
+            if (SnappingPosition) {
+              // const temp = fountain
+              // temp[ClosestIndex].used = true;
+              // setfountain(temp)
+              let rotation = 0;
+              let position = [0, -1, 0]; // box height/2 + border height
+              let side = sides.Left;
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = -0.4 / 2 + 0.05;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  rotation = 0; //180
+                  position[2] = -0.4 / 2 + 0.05;
+                  side = sides.Top;
+                  break;
+                case 2:
+                  rotation = Math.PI; //0
+                  position[2] = 0.4 / 2 - 0.05;
+                  side = sides.Bottom;
+                  break;
+
+                case 3:
+                  rotation = Math.PI / 2; //90
+                  position[0] = -0.4 / 2 + 0.05;
+                  side = sides.tLeft;
+                  break;
+                case 4:
+                  rotation = -Math.PI / 2; //0
+                  position[0] = 0.4 / 2 - 0.05;
+                  side = sides.tRight;
+                  break;
+                case 5:
+                  rotation = 0; //0
+                  position[2] = -0.4 / 2 + 0.05;
+                  side = sides.tTop;
+                  break;
+
+                default:
+                  break;
+              }
+              // switch (ClosestIndex) {
+              //   case 0:
+              //     //left
+              //     rotation = Math.PI / 2; // 90
+              //     position[0] = -0.4 / 2 + 0.05;
+              //     side = sides.Left;
+              //     break;
+              //   case 1:
+              //     //right
+              //     rotation = -Math.PI / 2; //-90
+              //     position[0] = 0.4 / 2 - 0.05;
+              //     side = sides.Right;
+              //     break;
+              //   case 2:
+              //     rotation = 0; //180
+              //     position[2] = -0.4 / 2 + 0.05;
+              //     side = sides.Top;
+              //     break;
+              //   case 3:
+              //     rotation = Math.PI; //0
+              //     position[2] = 0.4 / 2 - 0.05;
+              //     side = sides.Bottom;
+              //     break;
+
+              //   default:
+              //     break;
+              // }
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y + position[1],
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.3, 0.3, 0.3],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
+          case "WallWaterfall":
+            if (SnappingPosition) {
+              // const temp = fountain
+              // temp[ClosestIndex].used = true;
+              // setfountain(temp)
+              let rotation = 0;
+              let position = [0, -1, 0];
+              let side = sides.Left;
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = -0.4 / 2 + 0.05;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  rotation = 0; //180
+                  position[2] = -0.4 / 2 + 0.05;
+                  side = sides.Top;
+                  break;
+                case 2:
+                  rotation = Math.PI; //0
+                  position[2] = 0.4 / 2 - 0.05;
+                  side = sides.Bottom;
+                  break;
+
+                case 3:
+                  rotation = Math.PI / 2; //90
+                  position[0] = -0.4 / 2 + 0.05;
+                  side = sides.tLeft;
+                  break;
+                case 4:
+                  rotation = -Math.PI / 2; //0
+                  position[0] = 0.4 / 2 - 0.05;
+                  side = sides.tRight;
+                  break;
+                case 5:
+                  rotation = 0; //0
+                  position[2] = -0.4 / 2 + 0.05;
+                  side = sides.tTop;
+                  break;
+
+                default:
+                  break;
+              }
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y + position[1],
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.4, 0.4, 0.4],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
+          case "Waterblade":
+            if (SnappingPosition) {
+              // const temp = fountain
+              // temp[ClosestIndex].used = true;
+              // setfountain(temp)
+              let rotation = 0;
+              let position = [0, -1, 0];
+              let side = sides.Left;
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = -0.4 / 2 + 0.05;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  rotation = 0; //180
+                  position[2] = -0.4 / 2 + 0.05;
+                  side = sides.Top;
+                  break;
+                case 2:
+                  rotation = Math.PI; //0
+                  position[2] = 0.4 / 2 - 0.05;
+                  side = sides.Bottom;
+                  break;
+
+                case 3:
+                  rotation = Math.PI / 2; //90
+                  position[0] = -0.4 / 2 + 0.05;
+                  side = sides.tLeft;
+                  break;
+                case 4:
+                  rotation = -Math.PI / 2; //0
+                  position[0] = 0.4 / 2 - 0.05;
+                  side = sides.tRight;
+                  break;
+                case 5:
+                  rotation = 0; //0
+                  position[2] = -0.4 / 2 + 0.05;
+                  side = sides.tTop;
+                  break;
+
+                default:
+                  break;
+              }
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y + position[1],
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.3, 0.3, 0.3],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
+          case "SwimJet":
+            if (SnappingPosition) {
+              // const temp = stairs
+              // temp[ClosestIndex].used = true;
+              let side = sides.Left;
+              let rotation = 0;
+              let position = [0, -1, 0];
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = 0.02;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  rotation = 0; //180
+                  position[2] = 0.02;
+                  side = sides.Top;
+                  break;
+                case 2:
+                  rotation = Math.PI; //0
+                  position[2] = -0.02;
+                  side = sides.Bottom;
+                  break;
+
+                case 3:
+                  rotation = Math.PI / 2; //90
+                  position[0] = 0.02;
+                  side = sides.tLeft;
+                  break;
+                case 4:
+                  rotation = -Math.PI / 2; //0
+                  position[0] = -0.02;
+                  side = sides.tRight;
+                  break;
+                case 5:
+                  rotation = 0; //0
+                  position[2] = 0.02;
+                  side = sides.tTop;
+                  break;
+
+                default:
+                  break;
+              }
+              // setswimJet(temp)
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y + position[1],
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.4, 0.4, 0.4],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
+          case "InfinityEdge":
+            if (SnappingPosition) {
+              // const temp = infinityEdge
+              // temp[ClosestIndex].used = true;
+              // setinfinityEdge(temp)
+              let rotation = 0;
+              let position = [0, -0.8 / 2 - 1, 0];
+              let side = sides.Left;
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = -Math.PI / 2; // 90
+                  position[0] = -0.36;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  rotation = Math.PI; //180
+                  position[2] = -0.36;
+                  side = sides.Top;
+                  break;
+                case 2:
+                  rotation = 0; //0
+                  position[2] = 0.36;
+                  side = sides.Bottom;
+                  break;
+
+                case 3:
+                  rotation = -Math.PI / 2; //90
+                  position[0] = -0.36;
+                  side = sides.tLeft;
+                  break;
+                case 4:
+                  rotation = Math.PI / 2; //0
+                  position[0] = 0.36;
+                  side = sides.tRight;
+                  break;
+                case 5:
+                  rotation = Math.PI; //0
+                  position[2] = -0.36;
+                  side = sides.tTop;
+                  break;
+
+                default:
+                  break;
+              }
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y + position[1],
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [1, 0.3, 0.3],
+                    side: side,
                   },
                 })
               );
@@ -2397,12 +3128,143 @@ function GetClosestLShape(
   );
   let offsetHelperPos = { ...obj2.position };
   const offsetWidth = closestPool.sWidth - closestPool.width;
-  const offsetHeight = closestPool.sHeight - closestPool.height;
+  const offsettHeight = closestPool.stHeight - closestPool.tHeight;
+  const offsetbHeight = closestPool.sbHeight - closestPool.bHeight;
   const offsetDepth = closestPool.sDepth - closestPool.depth;
-  // offsetHelperPos.x -= offsetWidth / 2;
-  // obj2.position.copy(
-  //   new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
-  // );
+  offsetHelperPos.x = offsetHelperPos.x - offsetbHeight + offsetWidth / 2;
+
+  obj2.position.copy(
+    new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
+  );
+  if (
+    closestPool.sRotation[0] != 0 ||
+    closestPool.sRotation[1] != 0 ||
+    closestPool.sRotation[2] != 0
+  ) {
+    obj2 = RotateAroundPoint2(
+      closestPool.sRotation,
+      [obj2.position.x, obj2.position.y, obj2.position.z],
+      closestPool.sPosition
+    );
+  }
+  let closestObj = {
+    used: false,
+    position: {
+      x: obj2.position.x,
+      y: obj2.position.y,
+      z: obj2.position.z,
+    },
+  };
+  let closest = availablePositions[0];
+  let closestindex = 0;
+  setClosestIndex(0);
+  let newdist = Math.sqrt(
+    Math.pow(e.point.x - obj2.position.x, 2) +
+      Math.pow(e.point.y - obj2.position.y, 2) +
+      Math.pow(e.point.z - obj2.position.z, 2)
+  );
+  availablePositions.map((corner, index) => {
+    obj2.position.copy(
+      new THREE.Vector3(
+        closestPool.sPosition[0] + corner.position[0],
+        closestPool.sPosition[1] + corner.position[1],
+        closestPool.sPosition[2] + corner.position[2]
+      )
+    );
+
+    offsetHelperPos = { ...obj2.position };
+    switch (index) {
+      case 0:
+        //left
+        offsetHelperPos.x -= offsetbHeight / 2 + offsetWidth;
+        break;
+      case 1:
+        //top
+        offsetHelperPos.z -= offsetWidth / 2;
+        break;
+      case 2:
+        //bottom
+        offsetHelperPos.z += offsetWidth / 2;
+        break;
+      case 3:
+        //tleft
+        offsetHelperPos.x -= offsetWidth / 2;
+        break;
+      case 4:
+        //tright
+        offsetHelperPos.x += offsetWidth / 2;
+        break;
+      case 5:
+        //ttop
+        offsetHelperPos.z = offsetHelperPos.z - offsettHeight + offsetWidth / 2;
+        break;
+    }
+    obj2.position.copy(
+      new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
+    );
+    if (
+      closestPool.sRotation[0] != 0 ||
+      closestPool.sRotation[1] != 0 ||
+      closestPool.sRotation[2] != 0
+    )
+      obj2 = RotateAroundPoint2(
+        closestPool.sRotation,
+        [obj2.position.x, obj2.position.y, obj2.position.z],
+        closestPool.sPosition
+      );
+    const temp = Math.sqrt(
+      Math.pow(e.point.x - obj2.position.x, 2) +
+        Math.pow(e.point.y - obj2.position.y, 2) +
+        Math.pow(e.point.z - obj2.position.z, 2)
+    );
+    if (temp < newdist) {
+      newdist = temp;
+      closest = corner;
+      closestObj = {
+        used: false,
+        position: {
+          x: obj2.position.x,
+          y: obj2.position.y,
+          z: obj2.position.z,
+        },
+      };
+      setClosestIndex(index);
+      closestindex = index;
+    }
+  });
+  return {
+    ClosestIndex: closestindex,
+    closest: closest,
+    closestObj: closestObj,
+  };
+}
+function GetClosestLShapeCorner(
+  availablePositions: {
+    position: number[];
+    used: boolean;
+  }[],
+  closestPool: PoolType,
+  setClosestIndex: React.Dispatch<React.SetStateAction<number>>,
+  e: ThreeEvent<PointerEvent>
+) {
+  let obj2 = new THREE.Object3D();
+  obj2.position.copy(
+    new THREE.Vector3(
+      closestPool.sPosition[0] + availablePositions[0].position[0],
+      closestPool.sPosition[1] + availablePositions[0].position[1],
+      closestPool.sPosition[2] + availablePositions[0].position[2]
+    )
+  );
+  let offsetHelperPos = { ...obj2.position };
+  const offsetWidth = closestPool.sWidth - closestPool.width;
+  const offsetDepth = closestPool.sDepth - closestPool.depth;
+  const offsettHeight = closestPool.stHeight - closestPool.tHeight;
+  const offsetbHeight = closestPool.sbHeight - closestPool.bHeight;
+  offsetHelperPos.x = offsetHelperPos.x - offsetbHeight + offsetWidth / 2;
+  offsetHelperPos.z = offsetHelperPos.z - offsetWidth / 2;
+  obj2.position.copy(
+    new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
+  );
   if (
     closestPool.sRotation[0] != 0 ||
     closestPool.sRotation[1] != 0 ||
@@ -2459,6 +3321,39 @@ function GetClosestLShape(
     // obj2.position.copy(
     //   new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
     // );
+    switch (index) {
+      case 0:
+        //Top Left
+        offsetHelperPos.x = offsetHelperPos.x - offsetbHeight + offsetWidth / 2;
+        offsetHelperPos.z = offsetHelperPos.z - offsetWidth / 2;
+        break;
+
+      case 1:
+        //Bottom left
+        offsetHelperPos.x = offsetHelperPos.x - offsetbHeight + offsetWidth / 2;
+        offsetHelperPos.z = offsetHelperPos.z + offsetWidth / 2;
+        break;
+
+      case 2:
+        //Bottom right
+        offsetHelperPos.x = offsetHelperPos.x + offsetbHeight + offsetWidth / 2;
+        offsetHelperPos.z = offsetHelperPos.z + offsetWidth / 2;
+        break;
+
+      case 3:
+        //Topleft
+        offsetHelperPos.x = offsetHelperPos.x - offsetWidth / 2;
+        offsetHelperPos.z = offsetHelperPos.z - offsettHeight + offsetWidth / 2;
+        break;
+
+      case 4:
+        offsetHelperPos.x = offsetHelperPos.x + offsetWidth / 2;
+        offsetHelperPos.z = offsetHelperPos.z - offsettHeight + offsetWidth / 2;
+        break;
+    }
+    obj2.position.copy(
+      new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
+    );
     if (
       closestPool.sRotation[0] != 0 ||
       closestPool.sRotation[1] != 0 ||

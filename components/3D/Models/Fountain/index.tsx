@@ -55,7 +55,7 @@ const Fountain = ({
   // materials.Water.metalness=0
   useEffect(() => {
     if (materials["Mesh_0010"]?.color)
-      materials["Mesh_0010"].color = new THREE.Color("lightblue");
+      materials["Mesh_0010"].color = new THREE.Color(0xb8d0e1);
   }, [materials]);
   const [Mat, setMat] = useState(new THREE.Matrix4());
   useEffect(() => {
@@ -141,16 +141,17 @@ const Fountain = ({
         }}
         name="Fountain"
       >
-        <mesh
-          name="Mesh_0010"
-          geometry={nodes.Mesh_0010.geometry}
-          material={materials.Faucet}
-        />
-        <mesh
-          name="Mesh_0010_1"
-          geometry={nodes.Mesh_0010_1.geometry}
-          material={materials["Mesh_0010"]}
-        />
+        <mesh name="Mesh_0010" geometry={nodes.Mesh_0010.geometry}>
+          <meshStandardMaterial metalness={1} roughness={0.2} color="#a5a8ad" />
+        </mesh>
+        <mesh name="Mesh_0010_1" geometry={nodes.Mesh_0010_1.geometry}>
+          <meshStandardMaterial
+            roughness={0}
+            transparent
+            opacity={0.7}
+            color="#6bd1ff"
+          />
+        </mesh>
       </group>
     </PivotControls>
   );

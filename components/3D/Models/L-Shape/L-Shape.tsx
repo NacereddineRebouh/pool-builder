@@ -51,8 +51,8 @@ type Props = {
 
 export default function LShape({
   width,
-  theight,
-  bheight,
+  stHeight,
+  sbHeight,
   depth,
   position,
   sPosition,
@@ -70,11 +70,11 @@ export default function LShape({
   const geometry = new BufferGeometry();
   const geometry2 = new BufferGeometry();
   const tWidth = width;
-  const tHeight1 = theight;
-  const tHeight2 = theight / 2 - width;
+  const tHeight1 = stHeight;
+  const tHeight2 = stHeight / 2 - width;
   const bWidth = width;
-  const bHeight1 = bheight;
-  const bHeight2 = bheight / 2 - width;
+  const bHeight1 = sbHeight;
+  const bHeight2 = sbHeight / 2 - width;
 
   const groupRef = useRef<THREE.Group>(null);
   const gp = useRef<THREE.Group>(null);
@@ -496,7 +496,7 @@ export default function LShape({
           rotation={[-Math.PI / 2, 0, 0]}
           position={[tPosition[0], 0 + 0.005, tPosition[2]]}
         >
-          <planeGeometry args={[tWidth, theight]} />
+          <planeGeometry args={[tWidth, stHeight]} />
           {/* <meshBasicMaterial color={"salmon"}/> */}
         </Mask>
         {/* Mask2 */}
@@ -505,7 +505,7 @@ export default function LShape({
           rotation={[-Math.PI / 2, 0, Math.PI / 2]}
           position={[bPosition[0], 0 + 0.005, bPosition[2]]}
         >
-          <planeGeometry args={[bWidth, bheight]} />
+          <planeGeometry args={[bWidth, sbHeight]} />
           {/* <meshBasicMaterial color={"salmon"}/> */}
         </Mask>
         <group position={[0, 1, 0]}>{children}</group>

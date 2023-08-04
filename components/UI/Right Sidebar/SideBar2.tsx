@@ -146,8 +146,8 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
       console.log("fetching POOL", targetPool, pools[targetPool]);
       setDepth(pools[targetPool]?.sDepth);
       if (pools[targetPool] && pools[targetPool]?.poolType === "lshape") {
-        setbHeight(pools[targetPool]?.bHeight);
-        settHeight(pools[targetPool]?.tHeight);
+        setbHeight(pools[targetPool]?.sbHeight);
+        settHeight(pools[targetPool]?.stHeight);
       } else {
         setHeight(pools[targetPool]?.sHeight);
         setnbSwimJet(pools[targetPool]?.nbSwimJet ?? 1);
@@ -327,10 +327,10 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
                 pools={pools}
                 nbSwimjet={nbSwimJet}
                 setnbSwimjet={setnbSwimJet}
-                theight={Dtheight}
-                settHeight={setDtHeight}
-                bheight={Dbheight}
-                setbHeight={setDbHeight}
+                theight={theight}
+                settHeight={settHeight}
+                bheight={bheight}
+                setbHeight={setbHeight}
               />
             </div>
           </div>

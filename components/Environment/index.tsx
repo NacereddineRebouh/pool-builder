@@ -20,9 +20,9 @@ const Environment: FC = (): ReactElement => {
     <group>
       <ambientLight intensity={1} />
       <directionalLight position={[0, 10, 5]} />
-      
-      {/* <Env preset="forest" /> */}
-      {/* <Sky /> */}
+
+      <Env preset="forest" />
+      <Sky />
       {/* {createClouds} */}
     </group>
   );
