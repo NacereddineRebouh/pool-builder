@@ -4,21 +4,23 @@ import * as React from "react";
 
 interface IconProps extends React.HTMLProps<HTMLButtonElement> {
   icon: string;
+  ImageClassName?: string;
 }
 
-const Icon: React.FC<IconProps> = ({ icon, ...props }) => {
+const Icon: React.FC<IconProps> = ({ icon, ImageClassName, ...props }) => {
   return (
     <button
       {...props}
       type="button"
-      className="group/hover pointer-events-auto relative flex h-12 w-12 cursor-pointer select-none items-center justify-center overflow-hidden rounded-md bg-stone-200 p-2 transition-transform duration-150 active:scale-95 disabled:pointer-events-none"
+      className="group/hover pointer-events-auto relative flex h-12 w-12 cursor-pointer select-none items-center justify-center overflow-hidden rounded-md bg-stone-200 p-0 transition-transform duration-150 active:scale-95 disabled:pointer-events-none"
     >
       {/* <input type='image' alt='ButtonIcon' className='object-cover w-10 h-10' src={icon}/> */}
       <Image
-        fill
+        height={500}
+        width={500}
         alt="ButtonIcon"
         draggable="false"
-        className="h-10 w-10 object-cover"
+        className={`mx-auto h-full w-full object-center ${ImageClassName}`}
         src={icon}
       />
       {/* HOVER */}

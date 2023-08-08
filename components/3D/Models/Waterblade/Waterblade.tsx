@@ -8,6 +8,7 @@ import {
   selectTarget,
   setPivotVisibility,
   setTarget,
+  setTargetTitle,
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
@@ -141,6 +142,8 @@ const Waterblade = ({
         dispose={null}
         onClick={(e) => {
           e.stopPropagation();
+          const title = model.shapeType + " " + poolIndex + index;
+          dispatch(setTargetTitle(title));
           dispatch(setPivotVisibility(true));
           if (target?.uuid != groupRef?.current?.uuid) {
             dispatch(setTarget(groupRef.current));

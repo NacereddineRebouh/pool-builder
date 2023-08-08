@@ -7,6 +7,7 @@ import {
   selectTarget,
   setPivotVisibility,
   setTarget,
+  setTargetTitle,
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useTexture } from "@react-three/drei";
@@ -152,6 +153,8 @@ const SquareSteps: FC<squareStepsProps> = ({
         scale={scale}
         onClick={(e) => {
           e.stopPropagation();
+          const title = model.shapeType + " " + poolIndex + index;
+          dispatch(setTargetTitle(title));
           dispatch(setPivotVisibility(true));
           if (target?.uuid != groupRef?.current?.uuid) {
             dispatch(setTarget(groupRef.current));
@@ -179,7 +182,7 @@ const SquareSteps: FC<squareStepsProps> = ({
                 width + gap * 2 * idx,
               ];
               break;
-            case side === "tRight":
+            case side === "tRight" || side === "Right":
               newPosition = [
                 +gap / 4 - (gap / 2) * idx,
                 -heightPerStep / 2 - idx * heightPerStep,

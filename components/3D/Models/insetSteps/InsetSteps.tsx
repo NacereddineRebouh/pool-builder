@@ -12,6 +12,7 @@ import {
   selectTarget,
   setPivotVisibility,
   setTarget,
+  setTargetTitle,
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
@@ -136,6 +137,8 @@ export function InsetSteps({
         ref={groupRef}
         onClick={(e) => {
           e.stopPropagation();
+          const title = model.shapeType + " " + poolIndex + index;
+          dispatch(setTargetTitle(title));
           dispatch(setPivotVisibility(true));
           if (target?.uuid != groupRef?.current?.uuid) {
             dispatch(setTarget(groupRef.current));
@@ -147,21 +150,29 @@ export function InsetSteps({
           receiveShadow
           geometry={nodes.Inset_steps.geometry}
           material={materials["Inset steps"]}
-        >
-        </mesh>
-          <Mask id={1} >
-         {/* <primitive name="mask" object={nodes.mask.geometry} dispose={null} scale={[2*2.129, 2*1, 2*1]} ></primitive> */}
-         <primitive object={nodes.mask.geometry} dispose={null} scale={[2.129, 1, 1]}/>
+          scale={[0.6, 0.6, 0.6]}
+        ></mesh>
+        <Mask id={1}>
+          {/* <primitive name="mask" object={nodes.mask.geometry} dispose={null} scale={[2*2.129, 2*1, 2*1]} ></primitive> */}
+          <primitive
+            object={nodes.mask.geometry}
+            dispose={null}
+            scale={[2.129, 1, 1]}
+          />
           {/* <planeGeometry args={[5,5]} /> */}
-           {/* <mesh name="mask" geometry={nodes.mask.geometry}  scale={[2.129, 1, 1]} >
+          {/* <mesh name="mask" geometry={nodes.mask.geometry}  scale={[2.129, 1, 1]} >
             <meshStandardMaterial color={"pink"}/>
            </mesh> */}
         </Mask>
-          <Mask id={1} >
-         {/* <primitive name="mask" object={nodes.mask.geometry} dispose={null} scale={[2*2.129, 2*1, 2*1]} ></primitive> */}
-         <primitive object={nodes.mask.geometry} dispose={null} scale={[2.129, 1, 1]}/>
+        <Mask id={1}>
+          {/* <primitive name="mask" object={nodes.mask.geometry} dispose={null} scale={[2*2.129, 2*1, 2*1]} ></primitive> */}
+          <primitive
+            object={nodes.mask.geometry}
+            dispose={null}
+            scale={[2.129, 1, 1]}
+          />
           {/* <planeGeometry args={[5,5]} /> */}
-           {/* <mesh name="mask" geometry={nodes.mask.geometry}  scale={[2.129, 1, 1]} >
+          {/* <mesh name="mask" geometry={nodes.mask.geometry}  scale={[2.129, 1, 1]} >
             <meshStandardMaterial color={"pink"}/>
            </mesh> */}
         </Mask>

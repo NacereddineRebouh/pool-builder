@@ -46,10 +46,10 @@ const Helper: React.FC<HelperProps> = ({}) => {
       return (
         helper.dragging && (
           <LShapeHelper
-            width={4}
-            theight={16}
-            bheight={12}
-            depth={2}
+            width={defaults.lshape.width}
+            theight={defaults.lshape.theight}
+            bheight={defaults.lshape.bheight}
+            depth={defaults.lshape.depth}
             props={{ position: [Coord.x, -5 / 2 + 0.5, Coord.z] }}
           />
         )

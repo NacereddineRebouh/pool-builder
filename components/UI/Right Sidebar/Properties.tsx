@@ -1,4 +1,6 @@
 "use client";
+import { inchesToMeters, metersToInches } from "@/utils/getActiveAxis";
+import { NumberInput } from "@mantine/core";
 import * as React from "react";
 
 interface IPropertiesProps {
@@ -15,6 +17,7 @@ interface IPropertiesProps {
   nbSwimjet: number | null;
   setnbSwimjet: React.Dispatch<React.SetStateAction<number | null>>;
   defaults: string | null;
+  inches: boolean;
 }
 
 const Properties: React.FunctionComponent<IPropertiesProps> = ({
@@ -31,42 +34,59 @@ const Properties: React.FunctionComponent<IPropertiesProps> = ({
   setDepth,
   nbSwimjet,
   setnbSwimjet,
+  inches,
 }) => {
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      {/* Width */}
+      {/* Width (Length) */}
       <div className="flex w-full items-center justify-start gap-x-6">
         <div className="w-full self-start text-lg text-slate-50">
-          {defaults === "cyl" ? "Top" : "Width"}
+          {defaults === "cyl" ? "Top" : "Length"}
         </div>
         <div className="flex w-full items-center justify-start gap-x-2">
-          <input
+          <NumberInput
             type="number"
             name="width"
-            onChange={(e) =>
-              setWidth(e.currentTarget.value as unknown as number)
-            }
+            onChange={(e) => {
+              let val = +e;
+              if (inches) {
+                val = inchesToMeters(+e);
+              }
+              setWidth(val);
+            }}
             className="max-w-[80px] bg-transparent text-slate-50"
             step={0.1}
-            value={width ? width : 0}
+            precision={2}
+            value={width ? (inches ? metersToInches(width) : width) : 0}
           />
+          <div className="mx-1 font-medium text-slate-50">
+            {inches ? "Inches" : "Meters"}
+          </div>
         </div>
       </div>
-      {/* Height */}
+      {/* Height (Depth) */}
       {defaults !== "lshape" ? (
         <div className="flex w-full items-center justify-start gap-x-6">
-          <div className="w-full self-start text-lg text-slate-50">Height</div>
+          <div className="w-full self-start text-lg text-slate-50">Depth</div>
           <div className="flex w-full items-center justify-start gap-x-2">
-            <input
+            <NumberInput
               type="number"
               name="height"
-              onChange={(e) =>
-                setHeight(e.currentTarget.value as unknown as number)
-              }
+              onChange={(e) => {
+                let val = +e;
+                if (inches) {
+                  val = inchesToMeters(+e);
+                }
+                setHeight(val);
+              }}
               className="max-w-[80px] bg-transparent text-slate-50"
               step={0.1}
-              value={height ? height : 0}
+              precision={2}
+              value={height ? (inches ? metersToInches(height) : height) : 0}
             />
+            <div className="mx-1 font-medium text-slate-50">
+              {inches ? "Inches" : "Meters"}
+            </div>
           </div>
         </div>
       ) : (
@@ -76,16 +96,26 @@ const Properties: React.FunctionComponent<IPropertiesProps> = ({
               Top Height
             </div>
             <div className="flex w-full items-center justify-start gap-x-2">
-              <input
+              <NumberInput
                 type="number"
                 name="theight"
-                onChange={(e) =>
-                  settHeight(e.currentTarget.value as unknown as number)
-                }
+                onChange={(e) => {
+                  let val = +e;
+                  if (inches) {
+                    val = inchesToMeters(+e);
+                  }
+                  settHeight(val);
+                }}
                 className="max-w-[80px] bg-transparent text-slate-50"
                 step={0.1}
-                value={theight ? theight : 0}
+                precision={2}
+                value={
+                  theight ? (inches ? metersToInches(theight) : theight) : 0
+                }
               />
+              <div className="mx-1 font-medium text-slate-50">
+                {inches ? "Inches" : "Meters"}
+              </div>
             </div>
           </div>
           <div className="flex w-full items-center justify-start gap-x-6">
@@ -93,36 +123,54 @@ const Properties: React.FunctionComponent<IPropertiesProps> = ({
               Bottom Height
             </div>
             <div className="flex w-full items-center justify-start gap-x-2">
-              <input
+              <NumberInput
                 type="number"
                 name="bheight"
-                onChange={(e) =>
-                  setbHeight(e.currentTarget.value as unknown as number)
-                }
+                onChange={(e) => {
+                  let val = +e;
+                  if (inches) {
+                    val = inchesToMeters(+e);
+                  }
+                  setbHeight(val);
+                }}
                 className="max-w-[80px] bg-transparent text-slate-50"
                 step={0.1}
-                value={bheight ? bheight : 0}
+                precision={2}
+                value={
+                  bheight ? (inches ? metersToInches(bheight) : bheight) : 0
+                }
               />
+              <div className="mx-1 font-medium text-slate-50">
+                {inches ? "Inches" : "Meters"}
+              </div>
             </div>
           </div>
         </>
       )}
-      {/* Depth */}
+      {/* Depth (Width) */}
       <div className="flex w-full items-center justify-start gap-x-6">
         <div className="w-full self-start text-lg text-slate-50">
-          {defaults === "cyl" ? "Bottom" : "Depth"}
+          {defaults === "cyl" ? "Bottom" : "Width"}
         </div>
         <div className="flex w-full items-center justify-start gap-x-2">
-          <input
+          <NumberInput
             type="number"
-            onChange={(e) =>
-              setDepth(e.currentTarget.value as unknown as number)
-            }
+            onChange={(e) => {
+              let val = +e;
+              if (inches) {
+                val = inchesToMeters(+e);
+              }
+              setDepth(val);
+            }}
             name="depth"
             className="max-w-[80px] bg-transparent text-slate-50"
             step={0.1}
-            value={depth ? depth : 0}
+            precision={2}
+            value={depth ? (inches ? metersToInches(depth) : depth) : 0}
           />
+          <div className="mx-1 font-medium text-slate-50">
+            {inches ? "Inches" : "Meters"}
+          </div>
         </div>
       </div>
       {/* nbSwimjet */}
@@ -132,14 +180,13 @@ const Properties: React.FunctionComponent<IPropertiesProps> = ({
             Number of SwimJets
           </div>
           <div className="flex w-full items-center justify-start gap-x-2">
-            <input
+            <NumberInput
               type="number"
-              onChange={(e) =>
-                setnbSwimjet(e.currentTarget.value as unknown as number)
-              }
+              onChange={(e) => setnbSwimjet(+e)}
               name="nbSwimjet"
               className="max-w-[80px] bg-transparent text-slate-50"
-              step={0.1}
+              step={1}
+              precision={0}
               value={nbSwimjet ? nbSwimjet : 0}
             />
           </div>

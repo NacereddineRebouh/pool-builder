@@ -7,6 +7,7 @@ import {
   selectTarget,
   setPivotVisibility,
   setTarget,
+  setTargetTitle,
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
@@ -188,6 +189,8 @@ const InfinityEdge = ({
         {...props}
         onClick={(e) => {
           e.stopPropagation();
+          const title = model.shapeType + " " + poolIndex + index;
+          dispatch(setTargetTitle(title));
           dispatch(setPivotVisibility(true));
           if (target?.uuid != groupRef?.current?.uuid) {
             dispatch(setTarget(groupRef.current));
@@ -208,45 +211,57 @@ const InfinityEdge = ({
             color={"red"}
           />
         </mesh>
-
         {/* Width == 10 */}
-        <group
-          position={[0, 0, -3.5]}
-          scale={[(width * 1) / 10, 1, 1]}
-          name="Infinity_edge"
-          userData={{ name: "Infinity edge" }}
+        <PivotControls
+          disableScaleAxes
+          disableSliders
+          activeAxes={[false, true, false]}
+          snapTranslate={5}
+          visible={visible && target?.uuid == groupRef.current?.uuid}
+          displayValues
+          scale={visible && target?.uuid == groupRef.current?.uuid ? 75 : 0}
+          depthTest={false}
+          offset={[0, 2, 0]}
+          fixed
         >
-          <mesh
-            renderOrder={0}
-            name="mesh_0"
-            geometry={nodes.mesh_0.geometry}
-            material={materials["I.E. edge"]}
-          />
-          <mesh
-            renderOrder={0}
-            name="mesh_0_1"
-            geometry={nodes.mesh_0_1.geometry}
-            material={materials["I.E. stone"]}
-          />
-          <mesh
-            renderOrder={0}
-            name="mesh_0_2"
-            geometry={nodes.mesh_0_2.geometry}
-            material={materials["I.E. mosaic"]}
-          />
-          <mesh
-            renderOrder={0}
-            name="mesh_0_3"
-            geometry={nodes.mesh_0_3.geometry}
-            material={materials.Water}
-          />
-          <mesh
-            renderOrder={0}
-            name="mesh_0_4"
-            geometry={nodes.mesh_0_4.geometry}
-            material={materials["I.E. mosaic grout"]}
-          />
-        </group>
+          <group
+            position={[0, 0.6, -3.5]}
+            scale={[(width * 1) / 10, 1, 1]}
+            name="Infinity_edge"
+            userData={{ name: "Infinity edge" }}
+          >
+            <mesh
+              renderOrder={0}
+              name="mesh_0"
+              geometry={nodes.mesh_0.geometry}
+              material={materials["I.E. edge"]}
+            />
+            <mesh
+              renderOrder={0}
+              name="mesh_0_1"
+              geometry={nodes.mesh_0_1.geometry}
+              material={materials["I.E. stone"]}
+            />
+            <mesh
+              renderOrder={0}
+              name="mesh_0_2"
+              geometry={nodes.mesh_0_2.geometry}
+              material={materials["I.E. mosaic"]}
+            />
+            <mesh
+              renderOrder={0}
+              name="mesh_0_3"
+              geometry={nodes.mesh_0_3.geometry}
+              material={materials.Water}
+            />
+            <mesh
+              renderOrder={0}
+              name="mesh_0_4"
+              geometry={nodes.mesh_0_4.geometry}
+              material={materials["I.E. mosaic grout"]}
+            />
+          </group>
+        </PivotControls>
       </group>
     </PivotControls>
   );

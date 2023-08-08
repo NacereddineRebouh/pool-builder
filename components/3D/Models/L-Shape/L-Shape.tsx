@@ -5,12 +5,19 @@ import {
   selectPivotVisibility,
   setPivotVisibility,
   setTarget,
+  setTargetTitle,
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { AspectRatio } from "@/utils/getActiveAxis";
-import { CSGGeometryRef } from "@react-three/csg";
-import { Mask, useTexture } from "@react-three/drei";
-import React, { useEffect, useRef, useState } from "react";
+import {
+  Addition,
+  Base,
+  CSGGeometryRef,
+  Geometry,
+  Subtraction,
+} from "@react-three/csg";
+import { Mask, useGLTF, useTexture } from "@react-three/drei";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import {
   BufferAttribute,
   BufferGeometry,
@@ -26,6 +33,8 @@ import {
   TextureLoader,
   Vector3,
 } from "three";
+import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
+import LShapeBorders from "./Borders";
 // import * as THREE from "three"
 type Props = {
   index: number;
@@ -46,7 +55,11 @@ type Props = {
   key?: number;
   PoolTexture: Texture | undefined;
   children?: React.ReactNode;
+  childrenTop?: React.ReactNode;
+  childrenBottom?: React.ReactNode;
   pool: PoolType;
+  csg: RefObject<CSGGeometryRef>;
+  csg2: RefObject<CSGGeometryRef>;
 };
 
 export default function LShape({
@@ -61,8 +74,12 @@ export default function LShape({
   sRotation,
   index,
   children,
+  childrenTop,
+  childrenBottom,
   PoolTexture,
   pool,
+  csg,
+  csg2,
 }: Props) {
   // INIT
   const [Texture, setTexture] = useState<Texture | undefined>(PoolTexture);
@@ -105,38 +122,6 @@ export default function LShape({
       Texture2.repeat.set(XConstant2, YConstant2);
     }
   }, []);
-
-  // const texture = useTexture("/textures/tiles.jpg");
-  // const texture2 = useTexture("/textures/tiles.jpg");
-  // Create the material with the texture
-  // const material = new MeshStandardMaterial({
-  //   map: Texture,
-  //   side: 2,
-  // });
-  // const material2 = new MeshStandardMaterial({
-  //   map: Texture2,
-  //   side: 2,
-  // });
-  // material.roughness = 0.1;
-  // material.metalness = 0.2;
-  // material.color = new Color("lightblue");
-  // material2.roughness = 0.1;
-  // material2.metalness = 0.2;
-  // material2.color = new Color("lightblue");
-  // const XConstant = tWidth / 4;
-  // const YConstant = Math.max(tHeight1, tHeight2) / 8;
-  // if (material.map) {
-  //   material.map.wrapS = RepeatWrapping;
-  //   material.map.wrapT = RepeatWrapping;
-  //   material.map.repeat.set(XConstant, YConstant);
-  // }
-  // const XConstant2 = bWidth / 4;
-  // const YConstant2 = Math.max(bHeight1, bHeight2) / 4;
-  // if (material2.map) {
-  //   material2.map.wrapS = RepeatWrapping;
-  //   material2.map.wrapT = RepeatWrapping;
-  //   material2.map.repeat.set(XConstant2, YConstant2);
-  // }
   // Offset Position
   const tPosition = [0, -pool.sDepth / 2 + 0.005, -tHalfHeight1 + width / 2];
   const bPosition = [-bHalfHeight1 + width / 2, -pool.sDepth / 2 + 0.005, 0];
@@ -227,7 +212,6 @@ export default function LShape({
     -halfDepth,
     tHalfHeight1, // Vertex 23
   ];
-
   // Face indices (3 indices per triangle, forming 2 triangles per face)
   const Indices = [
     // Bottom face (two triangles, indices in clockwise order)
@@ -274,26 +258,128 @@ export default function LShape({
     22,
     23,
   ];
-  const UVS = [
-    // Bottom face
-    0, 0, 1, 0, 1, 1, 0, 1,
+  const tUVS = [
+    // Back face
+    0,
+    0,
+    width / 8,
+    0,
+    width / 8,
+    (tHeight1 - width) / 20,
+    0,
+    (tHeight1 - width) / 20,
 
-    // Top face
-    0, 0, 1, 0, 1, 1, 0, 1,
+    // Front face
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1,
 
-    // Front face (Side face 1)
-    0, 0, 1, 0, 1, 1, 0, 1,
+    // Top face (Side face 1) // removed
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
 
-    // Back face (Side face 2)
-    0, 0, 1, 0, 1, 1, 0, 1,
+    // bottom face (Side face 2)
+    0,
+    0,
+    depth / 8,
+    0,
+    depth / 8,
+    width / 20,
+    0,
+    width / 20,
 
     // Left face (Side face 3)
-    0, 0, 1, 0, 1, 1, 0, 1,
+    0,
+    0,
+    depth / 8,
+    0,
+    depth / 8,
+    (tHeight1 - width) / 20,
+    0,
+    (tHeight1 - width) / 20,
 
     // Right face (Side face 4)
-    0, 0, 1, 0, 1, 1, 0, 1,
+    0,
+    0,
+    depth / 8,
+    0,
+    depth / 8,
+    tHeight1 / 20,
+    0,
+    tHeight1 / 20,
   ];
+  const bUVS = [
+    // Back face
+    0 + 1,
+    0,
+    width / 8 + 1,
+    0,
+    width / 8 + 1,
+    bHeight1 / 20,
+    0 + 1,
+    bHeight1 / 20,
 
+    // Front face
+    0,
+    0,
+    1,
+    0,
+    1,
+    1,
+    0,
+    1,
+
+    // Top face (Side face 1) // removed
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+
+    // bottom face (Side face 2)
+    0,
+    0,
+    depth / 8,
+    0,
+    depth / 8,
+    width / 20,
+    0,
+    width / 20,
+
+    // Right face (Side face 4)
+    0,
+    0,
+    depth / 8,
+    0,
+    depth / 8,
+    bHeight1 / 20,
+    0,
+    bHeight1 / 20,
+
+    // Left face (Side face 3)
+    0,
+    0,
+    depth / 8,
+    0,
+    depth / 8,
+    (bHeight1 - width) / 20,
+    0,
+    (bHeight1 - width) / 20,
+  ];
   const bVertices = [
     // Bottom face
     -bHalfWidth,
@@ -389,9 +475,9 @@ export default function LShape({
     3
   );
   const indexAttribute = new BufferAttribute(new Uint16Array(Indices), 1);
-  const uvAttribute = new BufferAttribute(new Float32Array(UVS), 2); // 2 components (s, t) for each UV coordinate
+  const uvAttribute = new BufferAttribute(new Float32Array(tUVS), 2); // 2 components (s, t) for each UV coordinate
   const bIndexAttribute = new BufferAttribute(new Uint16Array(Indices), 1);
-  const bUvAttribute = new BufferAttribute(new Float32Array(UVS), 2); // 2 components (s, t) for each UV coordinate
+  const bUvAttribute = new BufferAttribute(new Float32Array(bUVS), 2); // 2 components (s, t) for each UV coordinate
 
   geometry.setAttribute("uv", uvAttribute);
   geometry.setAttribute("position", tPositionAttribute);
@@ -419,12 +505,18 @@ export default function LShape({
     setMat(comb);
   }, [sScale, sPosition, sRotation, pool]);
 
+  const insets = pool.childrens.filter((obj) => obj.shapeType === "insetSteps");
+  const rotate = insets.filter(
+    (obj) => obj.side === "Left" || obj.side === "Top" || obj.side === "Bottom"
+  );
+  let LshapeTZPosition = -stHeight / 2 + width / 2;
+  let LshapeBXPosition = -sbHeight / 2 + width / 2;
   return (
     <PivotControls
       disableScaleAxes
       snapTranslate={10}
       visible={visible && target?.uuid === groupRef.current?.uuid}
-      displayValues={false}
+      displayValues={true}
       scale={visible && target?.uuid === groupRef.current?.uuid ? 75 : 0}
       depthTest={false}
       fixed
@@ -456,17 +548,27 @@ export default function LShape({
         ref={groupRef}
         onClick={(e) => {
           dispatch(setPivotVisibility(true));
+          const title = pool.poolType + " " + index;
+          dispatch(setTargetTitle(title));
           if (target?.uuid != groupRef?.current?.uuid) {
             dispatch(setTarget(groupRef.current));
           }
         }}
-        position={[0, 0, 0]}
       >
-        <mesh
-          geometry={geometry}
-          position={new Vector3(...tPosition)}
-          // material={material}
-        >
+        <mesh position={new Vector3(...tPosition)}>
+          <Geometry ref={csg} computeVertexNormals>
+            <Base geometry={geometry}>
+              <meshStandardMaterial
+                metalness={0.2}
+                roughness={0.1}
+                map={Texture}
+                side={DoubleSide}
+                color={"lightblue"}
+              />
+            </Base>
+
+            {childrenTop}
+          </Geometry>
           <meshStandardMaterial
             metalness={0.2}
             roughness={0.1}
@@ -476,11 +578,21 @@ export default function LShape({
           />
         </mesh>
         <mesh
-          geometry={geometry2}
-          rotation={[0, Math.PI / 2, 0]}
           position={new Vector3(...bPosition)}
-          // material={material2}
+          rotation={[0, rotate.length > 0 ? 0 : Math.PI / 2, 0]}
         >
+          <Geometry ref={csg2} computeVertexNormals>
+            <Base geometry={geometry2} rotation={[0, Math.PI / 2, 0]}>
+              <meshStandardMaterial
+                metalness={0.2}
+                roughness={0.1}
+                map={Texture2}
+                side={DoubleSide}
+                color={"lightblue"}
+              />
+            </Base>
+            {childrenBottom}
+          </Geometry>
           <meshStandardMaterial
             metalness={0.2}
             roughness={0.1}
@@ -489,7 +601,6 @@ export default function LShape({
             color={"lightblue"}
           />
         </mesh>
-
         {/* Mask */}
         <Mask
           id={1}
@@ -497,7 +608,6 @@ export default function LShape({
           position={[tPosition[0], 0 + 0.005, tPosition[2]]}
         >
           <planeGeometry args={[tWidth, stHeight]} />
-          {/* <meshBasicMaterial color={"salmon"}/> */}
         </Mask>
         {/* Mask2 */}
         <Mask
@@ -506,8 +616,77 @@ export default function LShape({
           position={[bPosition[0], 0 + 0.005, bPosition[2]]}
         >
           <planeGeometry args={[bWidth, sbHeight]} />
-          {/* <meshBasicMaterial color={"salmon"}/> */}
         </Mask>
+
+        {/* Borders */}
+        {/* <>
+          <LShapeBorders
+            width={width}
+            height={0.05}
+            depth={depth}
+            outline={2}
+            position={new Vector3(LshapeBXPosition, 0, 0)}
+            side={"left"}
+            poolWidth={width}
+            poolbHeight={sbHeight}
+            pooltHeight={stHeight}
+          />
+          <LShapeBorders
+            width={width}
+            height={0.05}
+            depth={depth}
+            outline={2}
+            position={new Vector3(LshapeBXPosition, 0, 0)}
+            side={"top"}
+            poolWidth={width}
+            poolbHeight={sbHeight}
+            pooltHeight={stHeight}
+          />
+          <LShapeBorders
+            width={width}
+            height={0.05}
+            depth={depth}
+            outline={2}
+            position={new Vector3(LshapeBXPosition, 0, 0)}
+            side={"bottom"}
+            poolWidth={width}
+            poolbHeight={sbHeight}
+            pooltHeight={stHeight}
+          />
+          <LShapeBorders
+            width={width}
+            height={0.05}
+            depth={depth}
+            outline={2}
+            position={new Vector3(0, 0, LshapeTZPosition)}
+            side={"tleft"}
+            poolWidth={width}
+            poolbHeight={sbHeight}
+            pooltHeight={stHeight}
+          />
+          <LShapeBorders
+            width={width}
+            height={0.05}
+            depth={depth}
+            outline={2}
+            position={new Vector3(0, 0, LshapeTZPosition)}
+            side={"ttop"}
+            poolWidth={width}
+            poolbHeight={sbHeight}
+            pooltHeight={stHeight}
+          />
+          <LShapeBorders
+            width={width}
+            height={0.05}
+            depth={depth}
+            outline={2}
+            position={new Vector3(0, 0, LshapeTZPosition)}
+            side={"tright"}
+            poolWidth={width}
+            poolbHeight={sbHeight}
+            pooltHeight={stHeight}
+          />
+        </> */}
         <group position={[0, 1, 0]}>{children}</group>
       </group>
     </PivotControls>

@@ -525,7 +525,7 @@ const Grid = ({
   ]);
   const [fountainLShape, setfountainLShape] = useState([
     {
-      position: [LshapeBXPosition - lShapeTHeight / 2, 0, 0],
+      position: [LshapeBXPosition - lShapeBHeight / 2, 0, 0],
       used: false,
     }, //BOTTOM - left
     // {
@@ -668,6 +668,37 @@ const Grid = ({
       used: false,
     }, //TOP - top
   ]);
+  const [beachLShape, setbeachLShape] = useState([
+    {
+      position: [LshapeBXPosition - lShapeBHeight / 2, -0.5, 0],
+      used: false,
+    }, //BOTTOM - left
+    {
+      position: [LshapeBXPosition, 0, -lShapeWidth / 2 + boxDepth / 2],
+      used: false,
+    }, //BOTTOM - top
+    {
+      position: [LshapeBXPosition, 0, lShapeWidth / 2 - boxDepth / 2],
+      used: false,
+    }, //BOTTOM - bottom
+    // ---------------------------------------------------------------------- //
+    {
+      position: [-lShapeWidth / 2, 0, LshapeTZPosition],
+      used: false,
+    }, //TOP - left
+    {
+      position: [lShapeWidth / 2, 0, LshapeTZPosition],
+      used: false,
+    }, //TOP - right
+    {
+      position: [
+        0,
+        lShapeDepth / 2,
+        LshapeTZPosition - lShapeTHeight / 2 + boxDepth / 2,
+      ],
+      used: false,
+    }, //TOP - top
+  ]);
   const [SnappingPosition, setSnappingPosition] = useState<{
     x: number;
     y: number;
@@ -692,16 +723,12 @@ const Grid = ({
       ) {
         // find closest pool
         let dist = Infinity;
-        let FilteredPools = [...Pools];
-        // if (type != "SwimJet")
-        //   FilteredPools = Pools.filter((pool) => pool.poolType != "hottub");
-
         let closestPool: PoolType = Pools[0];
         Pools?.map((pool, index) => {
-          // console.log("pool.poolType ::", pool.poolType);
           if (
             pool.poolType != "hottub" ||
-            (type === "SwimJet" && pool.poolType === "hottub")
+            ((type === "SwimJet" || type === "RegularJets") &&
+              pool.poolType === "hottub")
           ) {
             const temp = Math.sqrt(
               Math.pow(e.point.x - pool.sPosition[0], 2) +
@@ -974,6 +1001,45 @@ const Grid = ({
                 used: false,
               }, //TOP - top
             ]);
+            setbeachLShape([
+              {
+                position: [LshapeBXPosition - closestPool.bHeight / 2, -0.5, 0],
+                used: false,
+              }, //BOTTOM - left
+              {
+                position: [
+                  LshapeBXPosition - closestPool.width / 2,
+                  -0.5,
+                  -closestPool.width / 2 + 0,
+                ],
+                used: false,
+              }, //BOTTOM - top
+              {
+                position: [LshapeBXPosition, -0.5, closestPool.width / 2 - 0],
+                used: false,
+              }, //BOTTOM - bottom
+              // ---------------------------------------------------------------------- //
+              {
+                position: [
+                  -closestPool.width / 2,
+                  -0.5,
+                  LshapeTZPosition - closestPool.width / 2,
+                ],
+                used: false,
+              }, //TOP - left
+              {
+                position: [closestPool.width / 2, -0.5, LshapeTZPosition],
+                used: false,
+              }, //TOP - right
+              {
+                position: [
+                  0,
+                  -0.5,
+                  LshapeTZPosition - closestPool.tHeight / 2 + 0,
+                ],
+                used: false,
+              }, //TOP - top
+            ]);
             switch (true) {
               case type === "SquareSteps" ||
                 type === "RoundSteps" ||
@@ -1082,6 +1148,30 @@ const Grid = ({
                 if (availableInfinityEdge.length > 0) {
                   const res = GetClosestLShape(
                     availableInfinityEdge,
+                    closestPool,
+                    setClosestIndex,
+                    e
+                  );
+                  pointer = {
+                    x: res.closest.position[0],
+                    y: res.closest.position[1],
+                    z: res.closest.position[2],
+                  };
+                  setSnappingPosition(pointer);
+                  pointer = {
+                    x: res.closestObj.position.x,
+                    y: res.closestObj.position.y,
+                    z: res.closestObj.position.z,
+                  };
+                }
+                break;
+              case type === "insetSteps" || type === "beachEntry":
+                const availableBeach = beachLShape.filter(
+                  (obj) => obj.used === false
+                );
+                if (availableBeach.length > 0) {
+                  const res = GetClosestLShape(
+                    availableBeach,
                     closestPool,
                     setClosestIndex,
                     e
@@ -1288,13 +1378,45 @@ const Grid = ({
                   };
                 }
                 break;
-              case type === "SwimJet":
+              case type === "SwimJet" || type === "RegularJets":
+                // if (type === "SwimJet") {
+                //   const temp = closestPool.childrens
+                //     .filter((obj) => obj.shapeType === "SwimJet")
+                //     .map((e) => {
+                //       return e.side;
+                //     });
+                //   swimJet.map((e, index) => {
+                //     switch (index) {
+                //       case 0:
+                //         if (temp.includes(sides.Left)) {
+                //           swimJet[0].used = true;
+                //         }
+                //         break;
+                //       case 1:
+                //         //right
+                //         if (temp.includes(sides.Right)) {
+                //           swimJet[1].used = true;
+                //         }
+                //         break;
+                //       case 2:
+                //         if (temp.includes(sides.Top)) {
+                //           swimJet[2].used = true;
+                //         }
+                //         break;
+                //       case 3:
+                //         if (temp.includes(sides.Bottom)) {
+                //           swimJet[3].used = true;
+                //         }
+                //         break;
+                //     }
+                //   });
+                // }
                 const availableSwimJet = swimJet.filter(
                   (obj) => obj.used === false
                 );
-                if (availableSwimJet.length > 0) {
+                if (swimJet.length > 0 && availableSwimJet.length > 0) {
                   const res = GetClosest(
-                    availableSwimJet,
+                    swimJet,
                     closestPool,
                     setClosestIndex,
                     e
@@ -1309,6 +1431,13 @@ const Grid = ({
                     x: res.closestObj.position.x,
                     y: res.closestObj.position.y,
                     z: res.closestObj.position.z,
+                  };
+                } else {
+                  setSnappingPosition(null);
+                  pointer = {
+                    x: 0,
+                    y: -5,
+                    z: 0,
                   };
                 }
                 break;
@@ -1421,12 +1550,12 @@ const Grid = ({
     dispatch(setRotation(RotationY));
   };
   const OnPointerUpHandler = (e: ThreeEvent<PointerEvent>) => {
+    console.log("ClosestPoolType;;", ClosestPoolType);
+    console.log("help.mouseDown;;", help.mouseDown);
     console.log("type;;", type);
-    // console.log("ClosestPoolType;;", ClosestPoolType);
+    console.log("Pools;;", Pools);
 
     if (help.mouseDown) {
-      console.log("mouseDown;;", help.mouseDown);
-
       dispatch(setHelper({ mouseDown: false, dragging: false }));
       if (
         type != "pool" &&
@@ -2064,27 +2193,198 @@ const Grid = ({
               );
             }
             break;
+          case "insetSteps":
+            if (SnappingPosition) {
+              // const temp = beach
+              // temp[ClosestIndex].used = true;
+              // setbeach(temp)
+              let rotation = 0;
+              let position = [0, 1.1, 0]; // box height/2 + border height
+              let side = sides.Left;
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = -0.55;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  rotation = 0; //180
+                  position[2] = -0.55;
+                  side = sides.Top;
+                  break;
+                case 2:
+                  rotation = Math.PI; //0
+                  position[2] = 0.55;
+                  side = sides.Bottom;
+                  break;
+
+                case 3:
+                  rotation = Math.PI / 2; //90
+                  position[0] = -0.55;
+                  side = sides.tLeft;
+                  break;
+                case 4:
+                  rotation = -Math.PI / 2; //0
+                  position[0] = 0.55;
+                  side = sides.tRight;
+                  break;
+                case 5:
+                  rotation = 0; //0
+                  position[2] = -0.55;
+                  side = sides.tTop;
+                  break;
+
+                default:
+                  break;
+              }
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y + position[1],
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [1, 1, 1],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
+        }
+      } else if (
+        type != "pool" &&
+        type != "hottub" &&
+        type != "cyl" &&
+        type != "poolWithSteps" &&
+        type != "lshape" &&
+        ClosestPoolType === "hottub"
+      ) {
+        switch (type) {
+          case "SwimJet":
+            if (SnappingPosition) {
+              // const temp = stairs
+              // temp[ClosestIndex].used = true;
+              let side = sides.Left;
+              let rotation = 0;
+              let position = [0, 0, 0];
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = 0.04;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  //right
+                  rotation = -Math.PI / 2; //-90
+                  position[0] = -0.04;
+                  side = sides.Right;
+                  break;
+                case 2:
+                  rotation = 0; //-90
+                  position[2] = 0.04;
+                  side = sides.Top;
+                  break;
+                case 3:
+                  rotation = Math.PI; //-90
+                  position[2] = -0.04;
+                  side = sides.Bottom;
+                  break;
+
+                default:
+                  break;
+              }
+              // setswimJet(temp)
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y,
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.4, 0.4, 0.4],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
+          case "RegularJets":
+            if (SnappingPosition) {
+              // const temp = stairs
+              // temp[ClosestIndex].used = true;
+              let side = sides.Left;
+              let rotation = 0;
+              let position = [0, 0, 0];
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = 0.04;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  //right
+                  rotation = -Math.PI / 2; //-90
+                  position[0] = -0.04;
+                  side = sides.Right;
+                  break;
+                case 2:
+                  rotation = 0; //-90
+                  position[2] = 0.04;
+                  side = sides.Top;
+                  break;
+                case 3:
+                  rotation = Math.PI; //-90
+                  position[2] = -0.04;
+                  side = sides.Bottom;
+                  break;
+
+                default:
+                  break;
+              }
+              // setswimJet(temp)
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y,
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.28, 0.28, 0.28],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
         }
       } else {
         switch (type) {
           case "pool":
-            // console.log("adding pool ::---", {
-            //   poolType: type,
-            //   width: defaults.pool.width,
-            //   height: defaults.pool.height,
-            //   depth: defaults.pool.depth,
-            //   sWidth: defaults.pool.width,
-            //   sHeight: defaults.pool.height,
-            //   sDepth: defaults.pool.depth,
-            //   position: [e.point.x, e.point.y, e.point.z],
-            //   scale: [1, 1, 1],
-            //   sPosition: [e.point.x, e.point.y, e.point.z],
-            //   sScale: [1, 1, 1],
-            //   sRotation: [0, 0, 0],
-            //   rotation: [0, 0, 0],
-            //   childrens: [],
-            // });
-            // dispatch(addPool({shapeType:type, position:[coords.x,coords.y,coords.z], scale:[1,1,1]}))
             dispatch(
               addNewPool({
                 poolType: type,
@@ -2843,11 +3143,6 @@ function GetClosest(
   setClosestIndex: React.Dispatch<React.SetStateAction<number>>,
   e: ThreeEvent<PointerEvent>
 ) {
-  const pos = [
-    closestPool.sPosition[0] + availableCorner[0].position[0],
-    closestPool.sPosition[1] + availableCorner[0].position[1],
-    closestPool.sPosition[2] + availableCorner[0].position[2],
-  ];
   let obj2 = new THREE.Object3D();
   obj2.position.copy(
     new THREE.Vector3(
@@ -2892,67 +3187,68 @@ function GetClosest(
       Math.pow(e.point.z - obj2.position.z, 2)
   );
   availableCorner.map((corner, index) => {
-    const pos = [
-      closestPool.sPosition[0] + corner.position[0],
-      closestPool.sPosition[1] + corner.position[1],
-      closestPool.sPosition[2] + corner.position[2],
-    ];
-    obj2.position.copy(
-      new THREE.Vector3(
-        closestPool.sPosition[0] + corner.position[0],
-        closestPool.sPosition[1] + corner.position[1],
-        closestPool.sPosition[2] + corner.position[2]
-      )
-    );
-
-    offsetHelperPos = { ...obj2.position };
-    switch (index) {
-      case 0:
-        //Topleft
-        offsetHelperPos.x -= offsetWidth / 2;
-        break;
-      case 1:
-        offsetHelperPos.x += offsetWidth / 2;
-        break;
-      case 2:
-        //bottom Left
-        offsetHelperPos.z -= offsetDepth / 2;
-        break;
-      case 3:
-        offsetHelperPos.z += offsetDepth / 2;
-        break;
-    }
-    obj2.position.copy(
-      new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
-    );
-    if (
-      closestPool.sRotation[0] != 0 ||
-      closestPool.sRotation[1] != 0 ||
-      closestPool.sRotation[2] != 0
-    )
-      obj2 = RotateAroundPoint2(
-        closestPool.sRotation,
-        [obj2.position.x, obj2.position.y, obj2.position.z],
-        closestPool.sPosition
+    if (!corner.used) {
+      obj2.position.copy(
+        new THREE.Vector3(
+          closestPool.sPosition[0] + corner.position[0],
+          closestPool.sPosition[1] + corner.position[1],
+          closestPool.sPosition[2] + corner.position[2]
+        )
       );
-    const temp = Math.sqrt(
-      Math.pow(e.point.x - obj2.position.x, 2) +
-        Math.pow(e.point.y - obj2.position.y, 2) +
-        Math.pow(e.point.z - obj2.position.z, 2)
-    );
-    if (temp < newdist) {
-      newdist = temp;
-      closest = corner;
-      closestObj = {
-        used: false,
-        position: {
-          x: obj2.position.x,
-          y: obj2.position.y,
-          z: obj2.position.z,
-        },
-      };
-      setClosestIndex(index);
-      closestindex = index;
+
+      offsetHelperPos = { ...obj2.position };
+      switch (index) {
+        case 0:
+          //Topleft
+          offsetHelperPos.x -= offsetWidth / 2;
+          break;
+        case 1:
+          offsetHelperPos.x += offsetWidth / 2;
+          break;
+        case 2:
+          //bottom Left
+          offsetHelperPos.z -= offsetDepth / 2;
+          break;
+        case 3:
+          offsetHelperPos.z += offsetDepth / 2;
+          break;
+      }
+      obj2.position.copy(
+        new THREE.Vector3(
+          offsetHelperPos.x,
+          offsetHelperPos.y,
+          offsetHelperPos.z
+        )
+      );
+      if (
+        closestPool.sRotation[0] != 0 ||
+        closestPool.sRotation[1] != 0 ||
+        closestPool.sRotation[2] != 0
+      )
+        obj2 = RotateAroundPoint2(
+          closestPool.sRotation,
+          [obj2.position.x, obj2.position.y, obj2.position.z],
+          closestPool.sPosition
+        );
+      const temp = Math.sqrt(
+        Math.pow(e.point.x - obj2.position.x, 2) +
+          Math.pow(e.point.y - obj2.position.y, 2) +
+          Math.pow(e.point.z - obj2.position.z, 2)
+      );
+      if (temp < newdist) {
+        newdist = temp;
+        closest = corner;
+        closestObj = {
+          used: false,
+          position: {
+            x: obj2.position.x,
+            y: obj2.position.y,
+            z: obj2.position.z,
+          },
+        };
+        setClosestIndex(index);
+        closestindex = index;
+      }
     }
   });
   return {

@@ -1,7 +1,11 @@
 "use client";
 import { PoolType, ReplaceChildren, ReplacePool } from "@/slices/poolsSlice";
 import { useAppDispatch } from "@/store/hooks";
-import { IgnoreOrderCompare } from "@/utils/getActiveAxis";
+import {
+  IgnoreOrderCompare,
+  inchesToMeters,
+  metersToInches,
+} from "@/utils/getActiveAxis";
 import { Checkbox, Group, NumberInput, Radio } from "@mantine/core";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -23,6 +27,7 @@ interface IPropertiesProps {
   settHeight: React.Dispatch<React.SetStateAction<number | null>>;
   bheight: number | null;
   setbHeight: React.Dispatch<React.SetStateAction<number | null>>;
+  inches: boolean;
 }
 
 const Properties2: React.FunctionComponent<IPropertiesProps> = ({
@@ -42,6 +47,7 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
   settHeight,
   bheight,
   setbHeight,
+  inches,
 }) => {
   const dispatch = useAppDispatch();
   const [BenchSeatings, setBenchSeatings] = useState<string[]>([]);
@@ -52,20 +58,32 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
   }, [pools, targetPool, targetModel]);
   return (
     <div className="flex w-full flex-col items-start justify-start">
-      {/* Width */}
+      {/* Width (Length) */}
       <div className="flex w-full items-center justify-start gap-x-6">
         <div className="w-full self-start text-lg text-slate-50">
-          {defaults === "cyl" ? "Top" : "Width"}
+          {targetPool != null &&
+          pools[targetPool] &&
+          pools[targetPool].poolType === "cyl"
+            ? "Top"
+            : targetPool != null &&
+              pools[targetPool] &&
+              pools[targetPool].poolType === "lshape"
+            ? "Width"
+            : "Length"}
         </div>
         <div className="flex w-full items-center justify-start gap-x-2">
           <NumberInput
             type="number"
             name="width"
             onChange={(e) => {
+              let val = +e;
+              if (inches) {
+                val = inchesToMeters(+e);
+              }
               if (targetPool != null && pools[targetPool]) {
                 const pool = { ...pools[targetPool] };
-                if (e != pool.sWidth) {
-                  pool.sWidth = +e; // Assign the updated array back to pool.sRotation
+                if (val != pool.sWidth) {
+                  pool.sWidth = val; // Assign the updated array back to pool.sRotation
                   dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
                 }
                 // setWidth(e.currentTarget.value as unknown as number)
@@ -77,8 +95,8 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 const model = {
                   ...pools[targetModel.pool].childrens[targetModel.model],
                 };
-                if (e != model.sWidth) {
-                  model.sWidth = +e; // Assign the updated array back to pool.sRotation
+                if (val != model.sWidth) {
+                  model.sWidth = val; // Assign the updated array back to pool.sRotation
                   dispatch(
                     ReplaceChildren({
                       poolIndex: targetModel.pool,
@@ -91,8 +109,12 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
             }}
             className="max-w-[80px] bg-transparent text-slate-50"
             step={0.1}
-            value={width ? width : 0}
+            precision={2}
+            value={width ? (inches ? metersToInches(width) : width) : 0}
           />
+          <div className="mx-1 font-medium text-slate-50">
+            {inches ? "Inches" : "Meters"}
+          </div>
         </div>
       </div>
       {/* Height */}
@@ -109,10 +131,14 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 type="number"
                 name="theight"
                 onChange={(e) => {
+                  let val = +e;
+                  if (inches) {
+                    val = inchesToMeters(+e);
+                  }
                   if (targetPool != null && pools[targetPool]) {
                     const pool = { ...pools[targetPool] };
-                    if (+e != pool.stHeight) {
-                      pool.stHeight = +e; // Assign the updated array back to pool.sRotation
+                    if (val != pool.stHeight) {
+                      pool.stHeight = val; // Assign the updated array back to pool.sRotation
                       dispatch(
                         ReplacePool({ poolIndex: targetPool, pool: pool })
                       );
@@ -122,8 +148,14 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 }}
                 className="max-w-[80px] bg-transparent text-slate-50"
                 step={0.1}
-                value={theight ? theight : 0}
+                precision={2}
+                value={
+                  theight ? (inches ? metersToInches(theight) : theight) : 0
+                }
               />
+              <div className="mx-1 font-medium text-slate-50">
+                {inches ? "Inches" : "Meters"}
+              </div>
             </div>
           </div>
           <div className="flex w-full items-center justify-start gap-x-6">
@@ -135,12 +167,16 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 type="number"
                 name="nheight"
                 onChange={(e) => {
+                  let val = +e;
+                  if (inches) {
+                    val = inchesToMeters(+e);
+                  }
                   if (targetPool != null && pools[targetPool]) {
                     console.log("bHeight, lshape: ", pools[targetPool]);
                     const pool = { ...pools[targetPool] };
-                    if (+e != pool.sbHeight) {
+                    if (val != pool.sbHeight) {
                       console.log("changing ....");
-                      pool.sbHeight = +e; // Assign the updated array back to pool.sRotation
+                      pool.sbHeight = val; // Assign the updated array back to pool.sRotation
                       dispatch(
                         ReplacePool({ poolIndex: targetPool, pool: pool })
                       );
@@ -150,26 +186,34 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 }}
                 className="max-w-[80px] bg-transparent text-slate-50"
                 step={0.1}
-                value={bheight ? bheight : 0}
+                precision={2}
+                value={
+                  bheight ? (inches ? metersToInches(bheight) : bheight) : 0
+                }
               />
+              <div className="mx-1 font-medium text-slate-50">
+                {inches ? "Inches" : "Meters"}
+              </div>
             </div>
           </div>
         </>
       ) : (
         <>
           <div className="flex w-full items-center justify-start gap-x-6">
-            <div className="w-full self-start text-lg text-slate-50">
-              Height
-            </div>
+            <div className="w-full self-start text-lg text-slate-50">Depth</div>
             <div className="flex w-full items-center justify-start gap-x-2">
               <NumberInput
                 type="number"
                 name="height"
                 onChange={(e) => {
+                  let val = +e;
+                  if (inches) {
+                    val = inchesToMeters(+e);
+                  }
                   if (targetPool != null && pools[targetPool]) {
                     const pool = { ...pools[targetPool] };
-                    if (+e != pool.sHeight) {
-                      pool.sHeight = +e; // Assign the updated array back to pool.sRotation
+                    if (val != pool.sHeight) {
+                      pool.sHeight = val; // Assign the updated array back to pool.sRotation
                       dispatch(
                         ReplacePool({ poolIndex: targetPool, pool: pool })
                       );
@@ -183,8 +227,8 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                     const model = {
                       ...pools[targetModel.pool].childrens[targetModel.model],
                     };
-                    if (+e != model.sHeight) {
-                      model.sHeight = +e; // Assign the updated array back to pool.sRotation
+                    if (val != model.sHeight) {
+                      model.sHeight = val; // Assign the updated array back to pool.sRotation
                       dispatch(
                         ReplaceChildren({
                           poolIndex: targetModel.pool,
@@ -197,26 +241,42 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 }}
                 className="max-w-[80px] bg-transparent text-slate-50"
                 step={0.1}
-                value={height ? height : 0}
+                precision={2}
+                value={height ? (inches ? metersToInches(height) : height) : 0}
               />
+              <div className="mx-1 font-medium text-slate-50">
+                {inches ? "Inches" : "Meters"}
+              </div>
             </div>
           </div>
         </>
       )}
 
-      {/* Depth */}
+      {/* Depth (Width) */}
       <div className="flex w-full items-center justify-start gap-x-6">
         <div className="w-full self-start text-lg text-slate-50">
-          {defaults === "cyl" ? "Bottom" : "Depth"}
+          {targetPool != null &&
+          pools[targetPool] &&
+          pools[targetPool].poolType === "cyl"
+            ? "Bottom"
+            : targetPool != null &&
+              pools[targetPool] &&
+              pools[targetPool].poolType === "lshape"
+            ? "Depth"
+            : "Width"}
         </div>
         <div className="flex w-full items-center justify-start gap-x-2">
           <NumberInput
             type="number"
             onChange={(e) => {
+              let val = +e;
+              if (inches) {
+                val = inchesToMeters(+e);
+              }
               if (targetPool != null && pools[targetPool]) {
                 const pool = { ...pools[targetPool] };
-                if (+e != pool.sDepth) {
-                  pool.sDepth = +e; // Assign the updated array back to pool.sRotation
+                if (val != pool.sDepth) {
+                  pool.sDepth = val; // Assign the updated array back to pool.sRotation
                   dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
                 }
                 // setdepth(e.currentTarget.value as unknown as number)
@@ -228,8 +288,8 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 const model = {
                   ...pools[targetModel.pool].childrens[targetModel.model],
                 };
-                if (+e != model.sDepth) {
-                  model.sDepth = +e; // Assign the updated array back to pool.sRotation
+                if (val != model.sDepth) {
+                  model.sDepth = val; // Assign the updated array back to pool.sRotation
                   dispatch(
                     ReplaceChildren({
                       poolIndex: targetModel.pool,
@@ -243,14 +303,20 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
             name="depth"
             className="max-w-[80px] bg-transparent text-slate-50"
             step={0.1}
-            value={depth ? depth : 0}
+            precision={2}
+            value={depth ? (inches ? metersToInches(depth) : depth) : 0}
           />
+          <div className="mx-1 font-medium text-slate-50">
+            {inches ? "Inches" : "Meters"}
+          </div>
         </div>
       </div>
       {/* nbSwimjet */}
       {targetPool != null &&
         pools[targetPool] &&
-        pools[targetPool].poolType === "hottub" && (
+        pools[targetPool].poolType === "hottub" &&
+        pools[targetPool].childrens.filter((obj) => obj.shapeType === "SwimJet")
+          .length > 0 && (
           <div className="flex w-full items-center justify-start gap-x-6">
             <div className="w-full self-start text-lg text-slate-50">
               Swimjets
@@ -272,7 +338,7 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                 }}
                 name="nbSwimJet"
                 className="max-w-[80px] bg-transparent text-slate-50"
-                step={0.1}
+                step={1}
                 value={nbSwimjet ? nbSwimjet : 0}
               />
             </div>
@@ -281,7 +347,8 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
       {/* BenchSeating */}
       {targetPool != null &&
         pools[targetPool] &&
-        pools[targetPool].poolType === "hottub" && (
+        (pools[targetPool].poolType === "hottub" ||
+          pools[targetPool].poolType === "pool") && (
           <div className="flex w-full items-center justify-start gap-x-6">
             <div className="w-full self-start text-lg text-slate-50">
               BenchSeatings

@@ -9,7 +9,7 @@ import Position from "./Position";
 import Rotation from "./Rotation";
 import Scale from "./Scale";
 import Properties from "./Properties";
-import { Select, Tabs } from "@mantine/core";
+import { Checkbox, Select, Tabs } from "@mantine/core";
 import { MdOutlineGrid3X3 } from "react-icons/md";
 import { HiMiniAdjustmentsHorizontal } from "react-icons/hi2";
 import { RootState } from "@/store/store";
@@ -31,6 +31,7 @@ import {
   setDefaultBHeightLShape,
 } from "@/slices/defaultsSlice";
 import Properties2 from "./Properties2";
+import { setUseInches } from "@/slices/propertiesSlice";
 interface ISideBarProps {}
 
 const RightSideBar: React.FC<ISideBarProps> = () => {
@@ -44,6 +45,10 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   const [DnbSwimjet, setDnbSwimjet] = useState<number | null>(1);
   const defaults = useAppSelector((state: RootState) => state.defaults);
   const dispatch = useAppDispatch();
+
+  const Inches = useAppSelector(
+    (state: RootState) => state.properties.UseInches
+  );
 
   // fetch & refetch
 
@@ -113,6 +118,14 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
     model: number;
   } | null>(null);
   const pools = useAppSelector((state: RootState) => state.pools.pools);
+  const targetTitle = useAppSelector(
+    (state: RootState) => state.target.targetTitle
+  );
+  useEffect(() => {
+    setSelectedElement(targetTitle);
+    console.log("selectedElement:", selectedElement);
+  }, [targetTitle]);
+
   //------ target Props -----
   // States
   const [type, setType] = useState<string | null>(null);
@@ -287,21 +300,33 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
             </div>
 
             {/* Transforms */}
-            <div className="text-lg font-medium text-slate-50">Transforms</div>
+            <div className="flex items-center justify-start gap-x-2 text-lg font-medium text-slate-50">
+              <div>Transforms</div>{" "}
+              <Checkbox
+                checked={Inches}
+                onChange={(e) => {
+                  dispatch(setUseInches(e.currentTarget.checked));
+                }}
+                label={"Inches?"}
+              />
+            </div>
             <div className="w-full gap-y-2 px-3">
               <Position
+                inches={Inches}
                 targetPool={targetPool}
                 targetModel={targetModel}
                 pools={pools}
                 position={position}
               />
               <Rotation
+                inches={Inches}
                 targetPool={targetPool}
                 targetModel={targetModel}
                 pools={pools}
                 rotation={rotation}
               />
               <Scale
+                inches={Inches}
                 targetPool={targetPool}
                 targetModel={targetModel}
                 pools={pools}
@@ -310,11 +335,12 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
             </div>
 
             {/* Properties and Dimensions */}
-            <div className="text-lg font-medium text-slate-50">
-              Properties and Dimensions
+            <div className="justify-starttext-lg flex items-center font-medium text-slate-50">
+              <div>Properties and Dimensions</div>
             </div>
             <div className="w-full px-3">
               <Properties2
+                inches={Inches}
                 defaults={Default}
                 width={width}
                 setWidth={setWidth}
@@ -360,6 +386,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
             </div>
             <div className="w-full px-3">
               <Properties
+                inches={Inches}
                 defaults={Default}
                 width={Dwidth}
                 setWidth={setDWidth}

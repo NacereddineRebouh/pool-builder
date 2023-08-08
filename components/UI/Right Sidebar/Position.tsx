@@ -1,6 +1,7 @@
 "use client";
 import { PoolType, ReplaceChildren, ReplacePool } from "@/slices/poolsSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { inchesToMeters, metersToInches } from "@/utils/getActiveAxis";
 import { NumberInput } from "@mantine/core";
 import * as React from "react";
 
@@ -11,6 +12,7 @@ interface IPositionProps {
     z: number;
   } | null;
   targetPool: number | null;
+  inches: boolean;
   targetModel: { pool: number; model: number } | null;
   pools: PoolType[];
 }
@@ -20,6 +22,7 @@ const Position: React.FunctionComponent<IPositionProps> = ({
   pools,
   targetModel,
   targetPool,
+  inches,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -30,20 +33,30 @@ const Position: React.FunctionComponent<IPositionProps> = ({
         <NumberInput
           name="posX"
           itemID="posX"
-          value={position?.x}
+          value={
+            position?.x
+              ? inches
+                ? metersToInches(position?.x)
+                : position?.x
+              : 0
+          }
           onChange={(e) => {
+            let val = +e;
+            if (inches) {
+              val = inchesToMeters(+e);
+            }
             if (position && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // position
               if (
                 pool?.sPosition &&
                 position &&
-                (pool.sPosition[0] != +e ||
+                (pool.sPosition[0] != val ||
                   pool.sPosition[2] != position.y ||
                   pool.sPosition[3] != position.z)
               ) {
                 const updatedSPosition = [...pool.sPosition]; // Create a copy of the array
-                updatedSPosition[0] = +e;
+                updatedSPosition[0] = val;
                 updatedSPosition[1] = position.y;
                 updatedSPosition[2] = position.z;
                 pool.sPosition = updatedSPosition; // Assign the updated array back to pool.sPosition
@@ -61,12 +74,12 @@ const Position: React.FunctionComponent<IPositionProps> = ({
               if (
                 model?.sPosition &&
                 position &&
-                (model.sPosition[0] != +e ||
+                (model.sPosition[0] != val ||
                   model.sPosition[2] != position.y ||
                   model.sPosition[3] != position.z)
               ) {
                 const updatedSPosition = [...model.sPosition]; // Create a copy of the array
-                updatedSPosition[0] = +e;
+                updatedSPosition[0] = val;
                 updatedSPosition[1] = position.y;
                 updatedSPosition[2] = position.z;
                 model.sPosition = updatedSPosition; // Assign the updated array back to model.sPosition
@@ -87,8 +100,18 @@ const Position: React.FunctionComponent<IPositionProps> = ({
         <NumberInput
           name="posY"
           itemID="posY"
-          value={position?.y}
+          value={
+            position?.y
+              ? inches
+                ? metersToInches(position?.y)
+                : position?.y
+              : 0
+          }
           onChange={(e) => {
+            let val = +e;
+            if (inches) {
+              val = inchesToMeters(+e);
+            }
             if (position && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // position
@@ -96,12 +119,12 @@ const Position: React.FunctionComponent<IPositionProps> = ({
                 pool?.sPosition &&
                 position &&
                 (pool.sPosition[0] != position.x ||
-                  pool.sPosition[2] != +e ||
+                  pool.sPosition[2] != val ||
                   pool.sPosition[3] != position.z)
               ) {
                 const updatedSPosition = [...pool.sPosition]; // Create a copy of the array
                 updatedSPosition[0] = position.x;
-                updatedSPosition[1] = +e;
+                updatedSPosition[1] = val;
                 updatedSPosition[2] = position.z;
                 pool.sPosition = updatedSPosition; // Assign the updated array back to pool.sPosition
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
@@ -119,12 +142,12 @@ const Position: React.FunctionComponent<IPositionProps> = ({
                 model?.sPosition &&
                 position &&
                 (model.sPosition[0] != position.x ||
-                  model.sPosition[2] != +e ||
+                  model.sPosition[2] != val ||
                   model.sPosition[3] != position.z)
               ) {
                 const updatedSPosition = [...model.sPosition]; // Create a copy of the array
                 updatedSPosition[0] = position.x;
-                updatedSPosition[1] = +e;
+                updatedSPosition[1] = val;
                 updatedSPosition[2] = position.z;
                 model.sPosition = updatedSPosition; // Assign the updated array back to model.sPosition
                 dispatch(
@@ -144,8 +167,18 @@ const Position: React.FunctionComponent<IPositionProps> = ({
         <NumberInput
           name="posZ"
           itemID="posZ"
-          value={position?.z}
+          value={
+            position?.z
+              ? inches
+                ? metersToInches(position?.z)
+                : position?.z
+              : 0
+          }
           onChange={(e) => {
+            let val = +e;
+            if (inches) {
+              val = inchesToMeters(+e);
+            }
             if (position && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // position
@@ -154,12 +187,12 @@ const Position: React.FunctionComponent<IPositionProps> = ({
                 position &&
                 (pool.sPosition[0] != position.x ||
                   pool.sPosition[2] != position.y ||
-                  pool.sPosition[3] != +e)
+                  pool.sPosition[3] != val)
               ) {
                 const updatedSPosition = [...pool.sPosition]; // Create a copy of the array
                 updatedSPosition[0] = position.x;
                 updatedSPosition[1] = position.y;
-                updatedSPosition[2] = +e;
+                updatedSPosition[2] = val;
                 pool.sPosition = updatedSPosition; // Assign the updated array back to pool.sPosition
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
@@ -177,12 +210,12 @@ const Position: React.FunctionComponent<IPositionProps> = ({
                 position &&
                 (model.sPosition[0] != position.x ||
                   model.sPosition[2] != position.y ||
-                  model.sPosition[3] != +e)
+                  model.sPosition[3] != val)
               ) {
                 const updatedSPosition = [...model.sPosition]; // Create a copy of the array
                 updatedSPosition[0] = position.x;
                 updatedSPosition[1] = position.y;
-                updatedSPosition[2] = +e;
+                updatedSPosition[2] = val;
                 model.sPosition = updatedSPosition; // Assign the updated array back to model.sPosition
                 dispatch(
                   ReplaceChildren({

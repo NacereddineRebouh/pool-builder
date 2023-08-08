@@ -4,6 +4,7 @@ import rectangle from "@/public/icons/rectangle.png";
 import { MdOutlineDeleteForever } from "react-icons/md";
 import { useAppDispatch } from "@/store/hooks";
 import { removeChildrenByIndex, removePoolByIndex } from "@/slices/poolsSlice";
+import { useEffect } from "react";
 interface SceneElementProps {
   icon?: StaticImageData;
   title: string;
@@ -37,54 +38,63 @@ const SceneElement: React.FunctionComponent<SceneElementProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    if (selectedElement === title) {
+      OnClickHandler();
+    }
+  }, [selectedElement]);
+
+  const OnClickHandler = (e?: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    setSelectedElement(title);
+    if (e) e.stopPropagation();
+    setType(type.toLocaleUpperCase());
+    // console.log(type);
+    if (
+      type === "pool" ||
+      type === "hottub" ||
+      type === "poolWithSteps" ||
+      type === "lshape" ||
+      type === "cyl"
+    ) {
+      setTargetModel(null);
+      if (targetPool != index) {
+        setTargetPool(index);
+      }
+    } else {
+      // if((targetModel?.model!=index2 || targetModel?.pool!= index || !targetModel)){
+      setTargetPool(null);
+      // console.log(targetModel, index, index2);
+      if (targetModel == null && index2 != undefined) {
+        // console.log(0);
+        setTargetModel({ pool: index, model: index2 });
+        // Model changed && !pool changed
+      } else if (
+        targetModel &&
+        index2 != undefined &&
+        index != undefined &&
+        targetModel.model != index2 &&
+        targetModel.pool == index
+      ) {
+        // console.log(1);
+        setTargetModel({ pool: index, model: index2 });
+        // Model changed && pool changed
+      } else if (
+        targetModel &&
+        index2 != undefined &&
+        index != undefined &&
+        targetModel.model != index2 &&
+        targetModel.pool != index
+      ) {
+        // console.log(2);
+        setTargetModel({ pool: index, model: index2 });
+      }
+      // }
+    }
+  };
   return (
     <div
       onClick={(e) => {
-        setSelectedElement(title);
-        e.stopPropagation();
-        setType(type.toLocaleUpperCase());
-        console.log(type);
-        if (
-          type === "pool" ||
-          type === "hottub" ||
-          type === "poolWithSteps" ||
-          type === "lshape" ||
-          type === "cyl"
-        ) {
-          setTargetModel(null);
-          if (targetPool != index) {
-            setTargetPool(index);
-          }
-        } else {
-          // if((targetModel?.model!=index2 || targetModel?.pool!= index || !targetModel)){
-          setTargetPool(null);
-          console.log(targetModel, index, index2);
-          if (targetModel == null && index2 != undefined) {
-            console.log(0);
-            setTargetModel({ pool: index, model: index2 });
-            // Model changed && !pool changed
-          } else if (
-            targetModel &&
-            index2 != undefined &&
-            index != undefined &&
-            targetModel.model != index2 &&
-            targetModel.pool == index
-          ) {
-            console.log(1);
-            setTargetModel({ pool: index, model: index2 });
-            // Model changed && pool changed
-          } else if (
-            targetModel &&
-            index2 != undefined &&
-            index != undefined &&
-            targetModel.model != index2 &&
-            targetModel.pool != index
-          ) {
-            console.log(2);
-            setTargetModel({ pool: index, model: index2 });
-          }
-          // }
-        }
+        OnClickHandler(e);
       }}
       className={`${
         selectedElement == title

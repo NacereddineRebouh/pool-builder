@@ -45,26 +45,6 @@ const Pool: FC<Props> = ({
   pool,
   Texture,
 }) => {
-  // load tile texture
-  // const [Texture, setTexture] = useState<THREE.Texture>();
-  // const [Texture2, setTexture2] = useState<THREE.Texture>();
-  // const textureLoader = new THREE.TextureLoader();
-
-  // useEffect(() => {
-  //   textureLoader.load("/textures/tiles.jpg", (t) => {
-  //     // Texture loaded callback
-  //     setTexture(t);
-  //   });
-  //   textureLoader.load("/textures/tiles.jpg", (t) => {
-  //     // Texture loaded callback
-  //     setTexture2(t);
-  //   });
-  // }, []);
-  // const texture = useTexture("/textures/tiles.jpg");
-  // texture.wrapT = THREE.RepeatWrapping;
-  // texture.wrapS = THREE.RepeatWrapping;
-  // texture.repeat.set(2, 1);
-
   const groupRef = useRef<THREE.Group>(null);
   const gp = useRef<THREE.Group>(null);
   const dispatch = useAppDispatch();
@@ -110,7 +90,7 @@ const Pool: FC<Props> = ({
       disableScaleAxes
       snapTranslate={10}
       visible={visible && target?.uuid === groupRef.current?.uuid}
-      displayValues={false}
+      displayValues
       scale={visible && target?.uuid === groupRef.current?.uuid ? 75 : 0}
       depthTest={false}
       fixed

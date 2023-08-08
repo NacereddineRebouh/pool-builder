@@ -37,27 +37,27 @@ const SideBar: React.FC<ISideBarProps> = () => {
   return (
     <div className="absolute left-0 top-0 flex h-screen select-none flex-col items-center justify-start gap-y-1 bg-slate-950/90 p-2">
       <Icon
-      disabled={false}
+        disabled={Pools.length > 0}
         icon={box.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "hottub")}
       />
       <Icon
-      disabled={false}
+        disabled={Pools.length > 0}
         icon={rectangle.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "pool")}
       />
       <Icon
-      disabled={false}
+        disabled={Pools.length > 0}
         icon={cyl.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "cyl")}
       />
       <Icon
-      disabled={false}
+        disabled={Pools.length > 0}
         icon={poolWithSteps.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "poolWithSteps")}
       />
       <Icon
-      disabled={false}
+        disabled={Pools.length > 0}
         icon={LShape.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "lshape")}
       />
@@ -91,7 +91,13 @@ const SideBar: React.FC<ISideBarProps> = () => {
         </div>
         <div className="flex items-center justify-start gap-x-1">
           <Icon
-            disabled={Pools.length > 0 ? false : true}
+            disabled={
+              Pools.length > 0 &&
+              Pools[0]?.childrens?.filter((obj) => obj.shapeType === "SwimJet")
+                .length === 0
+                ? false
+                : true
+            }
             icon={swimjet.src}
             onPointerDown={(e) => OnMouseDownHandler(e, "SwimJet")}
           />
@@ -99,8 +105,9 @@ const SideBar: React.FC<ISideBarProps> = () => {
           disabled={Pools.length>0 ?true: false} icon={corner.src} onPointerDown={(e)=>OnMouseDownHandler(e,"Steps")}/> */}
           <Icon
             disabled={Pools.length > 0 ? false : true}
-            icon={inset.src}
-            onPointerDown={(e) => OnMouseDownHandler(e, "insetSteps")}
+            icon={swimjet.src}
+            ImageClassName={"!w-8 !h-8 self-center"}
+            onPointerDown={(e) => OnMouseDownHandler(e, "RegularJets")}
           />
         </div>
         <div className="flex items-center justify-start gap-x-1">
@@ -125,6 +132,18 @@ const SideBar: React.FC<ISideBarProps> = () => {
             disabled={Pools.length > 0 ? false : true}
             icon={roundSteps.src}
             onPointerDown={(e) => OnMouseDownHandler(e, "Steps")}
+          />
+        </div>
+        <div className="flex items-center justify-start gap-x-1">
+          <Icon
+            disabled={Pools.length > 0 ? false : true}
+            icon={roundSteps.src}
+            onPointerDown={(e) => OnMouseDownHandler(e, "RoundSteps")}
+          />
+          <Icon
+            disabled={Pools.length > 0 ? false : true}
+            icon={inset.src}
+            onPointerDown={(e) => OnMouseDownHandler(e, "insetSteps")}
           />
         </div>
       </IconMenu>

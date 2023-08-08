@@ -1,6 +1,7 @@
 "use client";
 import { PoolType, ReplaceChildren, ReplacePool } from "@/slices/poolsSlice";
 import { useAppDispatch } from "@/store/hooks";
+import { inchesToMeters, metersToInches } from "@/utils/getActiveAxis";
 import { NumberInput } from "@mantine/core";
 import * as React from "react";
 
@@ -11,6 +12,7 @@ interface IRotationProps {
     z: number;
   } | null;
   targetPool: number | null;
+  inches: boolean;
   targetModel: { pool: number; model: number } | null;
   pools: PoolType[];
 }
@@ -20,6 +22,7 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
   targetModel,
   targetPool,
   pools,
+  inches,
 }) => {
   const dispatch = useAppDispatch();
 
@@ -30,39 +33,54 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
         <NumberInput
           name="rotX"
           itemID="rotX"
-          value={rotation?.x}
+          value={
+            rotation?.x
+              ? inches
+                ? metersToInches(rotation?.x)
+                : rotation?.x
+              : 0
+          }
           onChange={(e) => {
+            let val = +e;
+            if (inches) {
+              val = inchesToMeters(+e);
+            }
             if (rotation && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // rotation
               if (
                 pool?.sRotation &&
                 rotation &&
-                (pool.sRotation[0] != +e ||
+                (pool.sRotation[0] != val ||
                   pool.sRotation[2] != rotation.y ||
                   pool.sRotation[3] != rotation.z)
               ) {
                 const updatedsRotation = [...pool.sRotation]; // Create a copy of the array
                 // const temprot =
-                updatedsRotation[0] = +e;
+                updatedsRotation[0] = val;
                 updatedsRotation[1] = rotation.y;
                 updatedsRotation[2] = rotation.z;
                 pool.sRotation = updatedsRotation; // Assign the updated array back to pool.sRotation
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
-            } else if (rotation && targetModel != null && pools[targetModel.pool] && pools[targetModel.pool].childrens[targetModel.model]) {
+            } else if (
+              rotation &&
+              targetModel != null &&
+              pools[targetModel.pool] &&
+              pools[targetModel.pool].childrens[targetModel.model]
+            ) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };
               if (
                 model?.sRotation &&
                 rotation &&
-                (model.sRotation[0] != +e ||
+                (model.sRotation[0] != val ||
                   model.sRotation[2] != rotation.y ||
                   model.sRotation[3] != rotation.z)
               ) {
                 const updatedsRotation = [...model.sRotation]; // Create a copy of the array
-                updatedsRotation[0] = +e;
+                updatedsRotation[0] = val;
                 updatedsRotation[1] = rotation.y;
                 updatedsRotation[2] = rotation.z;
                 model.sRotation = updatedsRotation; // Assign the updated array back to model.sRotation
@@ -83,8 +101,18 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
         <NumberInput
           name="rotY"
           itemID="rotY"
-          value={rotation?.y}
+          value={
+            rotation?.y
+              ? inches
+                ? metersToInches(rotation?.y)
+                : rotation?.y
+              : 0
+          }
           onChange={(e) => {
+            let val = +e;
+            if (inches) {
+              val = inchesToMeters(+e);
+            }
             if (rotation && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // rotation
@@ -92,18 +120,22 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
                 pool?.sRotation &&
                 rotation &&
                 (pool.sRotation[0] != rotation.x ||
-                  pool.sRotation[2] != +e ||
+                  pool.sRotation[2] != val ||
                   pool.sRotation[3] != rotation.z)
               ) {
                 const updatedsRotation = [...pool.sRotation]; // Create a copy of the array
-                // const temprot =
                 updatedsRotation[0] = rotation.x;
-                updatedsRotation[1] = +e;
+                updatedsRotation[1] = val;
                 updatedsRotation[2] = rotation.z;
                 pool.sRotation = updatedsRotation; // Assign the updated array back to pool.sRotation
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
-            } else if (rotation && targetModel != null && pools[targetModel.pool] && pools[targetModel.pool].childrens[targetModel.model]) {
+            } else if (
+              rotation &&
+              targetModel != null &&
+              pools[targetModel.pool] &&
+              pools[targetModel.pool].childrens[targetModel.model]
+            ) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };
@@ -111,12 +143,12 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
                 model?.sRotation &&
                 rotation &&
                 (model.sRotation[0] != rotation.x ||
-                  model.sRotation[2] != +e ||
+                  model.sRotation[2] != val ||
                   model.sRotation[3] != rotation.z)
               ) {
                 const updatedsRotation = [...model.sRotation]; // Create a copy of the array
                 updatedsRotation[0] = rotation.x;
-                updatedsRotation[1] = +e;
+                updatedsRotation[1] = val;
                 updatedsRotation[2] = rotation.z;
                 model.sRotation = updatedsRotation; // Assign the updated array back to model.sRotation
                 dispatch(
@@ -136,8 +168,18 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
         <NumberInput
           name="rotZ"
           itemID="rotZ"
-          value={rotation?.z}
+          value={
+            rotation?.z
+              ? inches
+                ? metersToInches(rotation?.z)
+                : rotation?.z
+              : 0
+          }
           onChange={(e) => {
+            let val = +e;
+            if (inches) {
+              val = inchesToMeters(+e);
+            }
             if (rotation && targetPool != null && pools[targetPool]) {
               const pool = { ...pools[targetPool] };
               // rotation
@@ -146,17 +188,21 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
                 rotation &&
                 (pool.sRotation[0] != rotation.x ||
                   pool.sRotation[2] != rotation.y ||
-                  pool.sRotation[3] != +e)
+                  pool.sRotation[3] != val)
               ) {
                 const updatedsRotation = [...pool.sRotation]; // Create a copy of the array
-                // const temprot =
                 updatedsRotation[0] = rotation.x;
                 updatedsRotation[1] = rotation.y;
-                updatedsRotation[2] = +e;
+                updatedsRotation[2] = val;
                 pool.sRotation = updatedsRotation; // Assign the updated array back to pool.sRotation
                 dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
               }
-            } else if (rotation && targetModel != null && pools[targetModel.pool] && pools[targetModel.pool].childrens[targetModel.model]) {
+            } else if (
+              rotation &&
+              targetModel != null &&
+              pools[targetModel.pool] &&
+              pools[targetModel.pool].childrens[targetModel.model]
+            ) {
               const model = {
                 ...pools[targetModel.pool].childrens[targetModel.model],
               };
@@ -165,12 +211,12 @@ const Rotation: React.FunctionComponent<IRotationProps> = ({
                 rotation &&
                 (model.sRotation[0] != rotation.x ||
                   model.sRotation[2] != rotation.y ||
-                  model.sRotation[3] != +e)
+                  model.sRotation[3] != val)
               ) {
                 const updatedsRotation = [...model.sRotation]; // Create a copy of the array
                 updatedsRotation[0] = rotation.x;
                 updatedsRotation[1] = rotation.y;
-                updatedsRotation[2] = +e;
+                updatedsRotation[2] = val;
                 model.sRotation = updatedsRotation; // Assign the updated array back to model.sRotation
                 dispatch(
                   ReplaceChildren({

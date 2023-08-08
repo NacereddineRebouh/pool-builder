@@ -4,11 +4,13 @@ import { Object3D } from "three";
 
 interface TargetState {
   target: Object3D|null;
+  targetTitle: string;
   pivotVisibility: boolean
 }
 
 const initialState: TargetState = {
     target: null,
+    targetTitle: '',
     pivotVisibility: false
 };
 
@@ -22,10 +24,13 @@ export const targetSlice = createSlice({
     setPivotVisibility: (state, action) => {
       state.pivotVisibility = action.payload;
     },
+    setTargetTitle: (state, action) => {
+      state.targetTitle = action.payload;
+    },
   },
 });
 
-export const { setTarget,setPivotVisibility } = targetSlice.actions;
+export const { setTarget, setTargetTitle, setPivotVisibility } = targetSlice.actions;
 export const selectTarget = (state: RootState) => state.target.target;
 export const selectPivotVisibility = (state: RootState) => state.target.pivotVisibility;
 export default targetSlice.reducer;

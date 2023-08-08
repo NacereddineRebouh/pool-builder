@@ -8,10 +8,12 @@ import {
   selectTarget,
   setPivotVisibility,
   setTarget,
+  setTargetTitle,
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
 import { ChildrensType, PoolType, ReplacePool } from "@/slices/poolsSlice";
+import { CustomBoxGeometry } from "@/utils/getActiveAxis";
 interface Props {
   index?: number;
   position: number[];
@@ -29,6 +31,7 @@ interface Props {
   key?: number;
   children?: React.ReactNode;
   pool: PoolType;
+  PoolTexture: THREE.Texture | undefined;
 }
 const Hottub: FC<Props> = ({
   width = 5,
@@ -42,9 +45,19 @@ const Hottub: FC<Props> = ({
   index,
   children,
   pool,
+  PoolTexture,
 }) => {
   // Bench calculations
-
+  const topFace: [Boolean, Boolean, Boolean, Boolean, Boolean, Boolean] = [
+    true,
+    true,
+    false,
+    true,
+    true,
+    true,
+  ];
+  const geometry = CustomBoxGeometry({ width, height, depth, topFace });
+  // boxG.current?.attributes.uv.needsUpdate = true
   const BenchWidth = 0.5;
   const BenchDepth = 0.5;
   const BenchHeight = height - 0.65;
@@ -55,15 +68,15 @@ const Hottub: FC<Props> = ({
 
   const material = new THREE.MeshStandardMaterial({
     metalness: 0.2,
-    roughness: 0.15,
-    map: texture,
+    roughness: 0.2,
+    map: PoolTexture,
     side: 2,
     color: new THREE.Color("lightblue"),
   });
   if (material.map) {
     material.map.wrapS = THREE.RepeatWrapping;
     material.map.wrapT = THREE.RepeatWrapping;
-    material.map.repeat.set(2, 1);
+    material.map.repeat.set(1, 1);
   }
 
   const groupRef = useRef<THREE.Group>(null);
@@ -165,15 +178,17 @@ const Hottub: FC<Props> = ({
         dispose={null}
         onClick={(e) => {
           dispatch(setPivotVisibility(true));
+          const title = pool.poolType + " " + index;
+          dispatch(setTargetTitle(title));
           if (target?.uuid != groupRef?.current?.uuid) {
             dispatch(setTarget(groupRef.current));
           }
         }}
       >
         {/* Pool */}
-        <mesh dispose={null} position={[0, -height / 2, 0]}>
-          <boxGeometry args={[width, height, depth]} />
-          <>
+        <mesh geometry={geometry} dispose={null} position={[0, -height / 2, 0]}>
+          {/* <boxGeometry args={[width, height, depth]} /> */}
+          {/* <>
             <meshStandardMaterial
               metalness={0.2}
               roughness={0.24}
@@ -225,7 +240,14 @@ const Hottub: FC<Props> = ({
               // transparent
               // opacity={0}
             />
-          </>
+          </> */}
+          <meshStandardMaterial
+            metalness={0.2}
+            roughness={0.2}
+            map={PoolTexture}
+            side={THREE.DoubleSide}
+            color={"lightblue"}
+          />
         </mesh>
 
         {/* Mask */}
@@ -281,6 +303,7 @@ const Hottub: FC<Props> = ({
 
         {/* BenchSeating */}
         {/* left */}
+
         {pool?.BenchSeatings?.includes("left") && (
           <mesh
             material={material}
@@ -290,12 +313,18 @@ const Hottub: FC<Props> = ({
               BenchYPosition,
               rightOffsetZPosition,
             ]}
+            geometry={CustomBoxGeometry({
+              width: leftWidth,
+              height: BenchHeight,
+              depth: leftDepth,
+              topFace: [true, true, true, true, true, true],
+            })}
             renderOrder={0}
           >
-            <boxGeometry
+            {/* <boxGeometry
               args={[leftWidth, BenchHeight, leftDepth]}
               // args={[BenchWidth, BenchHeight, depth - BenchWidth * 2]}
-            />
+            /> */}
           </mesh>
         )}
         {pool?.BenchSeatings?.includes("top") && (
@@ -304,8 +333,14 @@ const Hottub: FC<Props> = ({
             visible={true}
             position={[0, BenchYPosition, -depth / 2 + BenchWidth / 2]}
             renderOrder={2}
+            geometry={CustomBoxGeometry({
+              width: width,
+              height: BenchHeight,
+              depth: BenchDepth,
+              topFace: [true, true, true, true, true, true],
+            })}
           >
-            <boxGeometry args={[width, BenchHeight, BenchDepth]} />
+            {/* <boxGeometry args={[width, BenchHeight, BenchDepth]} /> */}
           </mesh>
         )}
         {pool?.BenchSeatings?.includes("bottom") && (
@@ -314,8 +349,14 @@ const Hottub: FC<Props> = ({
             visible={true}
             position={[0, BenchYPosition, depth / 2 - BenchWidth / 2]}
             renderOrder={3}
+            geometry={CustomBoxGeometry({
+              width: width,
+              height: BenchHeight,
+              depth: BenchDepth,
+              topFace: [true, true, true, true, true, true],
+            })}
           >
-            <boxGeometry args={[width, BenchHeight, BenchDepth]} />
+            {/* <boxGeometry args={[width, BenchHeight, BenchDepth]} /> */}
           </mesh>
         )}
         {pool?.BenchSeatings?.includes("right") && (
@@ -328,11 +369,17 @@ const Hottub: FC<Props> = ({
               rightOffsetZPosition,
             ]}
             renderOrder={1}
+            geometry={CustomBoxGeometry({
+              width: rightWidth,
+              height: BenchHeight,
+              depth: rightDepth,
+              topFace: [true, true, true, true, true, true],
+            })}
           >
-            <boxGeometry
+            {/* <boxGeometry
               args={[rightWidth, BenchHeight, rightDepth]}
               // args={[BenchWidth, BenchHeight, depth - BenchWidth * 2]}
-            />
+            /> */}
           </mesh>
         )}
         {/* Right */}
