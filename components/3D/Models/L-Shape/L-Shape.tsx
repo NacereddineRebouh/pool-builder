@@ -123,8 +123,8 @@ export default function LShape({
     }
   }, []);
   // Offset Position
-  const tPosition = [0, -pool.sDepth / 2 + 0.005, -tHalfHeight1 + width / 2];
-  const bPosition = [-bHalfHeight1 + width / 2, -pool.sDepth / 2 + 0.005, 0];
+  const tPosition = [0, -depth / 2 + 0.005, -tHalfHeight1 + width / 2];
+  const bPosition = [-bHalfHeight1 + width / 2, -depth / 2 + 0.005, 0];
 
   // Vertex positions (x, y, z)
   const tVertices = [

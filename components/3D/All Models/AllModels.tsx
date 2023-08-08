@@ -744,9 +744,13 @@ export const AllModels = () => {
                         const pos = [...shape.position];
                         const offsetWidth = pool.sWidth - pool.width;
                         const offsetbHeight = pool.sbHeight - pool.bHeight;
+                        const offsetDepth = pool.sDepth - pool.depth;
+                        pos[1] = shape.position[1] + offsetDepth / 2;
+
                         const LshapeBXPosition =
                           -pool.bHeight / 2 + pool.sWidth / 2;
                         let scale = [-1, 1, 1]; // left
+
                         // ttop [1,1,1] 0
                         // tRight [1,1,1] -90
                         // tLeft [-1,1,1] 90
@@ -761,7 +765,6 @@ export const AllModels = () => {
                               offsetbHeight / 2 +
                               offsetWidth / 2 -
                               LshapeBXPosition;
-                            pos[1] = shape.position[1];
                             pos[2] = shape.position[2];
                             scale = [-1, 1, 1];
                             return (
@@ -783,7 +786,6 @@ export const AllModels = () => {
                           case shape.side === "Top":
                             //bottom Left
                             pos[0] = shape.position[0] - LshapeBXPosition;
-                            pos[1] = shape.position[1];
                             pos[2] = shape.position[2] - offsetWidth / 2;
                             scale = [1, 1, 1];
                             return (
@@ -804,7 +806,6 @@ export const AllModels = () => {
                             );
                           case shape.side === "Bottom":
                             pos[0] = shape.position[0] - LshapeBXPosition;
-                            pos[1] = shape.position[1];
                             pos[2] = shape.position[2] + offsetWidth / 2;
                             scale = [-1, 1, 1];
                             return (
@@ -833,6 +834,8 @@ export const AllModels = () => {
                         const pos = [...shape.position];
                         const offsetWidth = pool.sWidth - pool.width;
                         const offsettHeight = pool.stHeight - pool.tHeight;
+                        const offsetDepth = pool.sDepth - pool.depth;
+                        pos[1] = shape.position[1] + offsetDepth / 2;
                         const LshapeTZPosition =
                           -pool.tHeight / 2 + pool.sWidth / 2;
                         let scale = [-1, 1, 1]; // left
@@ -846,7 +849,6 @@ export const AllModels = () => {
                           case shape.side === "tLeft":
                             //Topleft
                             pos[0] = shape.position[0] - offsetWidth / 2;
-                            pos[1] = shape.position[1];
                             pos[2] = shape.position[2] - LshapeTZPosition;
                             scale = [-1, 1, 1];
                             return (
@@ -867,7 +869,6 @@ export const AllModels = () => {
                             );
                           case shape.side === "tRight":
                             pos[0] = shape.position[0] + offsetWidth / 2;
-                            pos[1] = shape.position[1];
                             pos[2] = shape.position[2] - LshapeTZPosition;
                             scale = [1, 1, 1];
                             return (
@@ -889,7 +890,6 @@ export const AllModels = () => {
                           case shape.side === "tTop":
                             //bottom Left
                             pos[0] = shape.position[0];
-                            pos[1] = shape.position[1];
                             pos[2] =
                               shape.position[2] -
                               LshapeTZPosition -
