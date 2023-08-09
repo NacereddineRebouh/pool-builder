@@ -1,5 +1,6 @@
+import { PivotControls } from "@/components/UI/pivotControls";
 import { Brush } from "@react-three/csg";
-import { useTexture } from "@react-three/drei";
+import { useMask, useTexture } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { FC, ReactElement, useRef } from "react";
 import * as THREE from "three";
@@ -40,43 +41,48 @@ const LShapeBorders: FC<Props> = ({
   // Bounding boxes
   const outerWall = useRef<Brush>(null);
   let rotation = [0, 0, 0];
+  let scale = [1, 1, 1];
   let postionOffset = [0, 0, 0]; // offset pool center
+  let val = poolWidth;
   switch (true) {
     case side === "left": // Depth
-      rotation[1] = 0;
-      rotation[0] = degToRad(90);
-      postionOffset = [-poolbHeight / 2, 0];
+      rotation[0] = -degToRad(90);
+      rotation[2] = degToRad(90);
+      scale[2] = -1;
+      // rotation[1] = degToRad(0);
+      postionOffset = [-poolbHeight / 2, 0, 0];
       break;
     case side === "top": // width
-      postionOffset = [0, -height, -poolWidth / 2];
-      poolWidth = poolbHeight - poolWidth;
+      rotation[0] = degToRad(-90);
+      scale[2] = -1;
+      postionOffset = [0, 0, -poolWidth / 2];
+      val = poolbHeight - poolWidth;
       break;
     case side === "bottom": // width
-      rotation[1] = -degToRad(180);
-      rotation[0] = -degToRad(90);
-      rotation[2] = -degToRad(90);
-      postionOffset = [0, 0, -poolWidth / 2];
-      poolWidth = poolbHeight;
+      rotation[0] = degToRad(90);
+      postionOffset = [0, 0, poolWidth / 2];
+      val = poolbHeight;
       break;
 
     case side === "tleft": // Depth
-      rotation[1] = 0;
-      rotation[0] = degToRad(90);
+      rotation[0] = -degToRad(90);
+      rotation[2] = degToRad(90);
+      scale[2] = -1;
       postionOffset = [-poolWidth / 2, 0, 0];
-      poolWidth = pooltHeight - poolWidth;
+      val = pooltHeight - poolWidth;
       break;
     case side === "tright": // Depth
-      rotation[1] = degToRad(180);
-      rotation[0] = -degToRad(90);
+      rotation[0] = degToRad(90);
+      rotation[2] = -degToRad(90);
+      // scale[2] = -1;
       postionOffset = [poolWidth / 2, 0, 0];
-      poolWidth = pooltHeight;
+      val = pooltHeight;
 
       break;
     case side === "ttop": // width
-      rotation[1] = degToRad(0);
-      rotation[0] = -degToRad(90);
-      rotation[2] = -degToRad(90);
-      postionOffset = [0, -height, -pooltHeight / 2];
+      rotation[0] = degToRad(-90);
+      scale[2] = -1;
+      postionOffset = [0, 0, -pooltHeight / 2];
       break;
 
     default:
@@ -91,27 +97,48 @@ const LShapeBorders: FC<Props> = ({
     bevelThickness: 1,
     bevelOffset: 1,
   };
-  const squareShape = new THREE.Shape()
-    .moveTo(-poolWidth / 2, 0)
-    .lineTo(-poolWidth / 2 - height * 5, height * 5)
-    .lineTo(poolWidth / 2 + height * 5, height * 5)
-    .lineTo(poolWidth / 2, 0);
-  const geometry = new THREE.ExtrudeGeometry(squareShape, extrudeSettings);
 
+  let v = height * 5;
+  if (side === "tleft") v = -height * 5;
+  let squareShape = new THREE.Shape()
+    .moveTo(-val / 2, 0)
+    .lineTo(-val / 2 - height * 5, height * 5) // bottom side
+    .lineTo(val / 2 + height * 5, height * 5) // top side
+    .lineTo(val / 2, 0);
+  if (side === "tleft")
+    squareShape = new THREE.Shape()
+      .moveTo(-val / 2, 0)
+      .lineTo(-val / 2 + height * 5, height * 5) // bottom side
+      .lineTo(val / 2 + height * 5, height * 5) // top side
+      .lineTo(val / 2, 0);
+  if (side === "top")
+    squareShape = new THREE.Shape()
+      .moveTo(-val / 2, 0)
+      .lineTo(-val / 2 - height * 5, height * 5) // bottom side
+      .lineTo(val / 2 - height * 5, height * 5) // top side
+      .lineTo(val / 2, 0);
+  const geometry = new THREE.ExtrudeGeometry(squareShape, extrudeSettings);
+  const stencil = useMask(1, true);
   return (
-    <group position={[position.x, height, position.z]}>
+    <group
+      position={[
+        position.x + postionOffset[0],
+        height + postionOffset[1],
+        position.z + postionOffset[2],
+      ]}
+    >
       <mesh
         geometry={geometry}
-        rotation={[rotation[0], rotation[1], rotation[2]]}
-        position={[postionOffset[0], postionOffset[1], postionOffset[2]]}
         ref={outerWall}
+        rotation={[rotation[0], rotation[1], rotation[2]]}
+        scale={[scale[0], scale[1], scale[2]]}
       >
-        {/* <boxGeometry args={[width, height, depth]} /> */}
         <meshStandardMaterial
           metalness={0.2}
           roughness={0.3}
           color={"#d6dee7"}
           map={cementTexture}
+          {...stencil}
         />
       </mesh>
     </group>

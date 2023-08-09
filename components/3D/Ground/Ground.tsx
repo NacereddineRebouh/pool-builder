@@ -1346,10 +1346,10 @@ const Grid = ({
               }, //bottom
             ]);
             setbeach([
-              { position: [-closestPool.width / 2 - 2, 2 / 2, 0], used: false }, //left
-              { position: [closestPool.width / 2 + 2, 2 / 2, 0], used: false }, //right
-              { position: [0, 2 / 2, -closestPool.depth / 2 - 2], used: false }, //top
-              { position: [0, 2 / 2, closestPool.depth / 2 + 2], used: false }, //bottom
+              { position: [-closestPool.width / 2, -0.5, 0], used: false }, //left
+              { position: [closestPool.width / 2, -0.5, 0], used: false }, //right
+              { position: [0, -0.5, -closestPool.depth / 2], used: false }, //top
+              { position: [0, -0.5, closestPool.depth / 2], used: false }, //bottom
             ]);
             switch (true) {
               case type === "SquareSteps" ||
@@ -1550,11 +1550,6 @@ const Grid = ({
     dispatch(setRotation(RotationY));
   };
   const OnPointerUpHandler = (e: ThreeEvent<PointerEvent>) => {
-    console.log("ClosestPoolType;;", ClosestPoolType);
-    console.log("help.mouseDown;;", help.mouseDown);
-    console.log("type;;", type);
-    console.log("Pools;;", Pools);
-
     if (help.mouseDown) {
       dispatch(setHelper({ mouseDown: false, dragging: false }));
       if (
@@ -2127,6 +2122,73 @@ const Grid = ({
               );
             }
             break;
+
+          case "RegularJets":
+            if (SnappingPosition) {
+              // const temp = stairs
+              // temp[ClosestIndex].used = true;
+              let side = sides.Left;
+              let rotation = 0;
+              let position = [0, -1, 0];
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = 0.02;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  rotation = 0; //180
+                  position[2] = 0.02;
+                  side = sides.Top;
+                  break;
+                case 2:
+                  rotation = Math.PI; //0
+                  position[2] = -0.02;
+                  side = sides.Bottom;
+                  break;
+
+                case 3:
+                  rotation = Math.PI / 2; //90
+                  position[0] = 0.02;
+                  side = sides.tLeft;
+                  break;
+                case 4:
+                  rotation = -Math.PI / 2; //0
+                  position[0] = -0.02;
+                  side = sides.tRight;
+                  break;
+                case 5:
+                  rotation = 0; //0
+                  position[2] = 0.02;
+                  side = sides.tTop;
+                  break;
+
+                default:
+                  break;
+              }
+              // setswimJet(temp)
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y + position[1],
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.28, 0.28, 0.28],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
           case "InfinityEdge":
             if (SnappingPosition) {
               // const temp = infinityEdge
@@ -2538,6 +2600,63 @@ const Grid = ({
               );
             }
             break;
+          case "RegularJets":
+            if (SnappingPosition) {
+              // const temp = stairs
+              // temp[ClosestIndex].used = true;
+              let side = sides.Left;
+              let rotation = 0;
+              let position = [0, 0, 0];
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = 0.04;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  //right
+                  rotation = -Math.PI / 2; //-90
+                  position[0] = -0.04;
+                  side = sides.Right;
+                  break;
+                case 2:
+                  rotation = 0; //-90
+                  position[2] = 0.04;
+                  side = sides.Top;
+                  break;
+                case 3:
+                  rotation = Math.PI; //-90
+                  position[2] = -0.04;
+                  side = sides.Bottom;
+                  break;
+
+                default:
+                  break;
+              }
+              // setswimJet(temp)
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y,
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.28, 0.28, 0.28],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
+
           case "WallWaterfall":
             if (SnappingPosition) {
               // const temp = fountain
@@ -3001,29 +3120,29 @@ const Grid = ({
               // temp[ClosestIndex].used = true;
               // setbeach(temp)
               let rotation = 0;
-              let position = [0, -0.86, 0];
+              let position = [0, 1, 0];
               let side = sides.Left;
               switch (ClosestIndex) {
                 case 0:
                   //left
                   rotation = Math.PI / 2; // 90
-                  position[0] = 1.6;
+                  position[0] = -0.36;
                   side = sides.Left;
                   break;
                 case 1:
                   //right
                   rotation = -Math.PI / 2; //-90
-                  position[0] = -1.6;
+                  position[0] = 0.36;
                   side = sides.Right;
                   break;
                 case 2:
-                  rotation = 0; //180
-                  position[2] = 1.6;
+                  rotation = Math.PI; //180
+                  position[2] = -0.36;
                   side = sides.Top;
                   break;
                 case 3:
                   rotation = Math.PI; //0
-                  position[2] = -1.6;
+                  position[2] = 0.36;
                   side = sides.Bottom;
                   break;
 
@@ -3044,7 +3163,7 @@ const Grid = ({
                     sPosition: [0, 0, 0],
                     sScale: [1, 1, 1],
                     sRotation: [0, 0, 0],
-                    scale: [0.3, 0.3, 0.3],
+                    scale: [0.7, 0.7, 0.7],
                     side: side,
                   },
                 })

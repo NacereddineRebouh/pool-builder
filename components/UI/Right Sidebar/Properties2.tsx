@@ -314,9 +314,10 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
       {/* nbSwimjet */}
       {targetPool != null &&
         pools[targetPool] &&
-        pools[targetPool].poolType === "hottub" &&
-        pools[targetPool].childrens.filter((obj) => obj.shapeType === "SwimJet")
-          .length > 0 && (
+        // pools[targetPool].poolType === "hottub" &&
+        pools[targetPool].childrens.filter(
+          (obj) => obj.shapeType === "RegularJets"
+        ).length > 0 && (
           <div className="flex w-full items-center justify-start gap-x-6">
             <div className="w-full self-start text-lg text-slate-50">
               Swimjets

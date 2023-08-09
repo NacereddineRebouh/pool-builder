@@ -42,11 +42,15 @@ export const AllModels = () => {
   // const texture = useTexture("/textures/tiles.jpg");
   const csg = useRef<CSGGeometryRef>(null);
   const csg2 = useRef<CSGGeometryRef>(null);
+  const csg3 = useRef<CSGGeometryRef>(null); // pool
   return (
     <Fragment key={0}>
       {Pools.map((pool, poolIndex) => {
         switch (pool.poolType) {
           case "pool":
+            const poolInsets = pool.childrens.filter(
+              (obj) => obj.shapeType === "insetSteps"
+            );
             return (
               <Suspense>
                 <PoolBool
@@ -65,7 +69,69 @@ export const AllModels = () => {
                   sWidth={pool.sWidth}
                   sHeight={pool.sHeight}
                   sDepth={pool.sDepth}
+                  csg={csg3}
                   Texture={Texture?.clone()}
+                  children2={
+                    <>
+                      {poolInsets.map((shape, index) => {
+                        const pos = [...shape.position];
+                        const offsetWidth = pool.sWidth - pool.width;
+                        const offsetbHeight = pool.sHeight - pool.height;
+                        const offsetDepth = pool.sDepth - pool.depth;
+                        pos[1] = shape.position[1] + offsetbHeight / 2;
+
+                        let scale = [-1, 1, 1];
+
+                        switch (shape.side) {
+                          case "Left":
+                            //Topleft
+                            pos[0] = shape.position[0] - offsetWidth / 2;
+                            pos[2] = shape.position[2];
+                            scale = [-1, 1, 1];
+                            break;
+                          case "Right":
+                            pos[0] = shape.position[0] + offsetWidth / 2;
+                            pos[2] = shape.position[2];
+                            scale = [-1, 1, 1];
+                            break;
+                          case "Top":
+                            //bottom Left
+                            pos[0] = shape.position[0];
+                            pos[2] = shape.position[2] - offsetDepth / 2;
+                            scale = [1, 1, -1];
+                            break;
+                          case "Bottom":
+                            pos[0] = shape.position[0];
+                            pos[2] = shape.position[2] + offsetDepth / 2;
+                            scale = [-1, 1, 1];
+                            break;
+                        }
+                        return (
+                          <Suspense key={index}>
+                            <InsetStep
+                              onDrag={() => csg3.current?.update()}
+                              model={shape}
+                              index={index}
+                              poolIndex={poolIndex}
+                              sPosition={shape.sPosition}
+                              sRotation={shape.sRotation}
+                              sScale={shape.sScale}
+                              key={index}
+                              rotation={new THREE.Euler(...shape.rotation)}
+                              scale={
+                                new THREE.Vector3(
+                                  shape.scale[0] * scale[0],
+                                  shape.scale[1] * scale[1],
+                                  shape.scale[2] * scale[2]
+                                )
+                              }
+                              position={new THREE.Vector3(...pos)}
+                            />
+                          </Suspense>
+                        );
+                      })}
+                    </>
+                  }
                 >
                   {pool.childrens.length > 0 &&
                     pool.childrens.map((shape, index) => {
@@ -115,6 +181,123 @@ export const AllModels = () => {
                               />
                             </Suspense>
                           );
+
+                        case "RegularJets":
+                          switch (shape.side) {
+                            case "Left":
+                              //Topleft
+                              pos[0] = shape.position[0] - offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2];
+                              break;
+                            case "Right":
+                              pos[0] = shape.position[0] + offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2];
+                              break;
+                            case "Top":
+                              //bottom Left
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] - offsetDepth / 2;
+                              break;
+                            case "Bottom":
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] + offsetDepth / 2;
+                              break;
+                          }
+                          return (
+                            <>
+                              {pool.nbSwimJet && pool.nbSwimJet > 0 ? (
+                                new Array(pool.nbSwimJet)
+                                  .fill(0)
+                                  .map((_, i) => {
+                                    const offsetPosition = [...pos];
+                                    if (pool.nbSwimJet) {
+                                      const resetZ =
+                                        offsetPosition[2] + pool.depth / 2;
+                                      const resetX =
+                                        offsetPosition[0] - pool.width / 2;
+                                      const offsetZ =
+                                        pool.depth / pool.nbSwimJet;
+                                      const initialZ =
+                                        pool.depth / pool.nbSwimJet / 2;
+
+                                      const offsetX =
+                                        pool.width / pool.nbSwimJet;
+                                      const initialX =
+                                        pool.width / pool.nbSwimJet / 2;
+
+                                      switch (shape.side) {
+                                        case "Left":
+                                          //Topleft
+                                          offsetPosition[0] = pos[0];
+                                          offsetPosition[1] = pos[1];
+                                          offsetPosition[2] =
+                                            resetZ - initialZ - i * offsetZ;
+                                          break;
+                                        case "Right":
+                                          offsetPosition[0] = pos[0];
+                                          offsetPosition[1] = pos[1];
+                                          offsetPosition[2] =
+                                            resetZ - initialZ - i * offsetZ;
+                                          break;
+                                        case "Top":
+                                          //bottom Left
+                                          offsetPosition[0] =
+                                            resetX + initialX + i * offsetX;
+                                          offsetPosition[1] = pos[1];
+                                          offsetPosition[2] = pos[2];
+                                          break;
+                                        case "Bottom":
+                                          offsetPosition[0] =
+                                            resetX + initialX + i * offsetX;
+                                          offsetPosition[1] = pos[1];
+                                          offsetPosition[2] = pos[2];
+                                          break;
+                                      }
+                                    }
+                                    return (
+                                      <Suspense key={i}>
+                                        <SwimJet
+                                          model={shape}
+                                          index={index}
+                                          poolIndex={poolIndex}
+                                          sPosition={shape.sPosition}
+                                          sRotation={shape.sRotation}
+                                          sScale={shape.sScale}
+                                          key={i}
+                                          rotation={
+                                            new THREE.Euler(...shape.rotation)
+                                          }
+                                          scale={
+                                            new THREE.Vector3(...shape.scale)
+                                          }
+                                          position={
+                                            new THREE.Vector3(...offsetPosition)
+                                          }
+                                        />
+                                      </Suspense>
+                                    );
+                                  })
+                              ) : (
+                                <SwimJet
+                                  model={shape}
+                                  index={index}
+                                  poolIndex={poolIndex}
+                                  sPosition={shape.sPosition}
+                                  sRotation={shape.sRotation}
+                                  sScale={shape.sScale}
+                                  key={index}
+                                  rotation={new THREE.Euler(...shape.rotation)}
+                                  scale={new THREE.Vector3(...shape.scale)}
+                                  position={new THREE.Vector3(...pos)}
+                                />
+                              )}
+                            </>
+                          );
+
                         case "WallWaterfall":
                           switch (shape.side) {
                             case "Left":
@@ -476,47 +659,6 @@ export const AllModels = () => {
                               />
                             </Suspense>
                           );
-                        case "insetSteps":
-                          switch (shape.side) {
-                            case "Left":
-                              //Topleft
-                              pos[0] = shape.position[0] - offsetWidth / 2;
-                              pos[1] = shape.position[1];
-                              pos[2] = shape.position[2];
-                              break;
-                            case "Right":
-                              pos[0] = shape.position[0] + offsetWidth / 2;
-                              pos[1] = shape.position[1];
-                              pos[2] = shape.position[2];
-                              break;
-                            case "Top":
-                              //bottom Left
-                              pos[0] = shape.position[0];
-                              pos[1] = shape.position[1];
-                              pos[2] = shape.position[2] - offsetDepth / 2;
-                              break;
-                            case "Bottom":
-                              pos[0] = shape.position[0];
-                              pos[1] = shape.position[1];
-                              pos[2] = shape.position[2] + offsetDepth / 2;
-                              break;
-                          }
-                          return (
-                            <Suspense>
-                              <InsetSteps
-                                model={shape}
-                                index={index}
-                                poolIndex={poolIndex}
-                                sPosition={shape.sPosition}
-                                sRotation={shape.sRotation}
-                                sScale={shape.sScale}
-                                key={index}
-                                rotation={new THREE.Euler(...shape.rotation)}
-                                scale={new THREE.Vector3(...shape.scale)}
-                                position={new THREE.Vector3(...pos)}
-                              />
-                            </Suspense>
-                          );
                       }
                     })}
                 </PoolBool>
@@ -770,6 +912,7 @@ export const AllModels = () => {
                             return (
                               <Suspense key={index}>
                                 <InsetStep
+                                  onDrag={() => csg.current?.update()}
                                   model={shape}
                                   index={index}
                                   poolIndex={poolIndex}
@@ -791,6 +934,7 @@ export const AllModels = () => {
                             return (
                               <Suspense key={index}>
                                 <InsetStep
+                                  onDrag={() => csg.current?.update()}
                                   model={shape}
                                   index={index}
                                   poolIndex={poolIndex}
@@ -811,6 +955,7 @@ export const AllModels = () => {
                             return (
                               <Suspense key={index}>
                                 <InsetStep
+                                  onDrag={() => csg.current?.update()}
                                   model={shape}
                                   index={index}
                                   poolIndex={poolIndex}
@@ -854,6 +999,7 @@ export const AllModels = () => {
                             return (
                               <Suspense key={index}>
                                 <InsetStep
+                                  onDrag={() => csg.current?.update()}
                                   model={shape}
                                   index={index}
                                   poolIndex={poolIndex}
@@ -874,6 +1020,7 @@ export const AllModels = () => {
                             return (
                               <Suspense key={index}>
                                 <InsetStep
+                                  onDrag={() => csg.current?.update()}
                                   model={shape}
                                   index={index}
                                   poolIndex={poolIndex}
@@ -899,6 +1046,7 @@ export const AllModels = () => {
                             return (
                               <Suspense key={index}>
                                 <InsetStep
+                                  onDrag={() => csg.current?.update()}
                                   model={shape}
                                   index={index}
                                   poolIndex={poolIndex}
@@ -1551,6 +1699,65 @@ export const AllModels = () => {
                               />
                             </Suspense>
                           );
+                        case "RegularJets":
+                          switch (true) {
+                            case shape.side === "Left":
+                              //Topleft
+                              pos[0] =
+                                shape.position[0] -
+                                offsetbHeight +
+                                offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2];
+                              break;
+                            case shape.side === "tLeft":
+                              //Topleft
+                              pos[0] = shape.position[0] - offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2];
+                              break;
+                            case shape.side === "tRight":
+                              pos[0] = shape.position[0] + offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2];
+                              break;
+                            case shape.side === "Top":
+                              //bottom Left
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] - offsetWidth / 2;
+                              break;
+                            case shape.side === "tTop":
+                              //bottom Left
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1];
+                              pos[2] =
+                                shape.position[2] -
+                                offsettHeight +
+                                offsetWidth / 2;
+                              break;
+                            case shape.side === "Bottom":
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] + offsetWidth / 2;
+                              break;
+                          }
+                          return (
+                            <Suspense>
+                              <SwimJet
+                                model={shape}
+                                index={index}
+                                poolIndex={poolIndex}
+                                sPosition={shape.sPosition}
+                                sRotation={shape.sRotation}
+                                sScale={shape.sScale}
+                                key={index}
+                                rotation={new THREE.Euler(...shape.rotation)}
+                                scale={new THREE.Vector3(...shape.scale)}
+                                position={new THREE.Vector3(...pos)}
+                              />
+                            </Suspense>
+                          );
                         case "InfinityEdge":
                           switch (true) {
                             case shape.side === "Left":
@@ -1566,7 +1773,10 @@ export const AllModels = () => {
                               //Topleft
                               pos[0] = shape.position[0] - offsetWidth / 2;
                               pos[1] = shape.position[1];
-                              pos[2] = shape.position[2] - offsettHeight / 2;
+                              pos[2] =
+                                shape.position[2] -
+                                offsettHeight / 2 -
+                                (0.05 * 5) / 2; //0.05 for the border
                               break;
                             case shape.side === "tRight":
                               pos[0] = shape.position[0] + offsetWidth / 2;
@@ -1578,7 +1788,10 @@ export const AllModels = () => {
                               break;
                             case shape.side === "Top":
                               //bottom Left
-                              pos[0] = shape.position[0] - offsetbHeight / 2;
+                              pos[0] =
+                                shape.position[0] -
+                                offsetbHeight / 2 -
+                                (0.05 * 5) / 2;
                               pos[1] = shape.position[1];
                               pos[2] = shape.position[2] - offsetWidth / 2;
                               break;
@@ -1622,79 +1835,6 @@ export const AllModels = () => {
                               />
                             </Suspense>
                           );
-                        // case "insetSteps":
-                        //   let scale=[-1, 1, 1] // left
-                        //   // ttop [1,1,1] 0
-                        //   // tRight [1,1,1] -90
-                        //   // tLeft [-1,1,1] 90
-
-                        //   // top [1,1,1] 0
-                        //   // bottom [-1,1,1] 0
-                        //   // Left [-1,1,1] 90
-                        //   switch (true) {
-                        //     case shape.side === "Left":
-                        //       //Topleft
-                        //       pos[0] =
-                        //         shape.position[0] -
-                        //         offsetbHeight +
-                        //         offsetWidth / 2;
-                        //       pos[1] = shape.position[1];
-                        //       pos[2] = shape.position[2];
-                        //       scale= [-1,1,1]
-                        //       break;
-                        //     case shape.side === "tLeft":
-                        //       //Topleft
-                        //       pos[0] = shape.position[0] - offsetWidth / 2;
-                        //       pos[1] = shape.position[1];
-                        //       pos[2] = shape.position[2];
-                        //       scale= [-1,1,1]
-                        //       break;
-                        //     case shape.side === "tRight":
-                        //       pos[0] = shape.position[0] + offsetWidth / 2;
-                        //       pos[1] = shape.position[1];
-                        //       pos[2] = shape.position[2];
-                        //       scale= [1,1,1]
-                        //       break;
-                        //     case shape.side === "Top":
-                        //       //bottom Left
-                        //       pos[0] = shape.position[0];
-                        //       pos[1] = shape.position[1];
-                        //       pos[2] = shape.position[2] - offsetWidth / 2;
-                        //       scale= [1,1,1]
-                        //       break;
-                        //     case shape.side === "tTop":
-                        //       //bottom Left
-                        //       pos[0] = shape.position[0];
-                        //       pos[1] = shape.position[1];
-                        //       pos[2] =
-                        //         shape.position[2] -
-                        //         offsettHeight +
-                        //         offsetWidth / 2;
-                        //         scale= [1,1,1]
-                        //       break;
-                        //     case shape.side === "Bottom":
-                        //       pos[0] = shape.position[0];
-                        //       pos[1] = shape.position[1];
-                        //       pos[2] = shape.position[2] + offsetWidth / 2;
-                        //       scale= [-1,1,1]
-                        //       break;
-                        //   }
-                        //   return (
-                        //     <Suspense>
-                        //       <InsetSteps
-                        //         model={shape}
-                        //         index={index}
-                        //         poolIndex={poolIndex}
-                        //         sPosition={shape.sPosition}
-                        //         sRotation={shape.sRotation}
-                        //         sScale={shape.sScale}
-                        //         key={index}
-                        //         rotation={new THREE.Euler(...shape.rotation)}
-                        //         scale={new THREE.Vector3(...scale)}
-                        //         position={new THREE.Vector3(...pos)}
-                        //       />
-                        //     </Suspense>
-                        //   );
                       }
                     })}
                 </LShape>

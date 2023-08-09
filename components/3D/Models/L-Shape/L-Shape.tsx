@@ -511,6 +511,8 @@ export default function LShape({
   );
   let LshapeTZPosition = -stHeight / 2 + width / 2;
   let LshapeBXPosition = -sbHeight / 2 + width / 2;
+  let LshapeBTopCenterPosition = -(sbHeight - width) / 2 - width / 2;
+  let LshapeTLeftCenterPosition = -(stHeight - width) / 2 - width / 2;
   return (
     <PivotControls
       disableScaleAxes
@@ -619,7 +621,7 @@ export default function LShape({
         </Mask>
 
         {/* Borders */}
-        {/* <>
+        <>
           <LShapeBorders
             width={width}
             height={0.05}
@@ -636,7 +638,7 @@ export default function LShape({
             height={0.05}
             depth={depth}
             outline={2}
-            position={new Vector3(LshapeBXPosition, 0, 0)}
+            position={new Vector3(LshapeBTopCenterPosition, 0, 0)}
             side={"top"}
             poolWidth={width}
             poolbHeight={sbHeight}
@@ -658,7 +660,7 @@ export default function LShape({
             height={0.05}
             depth={depth}
             outline={2}
-            position={new Vector3(0, 0, LshapeTZPosition)}
+            position={new Vector3(0, 0, LshapeTLeftCenterPosition)}
             side={"tleft"}
             poolWidth={width}
             poolbHeight={sbHeight}
@@ -686,7 +688,7 @@ export default function LShape({
             poolbHeight={sbHeight}
             pooltHeight={stHeight}
           />
-        </> */}
+        </>
         <group position={[0, 1, 0]}>{children}</group>
       </group>
     </PivotControls>

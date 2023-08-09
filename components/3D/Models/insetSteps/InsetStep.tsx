@@ -41,6 +41,7 @@ export function InsetStep({
   rotation,
   position,
   scale,
+  onDrag,
   ...props
 }: {
   sPosition: number[];
@@ -52,6 +53,7 @@ export function InsetStep({
   rotation: THREE.Euler;
   position: THREE.Vector3;
   scale: THREE.Vector3;
+  onDrag: () => void;
   props?: JSX.IntrinsicElements["group"];
 }) {
   const { nodes, materials } = useGLTF(
@@ -89,12 +91,13 @@ export function InsetStep({
       disableScaleAxes
       snapTranslate={5}
       disableSliders
-      disableRotations
+      // disableRotations
       visible={visible && target?.uuid === groupRef.current?.uuid}
       displayValues
       scale={visible && target?.uuid === groupRef.current?.uuid ? 75 : 0}
       depthTest={false}
       fixed
+      onDrag={onDrag}
       onDragEnd={(w, de, wl, delw) => {
         const position = new THREE.Vector3(); // create one and reuse it
         const quaternion = new THREE.Quaternion();

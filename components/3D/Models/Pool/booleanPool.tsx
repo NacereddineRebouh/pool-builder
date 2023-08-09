@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, RefObject, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Mask, useTexture } from "@react-three/drei";
 import Borders from "./Borders";
@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
 import { ChildrensType, PoolType, ReplacePool } from "@/slices/poolsSlice";
 import { CustomBoxGeometry } from "@/utils/getActiveAxis";
+import { Base, CSGGeometryRef, Geometry } from "@react-three/csg";
 interface Props {
   index?: number;
   position: number[];
@@ -31,7 +32,9 @@ interface Props {
   key?: number;
   Texture?: THREE.Texture;
   children?: React.ReactNode;
+  children2?: React.ReactNode;
   pool: PoolType;
+  csg: RefObject<CSGGeometryRef>;
 }
 const PoolBool: FC<Props> = ({
   width = 5,
@@ -46,6 +49,8 @@ const PoolBool: FC<Props> = ({
   children,
   pool,
   Texture: poolTexture,
+  children2,
+  csg,
 }) => {
   const groupRef = useRef<THREE.Group>(null);
   const gp = useRef<THREE.Group>(null);
@@ -391,8 +396,7 @@ const PoolBool: FC<Props> = ({
         }}
       >
         {/* Pool */}
-        <mesh geometry={geometry} position={[0, -height / 2, 0]}>
-          {/* <boxGeometry args={[width, height, depth]} /> */}
+        {/* <mesh geometry={geometry} position={[0, -height / 2, 0]}>
           <meshStandardMaterial
             metalness={0.2}
             roughness={0.2}
@@ -400,10 +404,31 @@ const PoolBool: FC<Props> = ({
             side={THREE.DoubleSide}
             color={"lightblue"}
           />
-        </mesh>
+        </mesh> */}
+        <mesh position={[0, -height / 2, 0]}>
+          <Geometry ref={csg} computeVertexNormals>
+            <Base geometry={geometry}>
+              <meshStandardMaterial
+                metalness={0.2}
+                roughness={0.1}
+                map={Texture}
+                side={THREE.DoubleSide}
+                color={"lightblue"}
+              />
+            </Base>
 
+            {children2}
+          </Geometry>
+          <meshStandardMaterial
+            metalness={0.2}
+            roughness={0.1}
+            map={Texture}
+            side={THREE.DoubleSide}
+            color={"lightblue"}
+          />
+        </mesh>
         {/* Mask */}
-        <Mask id={1} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.025, 0]}>
+        <Mask id={1} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
           <planeGeometry args={[width, depth]} />
           {/* <meshBasicMaterial color={"salmon"}/> */}
         </Mask>

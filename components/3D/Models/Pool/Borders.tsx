@@ -1,5 +1,5 @@
 import { Brush } from "@react-three/csg";
-import { useTexture } from "@react-three/drei";
+import { useMask, useTexture } from "@react-three/drei";
 import { useThree } from "@react-three/fiber";
 import { FC, ReactElement, useRef } from "react";
 import * as THREE from "three";
@@ -83,10 +83,11 @@ const Borders: FC<Props> = ({
   };
   const squareShape = new THREE.Shape()
     .moveTo(-poolWidth / 2, 0)
-    .lineTo(-poolWidth / 2 - height*5, height*5)
-    .lineTo(poolWidth / 2 + height*5, height*5)
+    .lineTo(-poolWidth / 2 - height * 5, height * 5)
+    .lineTo(poolWidth / 2 + height * 5, height * 5)
     .lineTo(poolWidth / 2, 0);
   const geometry = new THREE.ExtrudeGeometry(squareShape, extrudeSettings);
+  const stencil = useMask(1, true);
 
   return (
     <group position={[position.x, height, position.z]}>
@@ -102,6 +103,7 @@ const Borders: FC<Props> = ({
           roughness={0.3}
           color={"#d6dee7"}
           map={cementTexture}
+          {...stencil}
         />
       </mesh>
     </group>

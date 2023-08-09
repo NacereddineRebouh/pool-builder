@@ -85,7 +85,7 @@ const InfinityEdge = ({
       else width = poolDepth;
       break;
     case model.side === "Top":
-      if (poolType === "lshape") width = poolbHeight - poolWidth;
+      if (poolType === "lshape") width = poolbHeight - poolWidth - 0.05*5;
       else width = poolWidth;
       break;
     case model.side === "Bottom":
@@ -96,7 +96,7 @@ const InfinityEdge = ({
       width = poolDepth;
       break;
     case model.side === "tLeft":
-      width = pooltHeight - poolWidth;
+      width = pooltHeight - poolWidth - 0.05*5;
       break;
     case model.side === "tRight":
       width = pooltHeight;
