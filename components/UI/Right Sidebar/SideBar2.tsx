@@ -29,6 +29,9 @@ import {
   setDefaultWidthLShape,
   setDefaultTHeightLShape,
   setDefaultBHeightLShape,
+  setDefaultWidthSquarePool,
+  setDefaultHeightSquarePool,
+  setDefaultDepthSquarePool,
 } from "@/slices/defaultsSlice";
 import Properties2 from "./Properties2";
 import { setUseInches } from "@/slices/propertiesSlice";
@@ -65,6 +68,11 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         setDHeight(defaults.pool.height);
         setDDepth(defaults.pool.depth);
         break;
+      case "squarepool":
+        setDWidth(defaults.squarepool.width);
+        setDHeight(defaults.squarepool.height);
+        setDDepth(defaults.squarepool.depth);
+        break;
       case "hottub":
         setDWidth(defaults.hottub.width);
         setDHeight(defaults.hottub.height);
@@ -93,6 +101,11 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         dispatch(setDefaultWidthPool(Dwidth));
         dispatch(setDefaultHeightPool(Dheight));
         dispatch(setDefaultDepthPool(Ddepth));
+        break;
+      case "squarepool":
+        dispatch(setDefaultWidthSquarePool(Dwidth));
+        dispatch(setDefaultHeightSquarePool(Dheight));
+        dispatch(setDefaultDepthSquarePool(Ddepth));
         break;
       case "hottub":
         dispatch(setDefaultWidthHottub(Dwidth));
@@ -123,7 +136,6 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   );
   useEffect(() => {
     setSelectedElement(targetTitle);
-    console.log("selectedElement:", selectedElement);
   }, [targetTitle]);
 
   //------ target Props -----
@@ -156,7 +168,6 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   // fetch pool
   useEffect(() => {
     if (targetPool != null) {
-      console.log("fetching POOL", targetPool, pools[targetPool]);
       setDepth(pools[targetPool]?.sDepth);
       if (pools[targetPool] && pools[targetPool]?.poolType === "lshape") {
         setbHeight(pools[targetPool]?.sbHeight);
@@ -187,13 +198,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
 
   // fetch model
   useEffect(() => {
-    console.log("fetching Model", targetModel);
     if (targetModel) {
-      console.log(
-        "fetching Model2",
-        pools[targetModel.pool]?.childrens[targetModel.model]
-      );
-
       setDepth(pools[targetModel.pool]?.childrens[targetModel.model]?.sDepth);
       setHeight(pools[targetModel.pool]?.childrens[targetModel.model]?.sHeight);
       setWidth(pools[targetModel.pool]?.childrens[targetModel.model]?.sWidth);
@@ -301,7 +306,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
 
             {/* Transforms */}
             <div className="flex items-center justify-start gap-x-2 text-lg font-medium text-slate-50">
-              <div>Transforms</div>{" "}
+              <div>Transforms</div>
               <Checkbox
                 checked={Inches}
                 onChange={(e) => {
@@ -371,6 +376,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
                 { value: "pool", label: "Pool" },
                 { value: "cyl", label: "Cylinder Pool" },
                 { value: "hottub", label: "Hottub" },
+                { value: "squarepool", label: "SquarePool" },
                 { value: "lshape", label: "LShape" },
                 // { value: 'Fountain', label: 'Fountain' },
               ]}

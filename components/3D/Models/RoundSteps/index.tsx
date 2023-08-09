@@ -152,8 +152,6 @@ const RoundSteps: FC<Props> = ({
         }}
       >
         {stepsArray.map((step, idx) => {
-          // boxwidth/2 // set step to the edge
-          const offset = -3 / 5 / 2;
           let newPosition = [0, -idx * heightPerStep, 0];
           return (
             <SingleRoundStep

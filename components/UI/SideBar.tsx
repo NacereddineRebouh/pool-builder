@@ -39,7 +39,7 @@ const SideBar: React.FC<ISideBarProps> = () => {
       <Icon
         disabled={Pools.length > 0}
         icon={box.src}
-        onPointerDown={(e) => OnMouseDownHandler(e, "hottub")}
+        onPointerDown={(e) => OnMouseDownHandler(e, "squarepool")}
       />
       <Icon
         disabled={Pools.length > 0}
@@ -54,7 +54,7 @@ const SideBar: React.FC<ISideBarProps> = () => {
       <Icon
         disabled={Pools.length > 0}
         icon={poolWithSteps.src}
-        onPointerDown={(e) => OnMouseDownHandler(e, "poolWithSteps")}
+        onPointerDown={(e) => OnMouseDownHandler(e, "hottub")}
       />
       <Icon
         disabled={Pools.length > 0}
@@ -135,11 +135,6 @@ const SideBar: React.FC<ISideBarProps> = () => {
           />
         </div>
         <div className="flex items-center justify-start gap-x-1">
-          <Icon
-            disabled={Pools.length > 0 ? false : true}
-            icon={roundSteps.src}
-            onPointerDown={(e) => OnMouseDownHandler(e, "RoundSteps")}
-          />
           <Icon
             disabled={Pools.length > 0 ? false : true}
             icon={inset.src}

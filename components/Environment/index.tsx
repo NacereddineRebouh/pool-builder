@@ -19,9 +19,9 @@ const Environment: FC = (): ReactElement => {
   return (
     <group>
       <ambientLight intensity={1} />
-      <directionalLight position={[0, 10, 5]} />
+      {/* <directionalLight position={[0, 10, 5]} /> */}
 
-      <Env preset="forest" />
+      <Env preset="sunset" />
       <Sky />
       {/* {createClouds} */}
     </group>

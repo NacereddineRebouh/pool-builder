@@ -31,10 +31,12 @@ export function CornerRoundStep({
   const { nodes, materials, animations } = useGLTF(
     "/models/newModels/cornerRoundStep.glb"
   ) as GLTFResult;
-  materials["pool texture"].color = new THREE.Color("lightblue");
   const tileTexture = useTexture("/textures/tiles.jpg");
   tileTexture.wrapT = THREE.RepeatWrapping;
   tileTexture.wrapS = THREE.RepeatWrapping;
+  tileTexture.repeat.set(1, 1);
+  tileTexture.colorSpace = THREE.SRGBColorSpace;
+  tileTexture.needsUpdate = true;
   return (
     <group
       ref={groupRef}
@@ -55,6 +57,7 @@ export function CornerRoundStep({
             metalness={0.2}
             roughness={0.1}
             color={"lightblue"}
+            side={2}
           />
         </mesh>
       </group>

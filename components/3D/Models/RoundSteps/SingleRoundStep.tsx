@@ -32,6 +32,9 @@ export function SingleRoundStep({
   const tileTexture = useTexture("/textures/tiles.jpg");
   tileTexture.wrapT = THREE.RepeatWrapping;
   tileTexture.wrapS = THREE.RepeatWrapping;
+  tileTexture.repeat.set(1, 1);
+  tileTexture.colorSpace = THREE.SRGBColorSpace;
+  tileTexture.needsUpdate = true;
   return (
     <group
       ref={groupRef}

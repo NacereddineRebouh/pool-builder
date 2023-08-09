@@ -52,7 +52,7 @@ const SceneElement: React.FunctionComponent<SceneElementProps> = ({
     if (
       type === "pool" ||
       type === "hottub" ||
-      type === "poolWithSteps" ||
+      type === "squarepool" ||
       type === "lshape" ||
       type === "cyl"
     ) {
@@ -120,7 +120,7 @@ const SceneElement: React.FunctionComponent<SceneElementProps> = ({
           if (
             type === "pool" ||
             type === "hottub" ||
-            type === "poolWithSteps" ||
+            type === "squarepool" ||
             type === "lshape" ||
             type === "cyl"
           ) {

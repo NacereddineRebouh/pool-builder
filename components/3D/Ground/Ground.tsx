@@ -718,7 +718,7 @@ const Grid = ({
         type != "pool" &&
         type != "hottub" &&
         type != "cyl" &&
-        type != "poolWithSteps" &&
+        type != "squarepool" &&
         type != "lshape"
       ) {
         // find closest pool
@@ -1555,8 +1555,8 @@ const Grid = ({
       if (
         type != "pool" &&
         type != "hottub" &&
+        type != "squarepool" &&
         type != "cyl" &&
-        type != "poolWithSteps" &&
         type != "lshape" &&
         ClosestPoolType === "lshape"
       ) {
@@ -2261,7 +2261,7 @@ const Grid = ({
               // temp[ClosestIndex].used = true;
               // setbeach(temp)
               let rotation = 0;
-              let position = [0, 1.1, 0]; // box height/2 + border height
+              let position = [0, 0.1, 0]; // box height/2 + border height
               let side = sides.Left;
               switch (ClosestIndex) {
                 case 0:
@@ -2326,7 +2326,7 @@ const Grid = ({
         type != "pool" &&
         type != "hottub" &&
         type != "cyl" &&
-        type != "poolWithSteps" &&
+        type != "squarepool" &&
         type != "lshape" &&
         ClosestPoolType === "hottub"
       ) {
@@ -2465,7 +2465,27 @@ const Grid = ({
                 childrens: [],
               })
             );
-            // dispatch(addNewPool({poolType:type, width:16, height:5, depth:12, sWidth:16, sHeight:5, sDepth:12, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1], sPosition:[0,0,0], sScale:[1,1,1], sRotation:[0,0,0], rotation:[0,0,0], childrens:[]}))
+            break;
+
+          case "squarepool":
+            dispatch(
+              addNewPool({
+                poolType: type,
+                width: defaults.squarepool.width,
+                height: defaults.squarepool.height,
+                depth: defaults.squarepool.depth,
+                sWidth: defaults.squarepool.width,
+                sHeight: defaults.squarepool.height,
+                sDepth: defaults.squarepool.depth,
+                position: [e.point.x, e.point.y, e.point.z],
+                scale: [1, 1, 1],
+                sPosition: [e.point.x, e.point.y, e.point.z],
+                sScale: [1, 1, 1],
+                sRotation: [0, 0, 0],
+                rotation: [0, 0, 0],
+                childrens: [],
+              })
+            );
             break;
           case "hottub":
             dispatch(
@@ -2488,22 +2508,6 @@ const Grid = ({
               })
             );
             // dispatch(addNewPool({poolType:type, width:16, height:5, depth:12, sWidth:16, sHeight:5, sDepth:12, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1], sPosition:[0,0,0], sScale:[1,1,1], sRotation:[0,0,0], rotation:[0,0,0], childrens:[]}))
-            break;
-          case "poolWithSteps": // hottub
-            dispatch(
-              addNewPool({
-                poolType: type,
-                width: defaults.pool.width,
-                height: defaults.pool.height,
-                depth: defaults.pool.depth,
-                sWidth: defaults.pool.width,
-                sHeight: defaults.pool.height,
-                sDepth: defaults.pool.depth,
-                position: [e.point.x, e.point.y, e.point.z],
-                scale: [1, 1, 1],
-                childrens: [],
-              })
-            );
             break;
           case "lshape":
             dispatch(
@@ -3120,7 +3124,7 @@ const Grid = ({
               // temp[ClosestIndex].used = true;
               // setbeach(temp)
               let rotation = 0;
-              let position = [0, 1, 0];
+              let position = [0, 0.22, 0];
               let side = sides.Left;
               switch (ClosestIndex) {
                 case 0:

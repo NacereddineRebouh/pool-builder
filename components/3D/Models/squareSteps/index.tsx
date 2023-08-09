@@ -58,6 +58,9 @@ const SquareSteps: FC<squareStepsProps> = ({
   const tileTexture = useTexture("/textures/tiles.jpg");
   tileTexture.wrapT = THREE.RepeatWrapping;
   tileTexture.wrapS = THREE.RepeatWrapping;
+  tileTexture.repeat.set(1, 1);
+  tileTexture.colorSpace = THREE.SRGBColorSpace;
+  tileTexture.needsUpdate = true;
   const steps = Math.max(1, Math.ceil(poolHeight / heightPerStep));
   const stepsArray = new Array(steps).fill(0);
   const dispatch = useAppDispatch();
@@ -69,20 +72,6 @@ const SquareSteps: FC<squareStepsProps> = ({
     position.y,
     position.z,
   ];
-  // switch (true) {
-  //   case side === "Left" || side === "tLeft":
-  //     newOffset = [position.x - (steps * gap) / 2, position.y, position.z];
-  //     break;
-  //   case side === "tRight":
-  //     newOffset = [position.x + (steps * gap) / 2, position.y, position.z];
-  //     break;
-  //   case side === "Top" || side === "tTop":
-  //     newOffset = [position.x, position.y, position.z - (steps * gap) / 2];
-  //     break;
-  //   case side === "Bottom":
-  //     newOffset = [position.x, position.y, position.z + (steps * gap) / 2];
-  //     break;
-  // }
   const [Mat, setMat] = useState(new THREE.Matrix4());
   useEffect(() => {
     const position = new THREE.Vector3(

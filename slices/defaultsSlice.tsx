@@ -35,6 +35,7 @@ export interface DefaultsType3 {
 export interface Defaults {
   cyl: DefaultsType2;
   pool: DefaultsType;
+  squarepool: DefaultsType;
   hottub: DefaultsType1;
   lshape: DefaultsType3;
 }
@@ -48,6 +49,11 @@ const initialState: Defaults = {
   pool: {
     width: 5,
     height: 1.5,
+    depth: 3,
+  },
+  squarepool: {
+    width: 3,
+    height: 3,
     depth: 3,
   },
   hottub: {
@@ -68,23 +74,32 @@ export const defaultsSlice = createSlice({
   name: "default",
   initialState,
   reducers: {
-    setDefaultTopCyl: (state, action) => {
-      state["cyl"].top = action.payload as number;
-    },
     setDefaultWidthPool: (state, action) => {
       state["pool"].width = action.payload as number;
-    },
-    setDefaultHeightCyl: (state, action) => {
-      state["cyl"].height = action.payload as number;
     },
     setDefaultHeightPool: (state, action) => {
       state["pool"].height = action.payload as number;
     },
-    setDefaultBottomCyl: (state, action) => {
-      state["cyl"].bottom = action.payload as number;
-    },
     setDefaultDepthPool: (state, action) => {
       state["pool"].depth = action.payload as number;
+    },
+    setDefaultWidthSquarePool: (state, action) => {
+      state["squarepool"].width = action.payload as number;
+    },
+    setDefaultHeightSquarePool: (state, action) => {
+      state["squarepool"].height = action.payload as number;
+    },
+    setDefaultDepthSquarePool: (state, action) => {
+      state["squarepool"].depth = action.payload as number;
+    },
+    setDefaultTopCyl: (state, action) => {
+      state["cyl"].top = action.payload as number;
+    },
+    setDefaultHeightCyl: (state, action) => {
+      state["cyl"].height = action.payload as number;
+    },
+    setDefaultBottomCyl: (state, action) => {
+      state["cyl"].bottom = action.payload as number;
     },
     setDefaultWidthHottub: (state, action) => {
       state["hottub"].width = action.payload as number;
@@ -114,6 +129,9 @@ export const defaultsSlice = createSlice({
 });
 
 export const {
+  setDefaultWidthSquarePool,
+  setDefaultHeightSquarePool,
+  setDefaultDepthSquarePool,
   setDefaultBHeightLShape,
   setDefaultDepthLShape,
   setDefaultTHeightLShape,

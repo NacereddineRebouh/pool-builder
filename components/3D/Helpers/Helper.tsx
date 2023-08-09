@@ -14,9 +14,9 @@ interface HelperProps {}
 
 const Helper: React.FC<HelperProps> = ({}) => {
   const helper = useAppSelector((state: RootState) => state.helper);
-  // const Coord = useAppSelector(selectSnappingPosition)
   const Coord = useAppSelector(selectPointer);
   const defaults = useAppSelector((state: RootState) => state.defaults);
+  console.log("helper.type:", helper.type);
   switch (helper.type) {
     case "pool":
       return (
@@ -31,14 +31,31 @@ const Helper: React.FC<HelperProps> = ({}) => {
           />
         )
       );
-    case "poolWithSteps":
+    case "squarepool":
+      return (
+        helper.dragging && (
+          <PoolHelper
+            props={{
+              position: [
+                Coord.x,
+                -defaults.squarepool.height / 2 + 0.2,
+                Coord.z,
+              ],
+            }}
+            height={defaults.squarepool.height}
+            width={defaults.squarepool.width}
+            depth={defaults.squarepool.depth}
+          />
+        )
+      );
+    case "hottub":
       return (
         helper.dragging && (
           <PoolHelper
             props={{ position: [Coord.x, -5 / 2 + 0.5, Coord.z] }}
-            height={5}
-            width={16}
-            depth={12}
+            height={defaults.hottub.height}
+            width={defaults.hottub.width}
+            depth={defaults.hottub.depth}
           />
         )
       );

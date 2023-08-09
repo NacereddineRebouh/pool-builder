@@ -57,14 +57,15 @@ export default function Steps({
   const tileTexture = useTexture("/textures/tiles.jpg");
   tileTexture.wrapT = THREE.RepeatWrapping;
   tileTexture.wrapS = THREE.RepeatWrapping;
+  tileTexture.repeat.set(1, 1);
+  tileTexture.colorSpace = THREE.SRGBColorSpace;
+  tileTexture.needsUpdate = true;
   const steps = Math.ceil(poolHeight / heightPerStep);
-  console.log("nb Steps", poolHeight, heightPerStep, "res:", steps);
   const stepsArray = new Array(steps).fill(0);
   const dispatch = useAppDispatch();
   const target = useAppSelector(selectTarget);
   const groupRef = useRef<THREE.Group>(null);
   const visible = useAppSelector(selectPivotVisibility);
-  console.log(side);
   let newOffset: [number, number, number] = [
     position.x,
     position.y,
@@ -176,7 +177,7 @@ export default function Steps({
                 0,
               ]; //1.5 == boxWidth/2
               break;
-            case side === "tRight":
+            case side === "tRight" || side === "Right":
               newPosition = [
                 -offset - (gap / 2) * idx,
                 -offsetY - idx * heightPerStep,
@@ -204,7 +205,7 @@ export default function Steps({
             case side === "Left" || side === "tLeft":
               boxArgs = [heightPerStep + gap * idx, heightPerStep, poolDepth];
               break;
-            case side === "tRight":
+            case side === "tRight" || side === "Right":
               boxArgs = [heightPerStep + gap * idx, heightPerStep, poolDepth];
               break;
             case side === "Top" || side === "tTop":
@@ -214,8 +215,6 @@ export default function Steps({
               boxArgs = [poolWidth, heightPerStep, heightPerStep + gap * idx];
               break;
           }
-          console.log("boxArgs:", boxArgs);
-          console.log("newPosition:", newPosition);
           return (
             <mesh key={idx} position={new THREE.Vector3(...newPosition)}>
               <boxGeometry args={[boxArgs[0], boxArgs[1], boxArgs[2]]} />

@@ -97,7 +97,7 @@ export function InsetStep({
       scale={visible && target?.uuid === groupRef.current?.uuid ? 75 : 0}
       depthTest={false}
       fixed
-      onDrag={onDrag}
+      // onDrag={() => onDrag()}
       onDragEnd={(w, de, wl, delw) => {
         const position = new THREE.Vector3(); // create one and reuse it
         const quaternion = new THREE.Quaternion();
@@ -126,7 +126,6 @@ export function InsetStep({
         );
       }}
       matrix={Mat}
-      translateP={[sPosition[0], sPosition[1], sPosition[2]]}
       offset={[
         groupRef.current ? groupRef.current.position.x : position.x,
         groupRef.current ? groupRef.current.position.y : position.y,
