@@ -31,6 +31,7 @@ export interface DefaultsType3 {
   theight: number;
   bheight: number;
   depth: number;
+  nbSwimJet: number;
 }
 export interface Defaults {
   cyl: DefaultsType2;
@@ -67,6 +68,7 @@ const initialState: Defaults = {
     theight: 16,
     bheight: 12,
     depth: 2,
+    nbSwimJet: 1,
   },
 };
 
@@ -125,6 +127,9 @@ export const defaultsSlice = createSlice({
     setDefaultWidthLShape: (state, action) => {
       state["lshape"].width = action.payload as number;
     },
+    setDefaultNbSwimJetsLShape: (state, action) => {
+      state["lshape"].nbSwimJet = action.payload as number;
+    },
   },
 });
 
@@ -136,6 +141,7 @@ export const {
   setDefaultDepthLShape,
   setDefaultTHeightLShape,
   setDefaultWidthLShape,
+  setDefaultNbSwimJetsLShape,
   setDefaultTopCyl,
   setDefaultWidthPool,
   setDefaultHeightCyl,

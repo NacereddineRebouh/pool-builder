@@ -16,6 +16,8 @@ interface IPropertiesProps {
   height: number | null;
   setHeight: React.Dispatch<React.SetStateAction<number | null>>;
   depth: number | null;
+  bordersDepth: number | null;
+  bordersHeight: number | null;
   setDepth: React.Dispatch<React.SetStateAction<number | null>>;
   defaults: string | null;
   nbSwimjet: number | null;
@@ -36,6 +38,8 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
   pools,
   defaults,
   width,
+  bordersHeight,
+  bordersDepth,
   setWidth,
   height,
   setHeight,
@@ -51,9 +55,11 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const [BenchSeatings, setBenchSeatings] = useState<string[]>([]);
+  const [enableWater, setEnableWater] = useState<boolean>(false);
   useEffect(() => {
     if (targetPool != null) {
       setBenchSeatings(pools[targetPool]?.BenchSeatings);
+      setEnableWater(pools[targetPool]?.enableWater);
     }
   }, [pools, targetPool, targetModel]);
   return (
@@ -253,7 +259,7 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
       )}
 
       {/* Depth (Width) */}
-      <div className="flex w-full items-center justify-start gap-x-6">
+      <div className="my-1 flex w-full items-center justify-start gap-x-6">
         <div className="w-full self-start text-lg text-slate-50">
           {targetPool != null &&
           pools[targetPool] &&
@@ -311,6 +317,95 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
           </div>
         </div>
       </div>
+
+      {/* bordersDepth*/}
+      {targetPool != null && pools[targetPool] && (
+        <div className="my-1 flex w-full items-center justify-start gap-x-6">
+          <div className="w-full self-start text-lg text-slate-50">
+            Border Depth
+          </div>
+          <div className="flex w-full items-center justify-start gap-x-2">
+            <NumberInput
+              type="number"
+              onChange={(e) => {
+                let val = +e;
+                if (inches) {
+                  val = inchesToMeters(+e);
+                }
+                if (targetPool != null && pools[targetPool]) {
+                  const pool = { ...pools[targetPool] };
+                  if (val != pool.bordersDepth) {
+                    pool.bordersDepth = val; // Assign the updated array back to pool.sRotation
+                    dispatch(
+                      ReplacePool({ poolIndex: targetPool, pool: pool })
+                    );
+                  }
+                  // setdepth(e.currentTarget.value as unknown as number)
+                }
+              }}
+              name="depth"
+              className="max-w-[80px] bg-transparent text-slate-50"
+              step={0.1}
+              precision={2}
+              value={
+                bordersDepth
+                  ? inches
+                    ? metersToInches(bordersDepth)
+                    : bordersDepth
+                  : 0.25
+              }
+            />
+            <div className="mx-1 font-medium text-slate-50">
+              {inches ? "Inches" : "Meters"}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* bordersHeight*/}
+      {targetPool != null && pools[targetPool] && (
+        <div className="my-1 flex w-full items-center justify-start gap-x-6">
+          <div className="w-full self-start text-lg text-slate-50">
+            Border Height
+          </div>
+          <div className="flex w-full items-center justify-start gap-x-2">
+            <NumberInput
+              type="number"
+              onChange={(e) => {
+                let val = +e;
+                if (inches) {
+                  val = inchesToMeters(+e);
+                }
+                if (targetPool != null && pools[targetPool]) {
+                  const pool = { ...pools[targetPool] };
+                  if (val != pool.bordersHeight) {
+                    pool.bordersHeight = val; // Assign the updated array back to pool.sRotation
+                    dispatch(
+                      ReplacePool({ poolIndex: targetPool, pool: pool })
+                    );
+                  }
+                  // setdepth(e.currentTarget.value as unknown as number)
+                }
+              }}
+              name="height"
+              className="max-w-[80px] bg-transparent text-slate-50"
+              step={0.1}
+              precision={2}
+              value={
+                bordersHeight
+                  ? inches
+                    ? metersToInches(bordersHeight)
+                    : bordersHeight
+                  : 0.05
+              }
+            />
+            <div className="mx-1 font-medium text-slate-50">
+              {inches ? "Inches" : "Meters"}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* nbSwimjet */}
       {targetPool != null &&
         pools[targetPool] &&
@@ -318,9 +413,9 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
         pools[targetPool].childrens.filter(
           (obj) => obj.shapeType === "RegularJets"
         ).length > 0 && (
-          <div className="flex w-full items-center justify-start gap-x-6">
+          <div className="my-1 flex w-full items-center justify-start gap-x-6">
             <div className="w-full self-start text-lg text-slate-50">
-              Swimjets
+              RegularJets
             </div>
             <div className="flex w-full items-center justify-start gap-x-2">
               <NumberInput
@@ -349,8 +444,9 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
       {targetPool != null &&
         pools[targetPool] &&
         (pools[targetPool].poolType === "hottub" ||
-          pools[targetPool].poolType === "pool") && (
-          <div className="flex w-full items-center justify-start gap-x-6">
+          pools[targetPool].poolType === "pool" ||
+          pools[targetPool].poolType === "squarepool") && (
+          <div className="my-1 flex w-full items-center justify-start gap-x-6">
             <div className="w-full self-start text-lg text-slate-50">
               BenchSeatings
             </div>
@@ -376,6 +472,31 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                   <Checkbox color="gray" value="bottom" label="Bottom" />
                 </Group>
               </Checkbox.Group>
+            </div>
+          </div>
+        )}
+
+      {/* Enable water */}
+      {targetPool != null &&
+        pools[targetPool] &&
+        (pools[targetPool].poolType === "hottub" ||
+          pools[targetPool].poolType === "pool" ||
+          pools[targetPool].poolType === "lshape" ||
+          pools[targetPool].poolType === "squarepool") && (
+          <div className="my-1 flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              Water surface
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2 text-slate-50">
+              <Checkbox
+                checked={enableWater}
+                onChange={(event) => {
+                  setEnableWater(event.currentTarget.checked);
+                  const pool = { ...pools[targetPool] };
+                  pool.enableWater = event.currentTarget.checked;
+                  dispatch(ReplacePool({ poolIndex: targetPool, pool: pool }));
+                }}
+              />
             </div>
           </div>
         )}

@@ -1,12 +1,12 @@
 "use client";
-import { Instances, Instance, useMask } from "@react-three/drei";
+import { Instances, Instance, useMask, useTexture } from "@react-three/drei";
 import React, { useContext, useEffect, useState } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectPointer, setPointer, setRotation } from "@/slices/pointerSlice";
 import { setHelper } from "@/slices/helperSlice";
 import { RootState } from "@/store/store";
-import { ThreeEvent } from "@react-three/fiber";
+import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import {
   addPool as addNewPool,
   addChildren,
@@ -1117,7 +1117,7 @@ const Grid = ({
                   };
                 }
                 break;
-              case type === "SwimJet":
+              case type === "SwimJet" || type === "RegularJets":
                 const availableSwimJet = swimJetLShape.filter(
                   (obj) => obj.used === false
                 );
@@ -1379,38 +1379,6 @@ const Grid = ({
                 }
                 break;
               case type === "SwimJet" || type === "RegularJets":
-                // if (type === "SwimJet") {
-                //   const temp = closestPool.childrens
-                //     .filter((obj) => obj.shapeType === "SwimJet")
-                //     .map((e) => {
-                //       return e.side;
-                //     });
-                //   swimJet.map((e, index) => {
-                //     switch (index) {
-                //       case 0:
-                //         if (temp.includes(sides.Left)) {
-                //           swimJet[0].used = true;
-                //         }
-                //         break;
-                //       case 1:
-                //         //right
-                //         if (temp.includes(sides.Right)) {
-                //           swimJet[1].used = true;
-                //         }
-                //         break;
-                //       case 2:
-                //         if (temp.includes(sides.Top)) {
-                //           swimJet[2].used = true;
-                //         }
-                //         break;
-                //       case 3:
-                //         if (temp.includes(sides.Bottom)) {
-                //           swimJet[3].used = true;
-                //         }
-                //         break;
-                //     }
-                //   });
-                // }
                 const availableSwimJet = swimJet.filter(
                   (obj) => obj.used === false
                 );
@@ -2456,9 +2424,9 @@ const Grid = ({
                 sWidth: defaults.pool.width,
                 sHeight: defaults.pool.height,
                 sDepth: defaults.pool.depth,
-                position: [e.point.x, e.point.y, e.point.z],
+                position: [e.point.x, e.point.y + 0.05, e.point.z],
                 scale: [1, 1, 1],
-                sPosition: [e.point.x, e.point.y, e.point.z],
+                sPosition: [e.point.x, e.point.y + 0.05, e.point.z],
                 sScale: [1, 1, 1],
                 sRotation: [0, 0, 0],
                 rotation: [0, 0, 0],
@@ -2477,9 +2445,9 @@ const Grid = ({
                 sWidth: defaults.squarepool.width,
                 sHeight: defaults.squarepool.height,
                 sDepth: defaults.squarepool.depth,
-                position: [e.point.x, e.point.y, e.point.z],
+                position: [e.point.x, e.point.y + 0.05, e.point.z],
                 scale: [1, 1, 1],
-                sPosition: [e.point.x, e.point.y, e.point.z],
+                sPosition: [e.point.x, e.point.y + 0.05, e.point.z],
                 sScale: [1, 1, 1],
                 sRotation: [0, 0, 0],
                 rotation: [0, 0, 0],
@@ -2497,9 +2465,9 @@ const Grid = ({
                 sWidth: defaults.hottub.width,
                 sHeight: defaults.hottub.height,
                 sDepth: defaults.hottub.depth,
-                position: [e.point.x, e.point.y, e.point.z],
+                position: [e.point.x, e.point.y + 0.05, e.point.z],
                 scale: [1, 1, 1],
-                sPosition: [e.point.x, e.point.y, e.point.z],
+                sPosition: [e.point.x, e.point.y + 0.05, e.point.z],
                 sScale: [1, 1, 1],
                 sRotation: [0, 0, 0],
                 rotation: [0, 0, 0],
@@ -2507,7 +2475,7 @@ const Grid = ({
                 nbSwimJet: defaults.hottub.nbSwimJet,
               })
             );
-            // dispatch(addNewPool({poolType:type, width:16, height:5, depth:12, sWidth:16, sHeight:5, sDepth:12, position:[e.point.x,e.point.y,e.point.z], scale:[1,1,1], sPosition:[0,0,0], sScale:[1,1,1], sRotation:[0,0,0], rotation:[0,0,0], childrens:[]}))
+            // dispatch(addNewPool({poolType:type, width:16, height:5, depth:12, sWidth:16, sHeight:5, sDepth:12, position:[e.point.x,e.point.y + 0.05,e.point.z], scale:[1,1,1], sPosition:[0,0,0], sScale:[1,1,1], sRotation:[0,0,0], rotation:[0,0,0], childrens:[]}))
             break;
           case "lshape":
             dispatch(
@@ -2521,9 +2489,9 @@ const Grid = ({
                 sbHeight: defaults.lshape.bheight,
                 sWidth: defaults.lshape.width,
                 sDepth: defaults.lshape.depth,
-                position: [e.point.x, e.point.y, e.point.z],
+                position: [e.point.x, e.point.y + 0.05, e.point.z],
                 scale: [1, 1, 1],
-                sPosition: [e.point.x, e.point.y, e.point.z],
+                sPosition: [e.point.x, e.point.y + 0.05, e.point.z],
                 sScale: [1, 1, 1],
                 sRotation: [0, 0, 0],
                 rotation: [0, 0, 0],
@@ -2541,7 +2509,7 @@ const Grid = ({
                 sWidth: defaults.cyl.top,
                 sHeight: defaults.cyl.height,
                 sDepth: defaults.cyl.bottom,
-                position: [e.point.x, e.point.y, e.point.z],
+                position: [e.point.x, e.point.y + 0.05, e.point.z],
                 scale: [1, 1, 1],
                 childrens: [],
               })
@@ -3306,7 +3274,7 @@ function GetClosest(
   setClosestIndex(0);
   let newdist = Math.sqrt(
     Math.pow(e.point.x - obj2.position.x, 2) +
-      Math.pow(e.point.y - obj2.position.y, 2) +
+      Math.pow(e.point.y + 0.05 - obj2.position.y, 2) +
       Math.pow(e.point.z - obj2.position.z, 2)
   );
   availableCorner.map((corner, index) => {

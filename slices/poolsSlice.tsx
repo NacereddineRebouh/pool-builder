@@ -44,7 +44,10 @@ export interface PoolType {
   depth: number;
   sDepth: number;
   nbSwimJet?: number;
+  bordersHeight: number;
+  bordersDepth: number;
   BenchSeatings: string[];
+  enableWater: boolean;
   childrens: ChildrensType[];
 }
 interface PoolsState {

@@ -7,10 +7,11 @@ import { Perf } from "r3f-perf";
 import Ground from "./Ground/Ground";
 import Helper from "./Helpers/Helper";
 import { AllModels } from "./All Models/AllModels";
-import LShape from "./Models/L-Shape/L-Shape";
+import { Euler, PlaneGeometry, Vector3 } from "three";
 type Props = {};
 export default function Scene({}: Props) {
   const cameraRef = useRef<any>(null);
+  const g = new PlaneGeometry(5, 5);
   return (
     <Canvas>
       <Perf position={"bottom-right"} />
@@ -19,19 +20,16 @@ export default function Scene({}: Props) {
         makeDefault={true}
         position={[0, 1, 2]}
         near={0.1}
-        far={200}
+        far={100}
       />
       <OrbitControls makeDefault maxPolarAngle={Math.PI / 2} />
       <Environment />
-
       <Ground />
       <Suspense>
         <Helper />
       </Suspense>
-      {/* <House/> */}
+      <Suspense></Suspense>
       <AllModels />
-      {/* <TestLShape width={4} theight={16} bheight={12} depth={2} /> */}
-      {/* <CustomBox width={5} height={2} depth={4} /> */}
     </Canvas>
   );
 }

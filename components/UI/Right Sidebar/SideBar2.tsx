@@ -32,6 +32,7 @@ import {
   setDefaultWidthSquarePool,
   setDefaultHeightSquarePool,
   setDefaultDepthSquarePool,
+  setDefaultNbSwimJetsLShape,
 } from "@/slices/defaultsSlice";
 import Properties2 from "./Properties2";
 import { setUseInches } from "@/slices/propertiesSlice";
@@ -84,6 +85,8 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         setDtHeight(defaults.lshape.theight);
         setDbHeight(defaults.lshape.bheight);
         setDDepth(defaults.lshape.depth);
+        setDnbSwimjet(defaults.lshape.nbSwimJet);
+
         break;
     }
   }, [Default]);
@@ -118,6 +121,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         dispatch(setDefaultTHeightLShape(Dtheight));
         dispatch(setDefaultBHeightLShape(Dbheight));
         dispatch(setDefaultDepthLShape(Ddepth));
+        dispatch(setDefaultNbSwimJetsLShape(DnbSwimjet));
         break;
     }
   }, [Dwidth, Dheight, Ddepth, DnbSwimjet, Dtheight, Dbheight]);
@@ -160,6 +164,8 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   const [height, setHeight] = useState<number | null>(null);
   const [bheight, setbHeight] = useState<number | null>(null);
   const [theight, settHeight] = useState<number | null>(null);
+  const [bordersDepth, setbordersDepth] = useState<number | null>(null);
+  const [bordersHeight, setbordersHeight] = useState<number | null>(null);
   const [depth, setDepth] = useState<number | null>(null);
   const [nbSwimJet, setnbSwimJet] = useState<number | null>(null);
 
@@ -174,9 +180,12 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         settHeight(pools[targetPool]?.stHeight);
       } else {
         setHeight(pools[targetPool]?.sHeight);
-        setnbSwimJet(pools[targetPool]?.nbSwimJet ?? 1);
       }
+
+      setnbSwimJet(pools[targetPool]?.nbSwimJet ?? 1);
       setWidth(pools[targetPool]?.sWidth);
+      setbordersDepth(pools[targetPool]?.bordersDepth);
+      setbordersHeight(pools[targetPool]?.bordersHeight);
 
       setScale({
         x: pools[targetPool]?.sScale[0],
@@ -362,6 +371,8 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
                 settHeight={settHeight}
                 bheight={bheight}
                 setbHeight={setbHeight}
+                bordersDepth={bordersDepth}
+                bordersHeight={bordersHeight}
               />
             </div>
           </div>

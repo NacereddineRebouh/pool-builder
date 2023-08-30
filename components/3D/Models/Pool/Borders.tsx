@@ -40,17 +40,17 @@ const Borders: FC<Props> = ({
   let rotation = [0, 0, 0];
   let postionOffset = [0, 0, 0]; // offset pool center
   switch (side) {
-    case "left": // Depth
+    case "bottom": // Depth
       rotation[1] = 0;
       rotation[0] = degToRad(90);
       postionOffset = [0, 0, poolDepth / 2];
       break;
-    case "right": // Depth
+    case "top": // Depth
       rotation[1] = degToRad(180);
       rotation[0] = -degToRad(90);
       postionOffset = [0, 0, -poolDepth / 2];
       break;
-    case "top": // width
+    case "right": // width
       rotation[1] = degToRad(0);
       rotation[0] = -degToRad(90);
       rotation[2] = -degToRad(90);
@@ -59,7 +59,7 @@ const Borders: FC<Props> = ({
       poolWidth = poolDepth;
       poolDepth = temp;
       break;
-    case "bottom": // width
+    case "left": // width
       rotation[1] = -degToRad(180);
       rotation[0] = -degToRad(90);
       rotation[2] = -degToRad(90);
@@ -83,14 +83,19 @@ const Borders: FC<Props> = ({
   };
   const squareShape = new THREE.Shape()
     .moveTo(-poolWidth / 2, 0)
-    .lineTo(-poolWidth / 2 - height * 5, height * 5)
-    .lineTo(poolWidth / 2 + height * 5, height * 5)
+    .lineTo(-poolWidth / 2 - depth, depth)
+    .lineTo(poolWidth / 2 + depth, depth)
     .lineTo(poolWidth / 2, 0);
   const geometry = new THREE.ExtrudeGeometry(squareShape, extrudeSettings);
   const stencil = useMask(1, true);
 
   return (
-    <group position={[position.x, height, position.z]}>
+    <group
+      renderOrder={4}
+      scale={[1, 1, 1]}
+      position={[position.x, 0, position.z]}
+    >
+      {/* 0.05 */}
       <mesh
         geometry={geometry}
         rotation={[rotation[0], rotation[1], rotation[2]]}

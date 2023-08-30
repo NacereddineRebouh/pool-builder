@@ -1,7 +1,14 @@
 "use client";
-import React, { FC, RefObject, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  RefObject,
+  Suspense,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import * as THREE from "three";
-import { Mask, useTexture } from "@react-three/drei";
+import { Mask, useMask, useTexture } from "@react-three/drei";
 import Borders from "./Borders";
 import {
   selectPivotVisibility,
@@ -12,9 +19,15 @@ import {
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
-import { ChildrensType, PoolType, ReplacePool } from "@/slices/poolsSlice";
+import {
+  ChildrensType,
+  PoolType,
+  ReplacePool,
+  sides,
+} from "@/slices/poolsSlice";
 import { CustomBoxGeometry } from "@/utils/getActiveAxis";
 import { Base, CSGGeometryRef, Geometry } from "@react-three/csg";
+import Watershape from "../../Ground/Watershape";
 interface Props {
   index?: number;
   position: number[];
@@ -60,13 +73,6 @@ const PoolBool: FC<Props> = ({
   const geometry = new THREE.BufferGeometry();
   const texture = useTexture("/textures/tiles.jpg");
   const [Texture, setTexture] = useState(poolTexture);
-  // const material = new THREE.MeshStandardMaterial({
-  //   metalness: 0.2,
-  //   roughness: 0.2,
-  //   map: texture,
-  //   side: 2,
-  //   color: new THREE.Color("lightblue"),
-  // });
   const halfWidth = width / 2;
   const halfHeight = height / 2;
   const halfDepth = depth / 2;
@@ -282,8 +288,6 @@ const PoolBool: FC<Props> = ({
   geometry.setIndex(indexAttribute);
   geometry.computeVertexNormals();
   useEffect(() => {
-    const XConstant = width / 2;
-    const YConstant = height / 2;
     if (Texture) {
       Texture.wrapS = THREE.RepeatWrapping;
       Texture.wrapT = THREE.RepeatWrapping;
@@ -349,7 +353,10 @@ const PoolBool: FC<Props> = ({
       : (top && !bottom) || (!top && bottom)
       ? depth - BenchWidth
       : depth;
-
+  const edges = pool.childrens.filter(
+    (value) => value.shapeType === "InfinityEdge"
+  );
+  const stencil = useMask(2, true);
   return (
     <PivotControls
       disableScaleAxes
@@ -414,6 +421,7 @@ const PoolBool: FC<Props> = ({
                 map={Texture}
                 side={THREE.DoubleSide}
                 color={"lightblue"}
+                {...stencil}
               />
             </Base>
 
@@ -425,6 +433,7 @@ const PoolBool: FC<Props> = ({
             map={Texture}
             side={THREE.DoubleSide}
             color={"lightblue"}
+            {...stencil}
           />
         </mesh>
         {/* Mask */}
@@ -432,49 +441,75 @@ const PoolBool: FC<Props> = ({
           <planeGeometry args={[width, depth]} />
           {/* <meshBasicMaterial color={"salmon"}/> */}
         </Mask>
-
+        {pool.enableWater && (
+          <Suspense>
+            <Watershape
+              // geometry={BasePlaneGeometry}
+              width={width}
+              height={depth}
+              textureSize={1024}
+              reflectivity={0.2}
+              flowX={0.1}
+              flowY={0}
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[0, -0.06, 0]}
+            />
+          </Suspense>
+        )}
         {/* Borders */}
         <>
-          <Borders
-            width={width}
-            height={0.05}
-            depth={height}
-            outline={2}
-            position={new THREE.Vector3(0, 0, 0)}
-            side={"left"}
-            poolWidth={width}
-            poolDepth={depth}
-          />
-          <Borders
-            width={width}
-            height={0.05}
-            depth={height}
-            outline={2}
-            position={new THREE.Vector3(0, 0, 0)}
-            side={"top"}
-            poolWidth={width}
-            poolDepth={depth}
-          />
-          <Borders
-            width={width}
-            height={0.05}
-            depth={height}
-            outline={2}
-            position={new THREE.Vector3(0, 0, 0)}
-            side={"bottom"}
-            poolWidth={width}
-            poolDepth={depth}
-          />
-          <Borders
-            width={width}
-            height={0.05}
-            depth={height}
-            outline={2}
-            position={new THREE.Vector3(0, 0, 0)}
-            side={"right"}
-            poolWidth={width}
-            poolDepth={depth}
-          />
+          {!(edges.filter((value) => value.side === sides.Left).length > 0) && (
+            <Borders
+              width={width}
+              height={pool.bordersHeight ?? 0.05}
+              depth={pool.bordersDepth ?? 0.25}
+              outline={2}
+              position={new THREE.Vector3(0, 0, 0)}
+              side={"left"}
+              poolWidth={width}
+              poolDepth={depth}
+            />
+          )}
+          {!(edges.filter((value) => value.side === sides.Top).length > 0) && (
+            <Borders
+              width={width}
+              height={pool.bordersHeight ?? 0.05}
+              depth={pool.bordersDepth ?? 0.25}
+              outline={2}
+              position={new THREE.Vector3(0, 0, 0)}
+              side={"top"}
+              poolWidth={width}
+              poolDepth={depth}
+            />
+          )}
+          {!(
+            edges.filter((value) => value.side === sides.Bottom).length > 0
+          ) && (
+            <Borders
+              width={width}
+              height={pool.bordersHeight ?? 0.05}
+              depth={pool.bordersDepth ?? 0.25}
+              outline={2}
+              position={new THREE.Vector3(0, 0, 0)}
+              side={"bottom"}
+              poolWidth={width}
+              poolDepth={depth}
+            />
+          )}
+          {!(
+            edges.filter((value) => value.side === sides.Right).length > 0
+          ) && (
+            <Borders
+              width={width}
+              height={pool.bordersHeight ?? 0.05}
+              depth={pool.bordersDepth ?? 0.25}
+              outline={2}
+              position={new THREE.Vector3(0, 0, 0)}
+              side={"right"}
+              poolWidth={width}
+              poolDepth={depth}
+            />
+          )}
         </>
         {/* ------------------- Snapping areas " stairs helper boxes "  ---------------- */}
         {/* BenchSeating */}
@@ -508,6 +543,7 @@ const PoolBool: FC<Props> = ({
               metalness={0.15}
               side={2}
               map={Texture}
+              {...stencil}
             />
           </mesh>
         )}

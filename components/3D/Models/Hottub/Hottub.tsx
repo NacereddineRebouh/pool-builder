@@ -1,5 +1,5 @@
 "use client";
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { Mask, useTexture } from "@react-three/drei";
 import Borders from "../Pool/Borders";
@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
 import { ChildrensType, PoolType, ReplacePool } from "@/slices/poolsSlice";
 import { CustomBoxGeometry } from "@/utils/getActiveAxis";
+import Watershape from "../../Ground/Watershape";
 interface Props {
   index?: number;
   position: number[];
@@ -251,17 +252,31 @@ const Hottub: FC<Props> = ({
         </mesh>
 
         {/* Mask */}
-        <Mask id={1} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.025, 0]}>
+        <Mask id={1} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
           <planeGeometry args={[width, depth]} />
           {/* <meshBasicMaterial color={"salmon"}/> */}
         </Mask>
-
+        {pool.enableWater && (
+          <Suspense>
+            <Watershape
+              // geometry={BasePlaneGeometry}
+              width={width}
+              height={depth}
+              textureSize={1024}
+              reflectivity={0.2}
+              flowX={0.1}
+              flowY={0}
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[0, -0.06, 0]}
+            />
+          </Suspense>
+        )}
         {/* Borders */}
         <>
           <Borders
             width={width}
-            height={0.05}
-            depth={height}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new THREE.Vector3(0, 0, 0)}
             side={"left"}
@@ -270,8 +285,8 @@ const Hottub: FC<Props> = ({
           />
           <Borders
             width={width}
-            height={0.05}
-            depth={height}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new THREE.Vector3(0, 0, 0)}
             side={"top"}
@@ -280,8 +295,8 @@ const Hottub: FC<Props> = ({
           />
           <Borders
             width={width}
-            height={0.05}
-            depth={height}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new THREE.Vector3(0, 0, 0)}
             side={"bottom"}
@@ -290,8 +305,8 @@ const Hottub: FC<Props> = ({
           />
           <Borders
             width={width}
-            height={0.05}
-            depth={height}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new THREE.Vector3(0, 0, 0)}
             side={"right"}

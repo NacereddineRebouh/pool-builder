@@ -98,24 +98,24 @@ const LShapeBorders: FC<Props> = ({
     bevelOffset: 1,
   };
 
-  let v = height * 5;
-  if (side === "tleft") v = -height * 5;
+  let v = depth;
+  if (side === "tleft") v = -depth;
   let squareShape = new THREE.Shape()
     .moveTo(-val / 2, 0)
-    .lineTo(-val / 2 - height * 5, height * 5) // bottom side
-    .lineTo(val / 2 + height * 5, height * 5) // top side
+    .lineTo(-val / 2 - depth, depth) // bottom side
+    .lineTo(val / 2 + depth, depth) // top side
     .lineTo(val / 2, 0);
   if (side === "tleft")
     squareShape = new THREE.Shape()
       .moveTo(-val / 2, 0)
-      .lineTo(-val / 2 + height * 5, height * 5) // bottom side
-      .lineTo(val / 2 + height * 5, height * 5) // top side
+      .lineTo(-val / 2 + depth, depth) // bottom side
+      .lineTo(val / 2 + depth, depth) // top side
       .lineTo(val / 2, 0);
   if (side === "top")
     squareShape = new THREE.Shape()
       .moveTo(-val / 2, 0)
-      .lineTo(-val / 2 - height * 5, height * 5) // bottom side
-      .lineTo(val / 2 - height * 5, height * 5) // top side
+      .lineTo(-val / 2 - depth, depth) // bottom side
+      .lineTo(val / 2 - depth, depth) // top side
       .lineTo(val / 2, 0);
   const geometry = new THREE.ExtrudeGeometry(squareShape, extrudeSettings);
   const stencil = useMask(1, true);
@@ -123,7 +123,7 @@ const LShapeBorders: FC<Props> = ({
     <group
       position={[
         position.x + postionOffset[0],
-        height + postionOffset[1],
+        postionOffset[1],
         position.z + postionOffset[2],
       ]}
     >

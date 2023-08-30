@@ -17,7 +17,7 @@ import {
   Subtraction,
 } from "@react-three/csg";
 import { Mask, useGLTF, useTexture } from "@react-three/drei";
-import React, { RefObject, useEffect, useRef, useState } from "react";
+import React, { RefObject, Suspense, useEffect, useRef, useState } from "react";
 import {
   BufferAttribute,
   BufferGeometry,
@@ -35,6 +35,7 @@ import {
 } from "three";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import LShapeBorders from "./Borders";
+import Watershape from "../../Ground/Watershape";
 // import * as THREE from "three"
 type Props = {
   index: number;
@@ -620,12 +621,40 @@ export default function LShape({
           <planeGeometry args={[bWidth, sbHeight]} />
         </Mask>
 
+        {/* Water */}
+        {pool.enableWater && (
+          <Suspense>
+            <Watershape
+              // geometry={BasePlaneGeometry}
+              width={tWidth}
+              height={stHeight}
+              textureSize={512}
+              reflectivity={0.05}
+              flowX={0.1}
+              flowY={0}
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[tPosition[0], 0.005 - 0.06, tPosition[2]]}
+            />
+            <Watershape
+              // geometry={BasePlaneGeometry}
+              width={bWidth}
+              height={sbHeight - bWidth}
+              textureSize={512}
+              reflectivity={0.05}
+              flowX={0.1}
+              flowY={0}
+              rotation={[-Math.PI / 2, 0, Math.PI / 2]}
+              position={[bPosition[0] - bWidth / 2, 0.005 - 0.06, bPosition[2]]}
+            />
+          </Suspense>
+        )}
+
         {/* Borders */}
         <>
           <LShapeBorders
             width={width}
-            height={0.05}
-            depth={depth}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new Vector3(LshapeBXPosition, 0, 0)}
             side={"left"}
@@ -635,8 +664,8 @@ export default function LShape({
           />
           <LShapeBorders
             width={width}
-            height={0.05}
-            depth={depth}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new Vector3(LshapeBTopCenterPosition, 0, 0)}
             side={"top"}
@@ -646,8 +675,8 @@ export default function LShape({
           />
           <LShapeBorders
             width={width}
-            height={0.05}
-            depth={depth}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new Vector3(LshapeBXPosition, 0, 0)}
             side={"bottom"}
@@ -657,8 +686,8 @@ export default function LShape({
           />
           <LShapeBorders
             width={width}
-            height={0.05}
-            depth={depth}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new Vector3(0, 0, LshapeTLeftCenterPosition)}
             side={"tleft"}
@@ -668,8 +697,8 @@ export default function LShape({
           />
           <LShapeBorders
             width={width}
-            height={0.05}
-            depth={depth}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new Vector3(0, 0, LshapeTZPosition)}
             side={"ttop"}
@@ -679,8 +708,8 @@ export default function LShape({
           />
           <LShapeBorders
             width={width}
-            height={0.05}
-            depth={depth}
+            height={pool.bordersHeight ?? 0.05}
+            depth={pool.bordersDepth ?? 0.25}
             outline={2}
             position={new Vector3(0, 0, LshapeTZPosition)}
             side={"tright"}
