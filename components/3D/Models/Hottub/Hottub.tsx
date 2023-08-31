@@ -33,6 +33,7 @@ interface Props {
   children?: React.ReactNode;
   pool: PoolType;
   PoolTexture: THREE.Texture | undefined;
+  TextureStone: THREE.Texture | undefined;
 }
 const Hottub: FC<Props> = ({
   width = 5,
@@ -47,6 +48,7 @@ const Hottub: FC<Props> = ({
   children,
   pool,
   PoolTexture,
+  TextureStone,
 }) => {
   // Bench calculations
   const topFace: [Boolean, Boolean, Boolean, Boolean, Boolean, Boolean] = [
@@ -58,6 +60,12 @@ const Hottub: FC<Props> = ({
     true,
   ];
   const geometry = CustomBoxGeometry({ width, height, depth, topFace });
+  const geometryOuter = CustomBoxGeometry({
+    width: width + 0.05,
+    height: height + 0.05,
+    depth: depth + 0.05,
+    topFace,
+  });
   // boxG.current?.attributes.uv.needsUpdate = true
   const BenchWidth = 0.5;
   const BenchDepth = 0.5;
@@ -188,66 +196,24 @@ const Hottub: FC<Props> = ({
       >
         {/* Pool */}
         <mesh geometry={geometry} dispose={null} position={[0, -height / 2, 0]}>
-          {/* <boxGeometry args={[width, height, depth]} /> */}
-          {/* <>
-            <meshStandardMaterial
-              metalness={0.2}
-              roughness={0.24}
-              map={texture}
-              attach={"material-0"}
-              side={2}
-              color={"lightblue"}
-            />
-            <meshStandardMaterial
-              metalness={0.2}
-              roughness={0.24}
-              map={texture}
-              attach={"material-1"}
-              side={2}
-              color={"lightblue"}
-            />
-            <meshStandardMaterial
-              metalness={0.2}
-              roughness={0.24}
-              map={texture}
-              attach={"material-3"}
-              side={2}
-              color={"lightblue"}
-            />
-            <meshStandardMaterial
-              metalness={0.2}
-              roughness={0.24}
-              map={texture}
-              attach={"material-4"}
-              side={2}
-              color={"lightblue"}
-            />
-            <meshStandardMaterial
-              metalness={0.2}
-              roughness={0.24}
-              map={texture}
-              attach={"material-5"}
-              side={2}
-              color={"lightblue"}
-            />
-            <meshStandardMaterial
-              metalness={0.2}
-              roughness={0.24}
-              map={texture}
-              attach={"material-2"}
-              side={1}
-              colorWrite={false}
-              color={"lightblue"}
-              // transparent
-              // opacity={0}
-            />
-          </> */}
           <meshStandardMaterial
             metalness={0.2}
             roughness={0.2}
             map={PoolTexture}
             side={THREE.DoubleSide}
             color={"lightblue"}
+          />
+        </mesh>
+        <mesh
+          geometry={geometryOuter}
+          dispose={null}
+          position={[0, -height / 2 - 0.05 / 2, 0]}
+        >
+          <meshStandardMaterial
+            metalness={0.2}
+            roughness={0.35}
+            map={TextureStone}
+            side={THREE.DoubleSide}
           />
         </mesh>
 
@@ -397,10 +363,6 @@ const Hottub: FC<Props> = ({
             /> */}
           </mesh>
         )}
-        {/* Right */}
-        {/* Top */}
-        {/* Bottom */}
-        {/* Childrens */}
         {children}
       </group>
     </PivotControls>

@@ -49,10 +49,12 @@ export function RegularJet({
   rotation,
   position,
   scale,
+  offset = -0.146,
   ...props
 }: {
   poolIndex: number;
   index: number;
+  offset?: number;
   model: ChildrensType;
   sPosition: number[];
   sRotation: number[];
@@ -63,7 +65,7 @@ export function RegularJet({
   props?: JSX.IntrinsicElements["group"];
 }) {
   const { nodes, materials } = useGLTF(
-    "/models/newModels/RegularJet2-transformed.glb"
+    "/models/newModels/regular_jet2-transformed.glb"
   ) as GLTFResult;
 
   const dispatch = useAppDispatch();
@@ -161,7 +163,7 @@ export function RegularJet({
         {...props}
       >
         <group
-          position={[0, 0, -0.076]}
+          position={[0, 0, offset]}
           rotation={[Math.PI / 2, 0, 0]}
           scale={0.217}
         >
@@ -190,4 +192,4 @@ export function RegularJet({
   );
 }
 
-useGLTF.preload("/models/newModels/RegularJet2-transformed.glb");
+useGLTF.preload("/models/newModels/regular_jet2-transformed.glb");

@@ -26,8 +26,10 @@ import {
   sides,
 } from "@/slices/poolsSlice";
 import { CustomBoxGeometry } from "@/utils/getActiveAxis";
-import { Base, CSGGeometryRef, Geometry } from "@react-three/csg";
+import { Addition, Base, CSGGeometryRef, Geometry } from "@react-three/csg";
 import Watershape from "../../Ground/Watershape";
+import { useControls } from "leva";
+
 interface Props {
   index?: number;
   position: number[];
@@ -44,6 +46,7 @@ interface Props {
   sDepth: number;
   key?: number;
   Texture?: THREE.Texture;
+  TextureStone?: THREE.Texture;
   children?: React.ReactNode;
   children2?: React.ReactNode;
   pool: PoolType;
@@ -62,6 +65,7 @@ const PoolBool: FC<Props> = ({
   children,
   pool,
   Texture: poolTexture,
+  TextureStone: poolOuterTexture,
   children2,
   csg,
 }) => {
@@ -70,15 +74,440 @@ const PoolBool: FC<Props> = ({
   const dispatch = useAppDispatch();
   const target = useAppSelector(selectTarget);
   const visible = useAppSelector(selectPivotVisibility);
-  const geometry = new THREE.BufferGeometry();
-  const texture = useTexture("/textures/tiles.jpg");
+  const geometry = GetGeometry({ width, height, depth });
+  const geometryOuter = GetGeometry({
+    width: width + 0.05,
+    height: height + 0.05,
+    depth: depth + 0.05,
+  });
   const [Texture, setTexture] = useState(poolTexture);
-  const halfWidth = width / 2;
-  const halfHeight = height / 2;
-  const halfDepth = depth / 2;
+  const [TextureStone, setTextureStone] = useState(poolOuterTexture);
 
   // ------ ------- ------ //
   // Vertex positions (x, y, z)
+
+  useEffect(() => {
+    if (Texture) {
+      Texture.wrapS = THREE.RepeatWrapping;
+      Texture.wrapT = THREE.RepeatWrapping;
+      Texture.repeat.set(1, 1);
+    }
+    if (TextureStone) {
+      TextureStone.wrapS = THREE.RepeatWrapping;
+      TextureStone.wrapT = THREE.RepeatWrapping;
+      TextureStone.repeat.set(1, 1);
+    }
+  }, [Texture, TextureStone, width, height, depth]);
+
+  // useEffect(() => {
+  const [Mat, setMat] = useState(new THREE.Matrix4());
+  useEffect(() => {
+    const pos = new THREE.Vector3(
+      0 + sPosition[0],
+      0 + sPosition[1],
+      0 + sPosition[2]
+    );
+    const comb = new THREE.Matrix4();
+    const radiansX = THREE.MathUtils.degToRad(sRotation[0]);
+    const radiansY = THREE.MathUtils.degToRad(sRotation[1]);
+    const radiansZ = THREE.MathUtils.degToRad(sRotation[2]);
+    const qt = new THREE.Quaternion();
+    qt.setFromEuler(new THREE.Euler(radiansX, radiansY, radiansZ, "XYZ"));
+    comb.compose(pos, qt, new THREE.Vector3(sScale[0], sScale[1], sScale[2]));
+    setMat(comb);
+  }, [sScale, sPosition, sRotation, pool]);
+
+  const BenchWidth = 0.5;
+  const BenchDepth = 0.5;
+  const BenchHeight = height - 0.65;
+  const BenchYPosition = -height + BenchHeight / 2;
+  const left = pool?.BenchSeatings?.includes("left");
+  const right = pool?.BenchSeatings?.includes("right");
+  const top = pool?.BenchSeatings?.includes("top");
+  const bottom = pool?.BenchSeatings?.includes("bottom");
+  // Bench seatings
+  const leftOffsetZPosition =
+    top && bottom
+      ? 0
+      : top && !bottom
+      ? BenchWidth / 2
+      : !top && bottom
+      ? -BenchWidth / 2
+      : 0;
+  const leftWidth = BenchWidth;
+  const leftDepth =
+    top && bottom
+      ? depth - BenchWidth * 2
+      : (top && !bottom) || (!top && bottom)
+      ? depth - BenchWidth
+      : depth;
+
+  const rightOffsetZPosition =
+    top && bottom
+      ? 0
+      : top && !bottom
+      ? BenchWidth / 2
+      : !top && bottom
+      ? -BenchWidth / 2
+      : 0;
+  const rightWidth = BenchWidth;
+  const rightDepth =
+    top && bottom
+      ? depth - BenchWidth * 2
+      : (top && !bottom) || (!top && bottom)
+      ? depth - BenchWidth
+      : depth;
+  const edges = pool.childrens.filter(
+    (value) => value.shapeType === "InfinityEdge"
+  );
+  const stencil = useMask(2, true);
+  // const WaterMaterial2 = new THREE.ShaderMaterial({
+  //   transparent: true,
+  //   uniforms: {
+  //     u_time: { value: 0 },
+  //     // palette: { value: ["#b8d0e1","#b8d0e1"] },
+  //     u_offset: { value: 20 },
+  //     diffuse: { value: new THREE.Color("black") },
+
+  //     fresnelColor: { value: new THREE.Color("lightblue") },
+  //     //   uAlpha: { value: 0.5 },
+  //   },
+  //   side: THREE.DoubleSide,
+  //   wireframe: false,
+  //   vertexShader: vShader,
+  //   fragmentShader:
+  //     "vec4 diffuseColor = vec4( diffuse, opacity );diffuseColor.rgb +=  ( 1.0 - -min(dot(vEye, normalize(vNN) ), 0.0) ) * fresnelColor; gl_FragColor=diffuseColor;",
+
+  //   // Uniforms (will be applied to existing or added)
+  // });
+  // const params = useControls({
+  //   ior: 1.2,
+  //   thickness: 1.2,
+  //   transmission: 0.5,
+  //   roughness: 0.2,
+  // });
+  // const WaterMaterial = new THREE.MeshPhysicalMaterial(params);
+  // const SuperMaterial = extendMaterial(MeshStandardMaterial, {
+  //   uniforms: {
+  //     uTime: {
+  //       type: 'float',
+  //       value: 0
+  //     }
+  //   },
+  //   extensions: {
+  //     fragmentShader: {
+  //       map_fragment: `
+  //         #include <map_fragment>
+
+  //         diffuseColor.r += sin(uTime / 1000.);
+  //       `
+  //     },
+  //     vertexShader: {
+  //       headers: `
+  //         vec3 displace(vec3 pos) {
+  //           vec3 trans = vec3(pos);
+  //           trans.x += sin(trans.z + uTime / 1000.);
+  //           trans.y += cos(uTime / 1000.);
+
+  //           return trans;
+  //         }
+  //       `,
+  //       project_vertex: `
+  //         transformed.xyz = displace(transformed);
+
+  //         #include <project_vertex>
+  //       `
+  //     }
+  //   }
+  // })
+  return (
+    <PivotControls
+      disableScaleAxes
+      snapTranslate={10}
+      visible={visible && target?.uuid === groupRef.current?.uuid}
+      displayValues={false}
+      scale={visible && target?.uuid === groupRef.current?.uuid ? 75 : 0}
+      depthTest={false}
+      fixed
+      disableSliders
+      onDragEnd={(w, de, wl, delw) => {
+        const pos = new THREE.Vector3(); // create one and reuse it
+        const quaternion = new THREE.Quaternion();
+        const scale = new THREE.Vector3();
+        w.decompose(pos, quaternion, scale);
+        const euler = new THREE.Euler().setFromQuaternion(quaternion);
+        const pl = { ...pool };
+        const x = +pos.x.toFixed(2) + 0;
+        const y = +pos.y.toFixed(2) + 0;
+        const z = +pos.z.toFixed(2) + 0;
+        pl.sPosition = [x, y, z];
+
+        pl.sScale = [scale.x, scale.y, scale.z];
+        pl.sRotation = [
+          THREE.MathUtils.radToDeg(euler.x),
+          THREE.MathUtils.radToDeg(euler.y),
+          THREE.MathUtils.radToDeg(euler.z),
+        ];
+        dispatch(ReplacePool({ poolIndex: index, pool: pl }));
+      }}
+      ref={gp}
+      matrix={Mat}
+      lineWidth={2}
+    >
+      <group
+        ref={groupRef}
+        onClick={(e) => {
+          dispatch(setPivotVisibility(true));
+          const title = pool.poolType + " " + index;
+          dispatch(setTargetTitle(title));
+          if (target?.uuid != groupRef?.current?.uuid) {
+            dispatch(setTarget(groupRef.current));
+          }
+        }}
+      >
+        <mesh position={[0, -height / 2, 0]}>
+          <Geometry useGroups ref={csg} computeVertexNormals>
+            <Base geometry={geometry}>
+              <meshStandardMaterial
+                metalness={0.2}
+                roughness={0.1}
+                map={Texture}
+                side={THREE.DoubleSide}
+                color={"lightblue"}
+                {...stencil}
+              />
+            </Base>
+            <Addition geometry={geometryOuter} position={[0, -0.05 / 2, 0]}>
+              <meshStandardMaterial
+                metalness={0.2}
+                roughness={0.35}
+                map={TextureStone}
+                side={THREE.DoubleSide}
+                {...stencil}
+              />
+            </Addition>
+
+            {children2}
+          </Geometry>
+          <meshStandardMaterial
+            metalness={0.2}
+            roughness={0.1}
+            map={Texture}
+            side={THREE.DoubleSide}
+            color={"lightblue"}
+            {...stencil}
+          />
+        </mesh>
+        {/* Mask */}
+        <Mask id={1} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+          <planeGeometry args={[width, depth]} />
+          {/* <meshBasicMaterial color={"salmon"}/> */}
+        </Mask>
+        {pool.enableWater && (
+          <Suspense>
+            <Watershape
+              // geometry={BasePlaneGeometry}
+              width={width}
+              height={depth}
+              textureSize={512}
+              reflectivity={0.2}
+              flowX={0.1}
+              flowY={0}
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[0, -0.06, 0]}
+            />
+            {/* <mesh
+              rotation={[-Math.PI / 2, 0, 0]}
+              position={[0, -0.06, 0]}
+              material={WaterMaterial}
+            >
+              <planeGeometry args={[width, depth, 64, 64]} />
+            </mesh> */}
+          </Suspense>
+        )}
+
+        {/* ------------------- Borders  ---------------- */}
+        <>
+          {!(edges.filter((value) => value.side === sides.Left).length > 0) && (
+            <Borders
+              width={width}
+              height={pool.bordersHeight ?? 0.05}
+              depth={pool.bordersDepth ?? 0.25}
+              outline={2}
+              position={new THREE.Vector3(0, 0, 0)}
+              side={"left"}
+              poolWidth={width}
+              poolDepth={depth}
+            />
+          )}
+          {!(edges.filter((value) => value.side === sides.Top).length > 0) && (
+            <Borders
+              width={width}
+              height={pool.bordersHeight ?? 0.05}
+              depth={pool.bordersDepth ?? 0.25}
+              outline={2}
+              position={new THREE.Vector3(0, 0, 0)}
+              side={"top"}
+              poolWidth={width}
+              poolDepth={depth}
+            />
+          )}
+          {!(
+            edges.filter((value) => value.side === sides.Bottom).length > 0
+          ) && (
+            <Borders
+              width={width}
+              height={pool.bordersHeight ?? 0.05}
+              depth={pool.bordersDepth ?? 0.25}
+              outline={2}
+              position={new THREE.Vector3(0, 0, 0)}
+              side={"bottom"}
+              poolWidth={width}
+              poolDepth={depth}
+            />
+          )}
+          {!(
+            edges.filter((value) => value.side === sides.Right).length > 0
+          ) && (
+            <Borders
+              width={width}
+              height={pool.bordersHeight ?? 0.05}
+              depth={pool.bordersDepth ?? 0.25}
+              outline={2}
+              position={new THREE.Vector3(0, 0, 0)}
+              side={"right"}
+              poolWidth={width}
+              poolDepth={depth}
+            />
+          )}
+        </>
+        {/* ------------------- Snapping areas " stairs helper boxes "  ---------------- */}
+        {/* BenchSeating */}
+        {/* left */}
+        <>
+          {pool?.BenchSeatings?.includes("left") && (
+            <mesh
+              visible={true}
+              position={[
+                -width / 2 + BenchWidth / 2,
+                BenchYPosition,
+                rightOffsetZPosition,
+              ]}
+              geometry={CustomBoxGeometry({
+                width: leftWidth,
+                height: BenchHeight,
+                depth: leftDepth,
+                topFace: [true, true, true, true, true, true],
+              })}
+              renderOrder={0}
+            >
+              <meshStandardMaterial
+                color={"lightblue"}
+                roughness={0.22}
+                metalness={0.15}
+                side={2}
+                map={Texture}
+                {...stencil}
+              />
+            </mesh>
+          )}
+          {pool?.BenchSeatings?.includes("top") && (
+            <mesh
+              visible={true}
+              position={[0, BenchYPosition, -depth / 2 + BenchWidth / 2]}
+              renderOrder={2}
+              geometry={CustomBoxGeometry({
+                width: width,
+                height: BenchHeight,
+                depth: BenchDepth,
+                topFace: [true, true, true, true, true, true],
+              })}
+            >
+              {/* <boxGeometry args={[width, BenchHeight, BenchDepth]} /> */}
+              <meshStandardMaterial
+                color={"lightblue"}
+                roughness={0.22}
+                metalness={0.15}
+                side={2}
+                map={Texture}
+              />
+            </mesh>
+          )}
+          {pool?.BenchSeatings?.includes("bottom") && (
+            <mesh
+              visible={true}
+              position={[0, BenchYPosition, depth / 2 - BenchWidth / 2]}
+              renderOrder={3}
+              geometry={CustomBoxGeometry({
+                width: width,
+                height: BenchHeight,
+                depth: BenchDepth,
+                topFace: [true, true, true, true, true, true],
+              })}
+            >
+              {/* <boxGeometry args={[width, BenchHeight, BenchDepth]} /> */}
+              <meshStandardMaterial
+                color={"lightblue"}
+                roughness={0.22}
+                metalness={0.15}
+                side={2}
+                map={Texture}
+              />
+            </mesh>
+          )}
+          {pool?.BenchSeatings?.includes("right") && (
+            <mesh
+              visible={true}
+              position={[
+                width / 2 - BenchWidth / 2,
+                BenchYPosition,
+                rightOffsetZPosition,
+              ]}
+              renderOrder={1}
+              geometry={CustomBoxGeometry({
+                width: rightWidth,
+                height: BenchHeight,
+                depth: rightDepth,
+                topFace: [true, true, true, true, true, true],
+              })}
+            >
+              {/* <boxGeometry
+                args={[rightWidth, BenchHeight, rightDepth]}
+                // args={[BenchWidth, BenchHeight, depth - BenchWidth * 2]}
+              /> */}
+              <meshStandardMaterial
+                color={"lightblue"}
+                roughness={0.22}
+                metalness={0.15}
+                side={2}
+                map={Texture}
+              />
+            </mesh>
+          )}
+        </>
+
+        {/* Childrens */}
+        {children}
+      </group>
+    </PivotControls>
+  );
+};
+
+export default PoolBool;
+
+const GetGeometry = ({
+  width,
+  height,
+  depth,
+}: {
+  width: number;
+  height: number;
+  depth: number;
+}) => {
+  const halfWidth = width / 2;
+  const halfHeight = height / 2;
+  const halfDepth = depth / 2;
+  const geometry = new THREE.BufferGeometry();
   const vertices = [
     // Front face
     -halfWidth,
@@ -287,345 +716,5 @@ const PoolBool: FC<Props> = ({
   geometry.setAttribute("position", PositionAttribute);
   geometry.setIndex(indexAttribute);
   geometry.computeVertexNormals();
-  useEffect(() => {
-    if (Texture) {
-      Texture.wrapS = THREE.RepeatWrapping;
-      Texture.wrapT = THREE.RepeatWrapping;
-      Texture.repeat.set(1, 1);
-    }
-  }, [Texture, width, height, depth]);
-
-  // useEffect(() => {
-  const [Mat, setMat] = useState(new THREE.Matrix4());
-  useEffect(() => {
-    const pos = new THREE.Vector3(
-      0 + sPosition[0],
-      0 + sPosition[1],
-      0 + sPosition[2]
-    );
-    const comb = new THREE.Matrix4();
-    const radiansX = THREE.MathUtils.degToRad(sRotation[0]);
-    const radiansY = THREE.MathUtils.degToRad(sRotation[1]);
-    const radiansZ = THREE.MathUtils.degToRad(sRotation[2]);
-    const qt = new THREE.Quaternion();
-    qt.setFromEuler(new THREE.Euler(radiansX, radiansY, radiansZ, "XYZ"));
-    comb.compose(pos, qt, new THREE.Vector3(sScale[0], sScale[1], sScale[2]));
-    setMat(comb);
-  }, [sScale, sPosition, sRotation, pool]);
-
-  const BenchWidth = 0.5;
-  const BenchDepth = 0.5;
-  const BenchHeight = height - 0.65;
-  const BenchYPosition = -height + BenchHeight / 2;
-  const left = pool?.BenchSeatings?.includes("left");
-  const right = pool?.BenchSeatings?.includes("right");
-  const top = pool?.BenchSeatings?.includes("top");
-  const bottom = pool?.BenchSeatings?.includes("bottom");
-  // Bench seatings
-  const leftOffsetZPosition =
-    top && bottom
-      ? 0
-      : top && !bottom
-      ? BenchWidth / 2
-      : !top && bottom
-      ? -BenchWidth / 2
-      : 0;
-  const leftWidth = BenchWidth;
-  const leftDepth =
-    top && bottom
-      ? depth - BenchWidth * 2
-      : (top && !bottom) || (!top && bottom)
-      ? depth - BenchWidth
-      : depth;
-
-  const rightOffsetZPosition =
-    top && bottom
-      ? 0
-      : top && !bottom
-      ? BenchWidth / 2
-      : !top && bottom
-      ? -BenchWidth / 2
-      : 0;
-  const rightWidth = BenchWidth;
-  const rightDepth =
-    top && bottom
-      ? depth - BenchWidth * 2
-      : (top && !bottom) || (!top && bottom)
-      ? depth - BenchWidth
-      : depth;
-  const edges = pool.childrens.filter(
-    (value) => value.shapeType === "InfinityEdge"
-  );
-  const stencil = useMask(2, true);
-  return (
-    <PivotControls
-      disableScaleAxes
-      snapTranslate={10}
-      visible={visible && target?.uuid === groupRef.current?.uuid}
-      displayValues={false}
-      scale={visible && target?.uuid === groupRef.current?.uuid ? 75 : 0}
-      depthTest={false}
-      fixed
-      disableSliders
-      onDragEnd={(w, de, wl, delw) => {
-        const pos = new THREE.Vector3(); // create one and reuse it
-        const quaternion = new THREE.Quaternion();
-        const scale = new THREE.Vector3();
-        w.decompose(pos, quaternion, scale);
-        const euler = new THREE.Euler().setFromQuaternion(quaternion);
-        const pl = { ...pool };
-        const x = +pos.x.toFixed(2) + 0;
-        const y = +pos.y.toFixed(2) + 0;
-        const z = +pos.z.toFixed(2) + 0;
-        pl.sPosition = [x, y, z];
-
-        pl.sScale = [scale.x, scale.y, scale.z];
-        pl.sRotation = [
-          THREE.MathUtils.radToDeg(euler.x),
-          THREE.MathUtils.radToDeg(euler.y),
-          THREE.MathUtils.radToDeg(euler.z),
-        ];
-        dispatch(ReplacePool({ poolIndex: index, pool: pl }));
-      }}
-      ref={gp}
-      matrix={Mat}
-      lineWidth={2}
-    >
-      <group
-        ref={groupRef}
-        onClick={(e) => {
-          dispatch(setPivotVisibility(true));
-          const title = pool.poolType + " " + index;
-          dispatch(setTargetTitle(title));
-          if (target?.uuid != groupRef?.current?.uuid) {
-            dispatch(setTarget(groupRef.current));
-          }
-        }}
-      >
-        {/* Pool */}
-        {/* <mesh geometry={geometry} position={[0, -height / 2, 0]}>
-          <meshStandardMaterial
-            metalness={0.2}
-            roughness={0.2}
-            map={Texture}
-            side={THREE.DoubleSide}
-            color={"lightblue"}
-          />
-        </mesh> */}
-        <mesh position={[0, -height / 2, 0]}>
-          <Geometry ref={csg} computeVertexNormals>
-            <Base geometry={geometry}>
-              <meshStandardMaterial
-                metalness={0.2}
-                roughness={0.1}
-                map={Texture}
-                side={THREE.DoubleSide}
-                color={"lightblue"}
-                {...stencil}
-              />
-            </Base>
-
-            {children2}
-          </Geometry>
-          <meshStandardMaterial
-            metalness={0.2}
-            roughness={0.1}
-            map={Texture}
-            side={THREE.DoubleSide}
-            color={"lightblue"}
-            {...stencil}
-          />
-        </mesh>
-        {/* Mask */}
-        <Mask id={1} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-          <planeGeometry args={[width, depth]} />
-          {/* <meshBasicMaterial color={"salmon"}/> */}
-        </Mask>
-        {pool.enableWater && (
-          <Suspense>
-            <Watershape
-              // geometry={BasePlaneGeometry}
-              width={width}
-              height={depth}
-              textureSize={1024}
-              reflectivity={0.2}
-              flowX={0.1}
-              flowY={0}
-              rotation={[-Math.PI / 2, 0, 0]}
-              position={[0, -0.06, 0]}
-            />
-          </Suspense>
-        )}
-        {/* Borders */}
-        <>
-          {!(edges.filter((value) => value.side === sides.Left).length > 0) && (
-            <Borders
-              width={width}
-              height={pool.bordersHeight ?? 0.05}
-              depth={pool.bordersDepth ?? 0.25}
-              outline={2}
-              position={new THREE.Vector3(0, 0, 0)}
-              side={"left"}
-              poolWidth={width}
-              poolDepth={depth}
-            />
-          )}
-          {!(edges.filter((value) => value.side === sides.Top).length > 0) && (
-            <Borders
-              width={width}
-              height={pool.bordersHeight ?? 0.05}
-              depth={pool.bordersDepth ?? 0.25}
-              outline={2}
-              position={new THREE.Vector3(0, 0, 0)}
-              side={"top"}
-              poolWidth={width}
-              poolDepth={depth}
-            />
-          )}
-          {!(
-            edges.filter((value) => value.side === sides.Bottom).length > 0
-          ) && (
-            <Borders
-              width={width}
-              height={pool.bordersHeight ?? 0.05}
-              depth={pool.bordersDepth ?? 0.25}
-              outline={2}
-              position={new THREE.Vector3(0, 0, 0)}
-              side={"bottom"}
-              poolWidth={width}
-              poolDepth={depth}
-            />
-          )}
-          {!(
-            edges.filter((value) => value.side === sides.Right).length > 0
-          ) && (
-            <Borders
-              width={width}
-              height={pool.bordersHeight ?? 0.05}
-              depth={pool.bordersDepth ?? 0.25}
-              outline={2}
-              position={new THREE.Vector3(0, 0, 0)}
-              side={"right"}
-              poolWidth={width}
-              poolDepth={depth}
-            />
-          )}
-        </>
-        {/* ------------------- Snapping areas " stairs helper boxes "  ---------------- */}
-        {/* BenchSeating */}
-        {/* left */}
-
-        {pool?.BenchSeatings?.includes("left") && (
-          <mesh
-            visible={true}
-            position={[
-              -width / 2 + BenchWidth / 2,
-              BenchYPosition,
-              rightOffsetZPosition,
-            ]}
-            geometry={CustomBoxGeometry({
-              width: leftWidth,
-              height: BenchHeight,
-              depth: leftDepth,
-              topFace: [true, true, true, true, true, true],
-            })}
-            renderOrder={0}
-          >
-            {/* <boxGeometry
-              args={[leftWidth, BenchHeight, leftDepth]}
-              // args={[BenchWidth, BenchHeight, depth - BenchWidth * 2]}
-            <meshStandardMaterial color={"lightblue"} roughness={.22} metalness={.15} map={texture}/>
-
-            /> */}
-            <meshStandardMaterial
-              color={"lightblue"}
-              roughness={0.22}
-              metalness={0.15}
-              side={2}
-              map={Texture}
-              {...stencil}
-            />
-          </mesh>
-        )}
-        {pool?.BenchSeatings?.includes("top") && (
-          <mesh
-            visible={true}
-            position={[0, BenchYPosition, -depth / 2 + BenchWidth / 2]}
-            renderOrder={2}
-            geometry={CustomBoxGeometry({
-              width: width,
-              height: BenchHeight,
-              depth: BenchDepth,
-              topFace: [true, true, true, true, true, true],
-            })}
-          >
-            {/* <boxGeometry args={[width, BenchHeight, BenchDepth]} /> */}
-            <meshStandardMaterial
-              color={"lightblue"}
-              roughness={0.22}
-              metalness={0.15}
-              side={2}
-              map={Texture}
-            />
-          </mesh>
-        )}
-        {pool?.BenchSeatings?.includes("bottom") && (
-          <mesh
-            visible={true}
-            position={[0, BenchYPosition, depth / 2 - BenchWidth / 2]}
-            renderOrder={3}
-            geometry={CustomBoxGeometry({
-              width: width,
-              height: BenchHeight,
-              depth: BenchDepth,
-              topFace: [true, true, true, true, true, true],
-            })}
-          >
-            {/* <boxGeometry args={[width, BenchHeight, BenchDepth]} /> */}
-            <meshStandardMaterial
-              color={"lightblue"}
-              roughness={0.22}
-              metalness={0.15}
-              side={2}
-              map={Texture}
-            />
-          </mesh>
-        )}
-        {pool?.BenchSeatings?.includes("right") && (
-          <mesh
-            visible={true}
-            position={[
-              width / 2 - BenchWidth / 2,
-              BenchYPosition,
-              rightOffsetZPosition,
-            ]}
-            renderOrder={1}
-            geometry={CustomBoxGeometry({
-              width: rightWidth,
-              height: BenchHeight,
-              depth: rightDepth,
-              topFace: [true, true, true, true, true, true],
-            })}
-          >
-            {/* <boxGeometry
-              args={[rightWidth, BenchHeight, rightDepth]}
-              // args={[BenchWidth, BenchHeight, depth - BenchWidth * 2]}
-            /> */}
-            <meshStandardMaterial
-              color={"lightblue"}
-              roughness={0.22}
-              metalness={0.15}
-              side={2}
-              map={Texture}
-            />
-          </mesh>
-        )}
-
-        {/* Childrens */}
-        {children}
-      </group>
-    </PivotControls>
-  );
+  return geometry;
 };
-
-export default PoolBool;

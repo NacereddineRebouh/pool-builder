@@ -25,7 +25,7 @@ function Watershape({
   scale = 0.2,
   reflectivity = 0.2,
   width = 0.2,
-  textureSize = 128,
+  textureSize = 64,
   height = 0.2,
   flowX = 0,
   flowY = -1,

@@ -82,10 +82,10 @@ const Borders: FC<Props> = ({
     bevelOffset: 1,
   };
   const squareShape = new THREE.Shape()
-    .moveTo(-poolWidth / 2, 0)
+    .moveTo(-poolWidth / 2, +0.001)
     .lineTo(-poolWidth / 2 - depth, depth)
     .lineTo(poolWidth / 2 + depth, depth)
-    .lineTo(poolWidth / 2, 0);
+    .lineTo(poolWidth / 2, +0.001);
   const geometry = new THREE.ExtrudeGeometry(squareShape, extrudeSettings);
   const stencil = useMask(1, true);
 

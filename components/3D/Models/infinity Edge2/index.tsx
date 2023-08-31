@@ -70,20 +70,31 @@ const InfinityEdge2 = ({
   // Width
   let Waterfall_Width = poolWidth;
 
-  const YPosition =
+  let YPosition =
     LRheight -
     0.5 -
     (poolPosition[1] > poolHeight
       ? poolHeight - LRheight - 0.5
       : poolPosition[1]);
-
+  if (poolType === "lshape") {
+    YPosition =
+      LRheight -
+      0.5 -
+      (poolPosition[1] > poolDepth
+        ? poolDepth - LRheight - 0.5
+        : poolPosition[1]);
+  }
   let EdgePosition = [0, YPosition, 0];
+  let mask_WallZoffset = 0.1 / 2;
   switch (true) {
     case model.side === "Left":
       Waterfall_Width = poolDepth;
       EdgePosition[2] = position.x + poolWidth / 2 + LRdepth - depth / 2; // + poolWidth / 2 + LRdepth - depth / 2
       if (poolType === "lshape") {
+        mask_WallZoffset = 0.15;
         width = poolWidth;
+        Waterfall_Width = poolWidth;
+        EdgePosition[2] = position.z + LRdepth / 2 + 0.02;
       } else {
         width = poolDepth;
       }
@@ -91,7 +102,10 @@ const InfinityEdge2 = ({
     case model.side === "Top":
       Waterfall_Width = poolWidth;
       if (poolType === "lshape") {
+        mask_WallZoffset = 0.15;
         width = poolbHeight - poolWidth - 0.05 * 5;
+        Waterfall_Width = width;
+        EdgePosition[2] = +LRdepth / 2 + 0.02;
       } else {
         EdgePosition[2] = position.z + poolDepth / 2 + LRdepth - depth / 2;
         width = poolWidth;
@@ -101,7 +115,11 @@ const InfinityEdge2 = ({
       Waterfall_Width = poolWidth;
       // EdgePosition[0]=position.z - poolDepth / 2 + LRdepth - depth / 2
       if (poolType === "lshape") {
+        mask_WallZoffset = 0.15;
+        // width = poolbHeight;
         width = poolbHeight;
+        Waterfall_Width = width;
+        EdgePosition[2] = +LRdepth / 2 + 0.02;
       } else {
         EdgePosition[2] = -position.z + poolDepth / 2 + LRdepth - depth / 2;
         width = poolWidth;
@@ -113,16 +131,22 @@ const InfinityEdge2 = ({
       width = poolDepth;
       break;
     case model.side === "tLeft":
-      Waterfall_Width = poolWidth;
+      mask_WallZoffset = 0.15;
       width = pooltHeight - poolWidth - 0.05 * 5;
+      Waterfall_Width = width;
+      EdgePosition[2] = +LRdepth / 2 + 0.02;
       break;
     case model.side === "tRight":
-      Waterfall_Width = pooltHeight;
+      mask_WallZoffset = 0.15;
       width = pooltHeight;
+      Waterfall_Width = pooltHeight;
+      EdgePosition[2] = +LRdepth / 2 + 0.02;
       break;
     case model.side === "tTop":
+      mask_WallZoffset = 0.15;
       Waterfall_Width = poolWidth;
       width = poolWidth;
+      EdgePosition[2] = +LRdepth / 2 + 0.02;
       break;
   }
   const texture = useTexture("/textures/grass.jpeg");
@@ -149,7 +173,6 @@ const InfinityEdge2 = ({
   }, [sScale, sPosition, sRotation]);
 
   // geometry
-  const geometry = new THREE.BufferGeometry();
   const grassTexture = useTexture(
     "textures/grass/textures/leafy_grass_diff_1k.jpg"
   );
@@ -435,19 +458,8 @@ const InfinityEdge2 = ({
   };
   const squareShape = new THREE.Shape()
     .moveTo(0, -(Math.abs(YPosition) + LRheight + height) / 2)
-    // .lineTo(0, (Math.abs(YPosition) + LRheight + height) / 2 - 0.1)
     .lineTo(0, (Math.abs(YPosition) + LRheight + height) / 2)
     .lineTo(0 + LRwidth / 2, (Math.abs(YPosition) + LRheight + height) / 2);
-  // const squareShape = new THREE.Shape() // bevel
-  //   .moveTo(0, -(Math.abs(YPosition) + LRheight + height) / 2)
-  //   // .lineTo(0, (Math.abs(YPosition) + LRheight + height) / 2 - 0.1)
-  //   .lineTo(0, (Math.abs(YPosition) + LRheight + height) / 2 - 0.1 - 0.01) //bevel
-  //   .lineTo(
-  //     0 + 0.015,
-  //     (Math.abs(YPosition) + LRheight + height) / 2 - 0.1 + 0.01
-  //   ) //bevel
-  //   .lineTo(0 + LRwidth / 2, (Math.abs(YPosition) + LRheight + height) / 2)
-  //   .lineTo(0 + LRwidth / 2, -(Math.abs(YPosition) + LRheight + height) / 2);
   const waterGeometry = new THREE.ExtrudeGeometry(squareShape, extrudeSettings);
   waterGeometry.computeVertexNormals();
 
@@ -462,6 +474,7 @@ const InfinityEdge2 = ({
     height: Math.abs(YPosition) + LRheight + height,
     depth: LRdepth,
   });
+
   return (
     <PivotControls
       disableScaleAxes
@@ -530,7 +543,7 @@ const InfinityEdge2 = ({
         {/* stick to the ground*/}
         <mesh
           renderOrder={0}
-          position={[0, YPosition / 2 - 0.005 + height / 2, 0.1 / 2]}
+          position={[0, YPosition / 2 - 0.005 + height / 2, mask_WallZoffset]}
           geometry={WallsGeom}
         >
           <meshStandardMaterial side={2} map={grassTexture} />
@@ -705,7 +718,7 @@ const InfinityEdge2 = ({
           <Mask
             id={1}
             rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, LRheight + height / 2 - 0.005, 0.1 / 2]}
+            position={[0, LRheight + height / 2 - 0.005, mask_WallZoffset]}
           >
             <planeGeometry args={[Waterfall_Width + 2 * LRwidth, LRdepth]} />
             {/* <meshBasicMaterial color={"salmon"}/> */}

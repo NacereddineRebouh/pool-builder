@@ -29,6 +29,7 @@ export const AllModels = () => {
   const Pools = useAppSelector(selectAllPools);
   const textureLoader = new THREE.TextureLoader();
   const [Texture, setTexture] = useState<THREE.Texture>();
+  const [TextureStone, setTextureStone] = useState<THREE.Texture>();
   useTexture.preload("/textures/tiles.jpg");
   useTexture.preload("/textures/stone/stone-9_diffuse.png");
   useEffect(() => {
@@ -40,6 +41,15 @@ export const AllModels = () => {
         t.repeat.set(2, 1);
       }
       setTexture(t);
+    });
+    textureLoader.load("textures/stone/stone-9_diffuse.png", (t) => {
+      // Texture loaded callback
+      if (t) {
+        t.wrapT = THREE.RepeatWrapping;
+        t.wrapS = THREE.RepeatWrapping;
+        t.repeat.set(1, 1);
+      }
+      setTextureStone(t);
     });
   }, []);
   // const texture = useTexture("/textures/tiles.jpg");
@@ -71,6 +81,7 @@ export const AllModels = () => {
                   sDepth={pool.sDepth}
                   csg={csg3}
                   Texture={Texture?.clone()}
+                  TextureStone={TextureStone?.clone()}
                   children2={
                     <>
                       {pool.childrens.map((shape, index) => {
@@ -530,7 +541,6 @@ export const AllModels = () => {
                             </Suspense>
                           );
                         case "InfinityEdge":
-                          console.log("shape.side", shape.side);
                           switch (shape.side) {
                             case "Left":
                               //Topleft
@@ -557,24 +567,6 @@ export const AllModels = () => {
                           }
                           return (
                             <Suspense>
-                              {/* <InfinityEdge
-                                model={shape}
-                                index={index}
-                                poolIndex={poolIndex}
-                                sPosition={shape.sPosition}
-                                sRotation={shape.sRotation}
-                                sScale={shape.sScale}
-                                poolWidth={pool.sWidth}
-                                poolHeight={pool.sHeight}
-                                poolDepth={pool.sDepth}
-                                key={index}
-                                rotation={new THREE.Euler(...shape.rotation)}
-                                scale={new THREE.Vector3(...shape.scale)}
-                                position={new THREE.Vector3(...pos)}
-                                pooltHeight={0}
-                                poolbHeight={0}
-                                poolType={pool.poolType}
-                              /> */}
                               <InfinityEdge2
                                 model={shape}
                                 index={index}
@@ -709,6 +701,7 @@ export const AllModels = () => {
                   sScale={pool.sScale}
                   sWidth={pool.sWidth}
                   sHeight={pool.sHeight}
+                  TextureStone={TextureStone?.clone()}
                   sDepth={pool.sDepth}
                   PoolTexture={Texture?.clone()}
                 >
@@ -884,6 +877,7 @@ export const AllModels = () => {
             return (
               <Suspense>
                 <LShape
+                  StoneTexture={TextureStone?.clone()}
                   index={poolIndex}
                   theight={pool.stHeight}
                   bheight={pool.sbHeight}
@@ -1891,6 +1885,7 @@ export const AllModels = () => {
                                             sRotation={shape.sRotation}
                                             sScale={shape.sScale}
                                             key={i}
+                                            offset={-0.1}
                                             rotation={
                                               new THREE.Euler(...shape.rotation)
                                             }
@@ -1915,6 +1910,7 @@ export const AllModels = () => {
                                     sRotation={shape.sRotation}
                                     sScale={shape.sScale}
                                     key={index}
+                                    offset={-0.09}
                                     rotation={
                                       new THREE.Euler(...shape.rotation)
                                     }
@@ -1982,7 +1978,7 @@ export const AllModels = () => {
                           }
                           return (
                             <Suspense>
-                              <InfinityEdge
+                              {/* <InfinityEdge
                                 model={shape}
                                 index={index}
                                 poolIndex={poolIndex}
@@ -1999,6 +1995,25 @@ export const AllModels = () => {
                                 rotation={new THREE.Euler(...shape.rotation)}
                                 scale={new THREE.Vector3(...shape.scale)}
                                 position={new THREE.Vector3(...pos)}
+                              /> */}
+                              <InfinityEdge2
+                                model={shape}
+                                index={index}
+                                poolIndex={poolIndex}
+                                sPosition={shape.sPosition}
+                                sRotation={shape.sRotation}
+                                sScale={shape.sScale}
+                                poolWidth={pool.sWidth}
+                                poolHeight={pool.sHeight}
+                                poolDepth={pool.sDepth}
+                                key={index}
+                                rotation={new THREE.Euler(...shape.rotation)}
+                                scale={new THREE.Vector3(...shape.scale)}
+                                position={new THREE.Vector3(...pos)}
+                                pooltHeight={pool.stHeight}
+                                poolbHeight={pool.sbHeight}
+                                poolType={pool.poolType}
+                                poolPosition={pool.sPosition}
                               />
                             </Suspense>
                           );

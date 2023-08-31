@@ -101,22 +101,22 @@ const LShapeBorders: FC<Props> = ({
   let v = depth;
   if (side === "tleft") v = -depth;
   let squareShape = new THREE.Shape()
-    .moveTo(-val / 2, 0)
+    .moveTo(-val / 2, +0.001)
     .lineTo(-val / 2 - depth, depth) // bottom side
     .lineTo(val / 2 + depth, depth) // top side
-    .lineTo(val / 2, 0);
+    .lineTo(val / 2, +0.001);
   if (side === "tleft")
     squareShape = new THREE.Shape()
-      .moveTo(-val / 2, 0)
+      .moveTo(-val / 2, +0.001)
       .lineTo(-val / 2 + depth, depth) // bottom side
       .lineTo(val / 2 + depth, depth) // top side
-      .lineTo(val / 2, 0);
+      .lineTo(val / 2, +0.001);
   if (side === "top")
     squareShape = new THREE.Shape()
-      .moveTo(-val / 2, 0)
+      .moveTo(-val / 2, +0.001)
       .lineTo(-val / 2 - depth, depth) // bottom side
       .lineTo(val / 2 - depth, depth) // top side
-      .lineTo(val / 2, 0);
+      .lineTo(val / 2, +0.001);
   const geometry = new THREE.ExtrudeGeometry(squareShape, extrudeSettings);
   const stencil = useMask(1, true);
   return (
