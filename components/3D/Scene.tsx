@@ -14,7 +14,7 @@ export default function Scene({}: Props) {
   const g = new PlaneGeometry(5, 5);
   return (
     <Canvas>
-      <Perf position={"bottom-right"} />
+      {/* <Perf position={"bottom-right"} /> */}
       <PerspectiveCamera
         ref={cameraRef}
         makeDefault={true}

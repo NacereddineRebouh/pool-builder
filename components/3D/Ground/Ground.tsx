@@ -1247,7 +1247,7 @@ const Grid = ({
               {
                 position: [
                   -closestPool.width / 2 + 0,
-                  -closestPool.height / 2 + swimJetBoxHeight / 2,
+                  -closestPool.sHeight / 2 + swimJetBoxHeight / 2,
                   0,
                 ],
                 used: false,
@@ -1255,7 +1255,7 @@ const Grid = ({
               {
                 position: [
                   closestPool.width / 2 - 0,
-                  -closestPool.height / 2 + swimJetBoxHeight / 2,
+                  -closestPool.sHeight / 2 + swimJetBoxHeight / 2,
                   0,
                 ],
                 used: false,
@@ -1263,7 +1263,7 @@ const Grid = ({
               {
                 position: [
                   0,
-                  -closestPool.height / 2 + swimJetBoxHeight / 2,
+                  -closestPool.sHeight / 2 + swimJetBoxHeight / 2,
                   -closestPool.depth / 2 + 0,
                 ],
                 used: false,
@@ -1271,7 +1271,7 @@ const Grid = ({
               {
                 position: [
                   0,
-                  -closestPool.height / 2 + swimJetBoxHeight / 2,
+                  -closestPool.sHeight / 2 + swimJetBoxHeight / 2,
                   closestPool.depth / 2 - 0,
                 ],
                 used: false,
