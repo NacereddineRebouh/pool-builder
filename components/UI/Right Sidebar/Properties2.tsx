@@ -322,7 +322,7 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
       {targetPool != null && pools[targetPool] && (
         <div className="my-1 flex w-full items-center justify-start gap-x-6">
           <div className="w-full self-start text-lg text-slate-50">
-            Border Depth
+            Wall Thickness
           </div>
           <div className="flex w-full items-center justify-start gap-x-2">
             <NumberInput
@@ -366,7 +366,7 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
       {targetPool != null && pools[targetPool] && (
         <div className="my-1 flex w-full items-center justify-start gap-x-6">
           <div className="w-full self-start text-lg text-slate-50">
-            Border Height
+            Wall Height
           </div>
           <div className="flex w-full items-center justify-start gap-x-2">
             <NumberInput

@@ -8,11 +8,13 @@ import {
   setTarget,
   setTargetTitle,
 } from "@/slices/targetSlice";
+import { sides as Sides, sides } from "@/slices/defaultsSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
-import { ReplaceChildren } from "@/slices/poolsSlice";
+import { ChildrensType, ReplaceChildren } from "@/slices/poolsSlice";
 import Watershape from "../../Ground/Watershape";
 const InfinityEdge2 = ({
+  sides,
   sPosition,
   sRotation,
   sScale,
@@ -31,6 +33,7 @@ const InfinityEdge2 = ({
   scale,
   ...props
 }: {
+  sides?: ChildrensType[];
   sPosition: number[];
   poolPosition: number[];
   sRotation: number[];
@@ -60,6 +63,164 @@ const InfinityEdge2 = ({
   let LRheight = 0.2;
   let LRwidth = 0.25;
   let LRdepth = 1.2;
+
+  // ----------------------- Combine Edges -----------------------//
+  let offsetLeftPosition = 0;
+  let offsetRightPosition = 0;
+  let offsetLeftWidth = 0;
+  let offsetRightWidth = 0;
+  let offsetMiddlePosition = 0;
+  let offsetMiddleWidth = 0;
+  let offsetWaterWidth = 0;
+  let offsetWaterPosition = 0;
+  let offsetMaskWidth = 0;
+  let offsetMaskPosition = 0;
+  let fillGab = 0;
+  let offsetWaterWallWidth = 0;
+  let offsetWaterWallPosition = 0;
+  let offsetFrontWallWidthRight = 0;
+  let offsetFrontWallWidthLeft = 0;
+  let offsetFrontWallPositionLeft = 0;
+  let offsetFrontWallPositionRight = 0;
+  let SideWallRight = 1;
+  let SideWallLeft = 1;
+  const removeArray = [false, false]; //Right, Left posts to remove LRdepth - LRwidth / 2 + LRwidth / 2
+  if (sides) {
+    let filtered: ChildrensType[] = [];
+    filtered = sides.filter((value, index) => {
+      if (value.side === Sides.Top || value.side === Sides.Bottom) {
+        return value.side;
+      }
+    });
+    switch (model.side) {
+      case "Left":
+        let left = false;
+        if (
+          sides.filter((value, index) => value.side === Sides.Top).length > 0
+        ) {
+          left = true;
+          offsetRightWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetRightPosition = (LRdepth - LRwidth / 2 + LRwidth / 2) / 2; //x axis
+          offsetMiddleWidth = offsetRightWidth;
+          offsetMiddlePosition = offsetRightPosition;
+          offsetWaterWidth = offsetMiddleWidth;
+          offsetWaterPosition = offsetMiddlePosition;
+          offsetMaskWidth = LRdepth - LRwidth;
+          offsetMaskPosition = -(LRdepth - LRwidth) / 2;
+          offsetWaterWallWidth = LRwidth / 2;
+          offsetWaterWallPosition = LRwidth / 2;
+          offsetFrontWallWidthLeft = LRdepth - LRwidth;
+          offsetFrontWallPositionLeft = (LRdepth - LRwidth / 2) / 2;
+          removeArray[0] = true;
+        }
+        if (
+          sides.filter((value, index) => value.side === Sides.Bottom).length > 0
+        ) {
+          offsetLeftWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetLeftPosition = -(LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+          offsetMiddleWidth += offsetLeftWidth;
+          offsetMiddlePosition += offsetLeftPosition;
+          offsetWaterWidth = offsetMiddleWidth;
+          offsetWaterPosition = offsetMiddlePosition;
+          offsetMaskWidth += LRdepth - LRwidth;
+          offsetMaskPosition += (LRdepth - LRwidth) / 2;
+          offsetWaterWallWidth += LRwidth / 2;
+          if (left) offsetWaterWallPosition = LRwidth / 2;
+
+          offsetFrontWallWidthRight = LRdepth - LRwidth;
+          offsetFrontWallPositionRight += -(LRdepth - LRwidth / 2) / 2;
+
+          removeArray[1] = true;
+        }
+        break;
+      case "Right":
+        let bottom =
+          sides.filter((value, index) => value.side === Sides.Bottom).length >
+          0;
+        if (
+          sides.filter((value, index) => value.side === Sides.Top).length > 0
+        ) {
+          offsetLeftWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetLeftPosition = -(LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+          offsetMiddleWidth = offsetLeftWidth;
+          offsetWaterWidth = offsetMiddleWidth;
+          offsetMiddlePosition = offsetLeftPosition;
+          offsetWaterPosition = offsetMiddlePosition;
+          offsetMaskWidth = LRdepth - LRwidth;
+          offsetMaskPosition = (LRdepth - LRwidth) / 2;
+          offsetWaterWallWidth = LRwidth / 2;
+          if (bottom) offsetWaterWallPosition = LRwidth / 2;
+
+          offsetFrontWallWidthRight = LRdepth - LRwidth;
+          offsetFrontWallPositionRight = (LRdepth - LRwidth / 2) / 2;
+          removeArray[1] = true;
+        }
+        if (
+          sides.filter((value, index) => value.side === Sides.Bottom).length > 0
+        ) {
+          offsetRightWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetRightPosition = (LRdepth - LRwidth / 2 + LRwidth / 2) / 2; //x axis
+          offsetMiddleWidth += offsetRightWidth;
+          offsetWaterWidth = offsetMiddleWidth;
+          offsetMiddlePosition += offsetRightPosition;
+          offsetWaterPosition = offsetMiddlePosition;
+          offsetMaskWidth += LRdepth - LRwidth;
+          offsetMaskPosition += -(LRdepth - LRwidth) / 2;
+          offsetWaterWallWidth += LRwidth / 2;
+          offsetWaterWallPosition = LRwidth / 2;
+
+          offsetFrontWallWidthLeft = LRdepth - LRwidth;
+          offsetFrontWallPositionLeft += -(LRdepth - LRwidth / 2) / 2;
+          removeArray[0] = true;
+        }
+        break;
+      case "Top":
+        if (
+          sides.filter((value, index) => value.side === Sides.Left).length > 0
+        ) {
+          offsetMiddleWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetMiddlePosition = -(LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+          fillGab = LRwidth;
+          SideWallRight = 0;
+          // offsetWaterPosition = -fillGab / 2;
+          removeArray[1] = true;
+        }
+
+        if (
+          sides.filter((value, index) => value.side === Sides.Right).length > 0
+        ) {
+          offsetMiddleWidth += LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetMiddlePosition += (LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+          fillGab = LRwidth;
+          SideWallLeft = 0;
+          // offsetWaterPosition = fillGab / 2;
+          removeArray[0] = true;
+        }
+        break;
+      case "Bottom":
+        if (
+          sides.filter((value, index) => value.side === Sides.Left).length > 0
+        ) {
+          offsetMiddleWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetMiddlePosition = (LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+          fillGab = LRwidth;
+          SideWallLeft = 0;
+          // offsetWaterPosition = fillGab / 2;
+          removeArray[0] = true;
+        }
+        if (
+          sides.filter((value, index) => value.side === Sides.Right).length > 0
+        ) {
+          offsetMiddleWidth += LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetMiddlePosition += -(LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+          fillGab = LRwidth;
+          SideWallRight = 0;
+          // offsetWaterPosition = -fillGab / 2;
+          removeArray[1] = true;
+        }
+        break;
+    }
+  }
 
   //Water
   // Constants
@@ -409,9 +570,8 @@ const InfinityEdge2 = ({
     new Float32Array(UVSBase),
     2
   ); // 2 components (s, t) for each UV coordinate
-
   const BasePlaneGeometry = new THREE.PlaneGeometry(
-    width,
+    width + offsetRightWidth + offsetLeftWidth,
     LRdepth - LRwidth / 2
   );
   const leftGeometry = new THREE.BoxGeometry(LRwidth + 0.01, LRheight, LRdepth);
@@ -430,8 +590,11 @@ const InfinityEdge2 = ({
     Math.abs(YPosition) + LRheight,
     LRwidth + 0.01
   );
-  const middleGeometry = new THREE.BoxGeometry(width, height, depth);
-  // console.table(leftGeometry.getAttribute("uv"));
+  const middleGeometry = new THREE.BoxGeometry(
+    width + offsetMiddleWidth,
+    height,
+    depth
+  );
   BasePlaneGeometry.setAttribute("uv", uvAttributeBasePlane);
   leftGeometry.setAttribute("uv", uvAttribute);
   leftPostGeometry.setAttribute("uv", uvAttributePosts);
@@ -448,18 +611,19 @@ const InfinityEdge2 = ({
   const left = [-width / 2 - LRwidth / 2, 0, LRdepth / 2 - depth / 2];
   const right = [+width / 2 + LRwidth / 2, 0, LRdepth / 2 - depth / 2];
   const Waterfall = [0, 0, LRdepth / 2 - depth / 2];
-  const middle = [0, 0, 0];
+  const middle = [offsetMiddlePosition, 0, 0];
 
   // water
   const extrudeSettings = {
-    depth: Waterfall_Width,
+    depth: Waterfall_Width + offsetWaterWallWidth,
     bevelEnabled: false,
     // bevelOffset: .01,
   };
   const squareShape = new THREE.Shape()
     .moveTo(0, -(Math.abs(YPosition) + LRheight + height) / 2)
     .lineTo(0, (Math.abs(YPosition) + LRheight + height) / 2)
-    .lineTo(0 + LRwidth / 2, (Math.abs(YPosition) + LRheight + height) / 2);
+    .lineTo(0 + LRwidth / 2, (Math.abs(YPosition) + LRheight + height) / 2)
+    .lineTo(0 + LRwidth / 2, -(Math.abs(YPosition) + LRheight + height) / 2);
   const waterGeometry = new THREE.ExtrudeGeometry(squareShape, extrudeSettings);
   waterGeometry.computeVertexNormals();
 
@@ -473,6 +637,13 @@ const InfinityEdge2 = ({
     width: Waterfall_Width + 2 * LRwidth,
     height: Math.abs(YPosition) + LRheight + height,
     depth: LRdepth,
+    offsetFrontWallWidthLeft: offsetFrontWallWidthLeft,
+    offsetFrontWallWidthRight: offsetFrontWallWidthRight,
+    offsetFrontWallPositionLeft: offsetFrontWallPositionLeft,
+    offsetFrontWallPositionRight: offsetFrontWallPositionRight,
+    side: model.side,
+    SideWallLeft: SideWallLeft,
+    SideWallRight: SideWallRight,
   });
 
   return (
@@ -546,7 +717,7 @@ const InfinityEdge2 = ({
           position={[0, YPosition / 2 - 0.005 + height / 2, mask_WallZoffset]}
           geometry={WallsGeom}
         >
-          <meshStandardMaterial side={2} map={grassTexture} />
+          <meshBasicMaterial side={2} map={grassTexture} />
         </mesh>
 
         {/* Width == 10 */}
@@ -569,7 +740,11 @@ const InfinityEdge2 = ({
             userData={{ name: "Infinity edge" }}
           >
             <mesh
-              position={[0, -LRheight / 2, LRdepth / 2 - depth / 2]}
+              position={[
+                offsetRightPosition + offsetLeftPosition,
+                -LRheight / 2,
+                LRdepth / 2 - depth / 2,
+              ]}
               rotation={[Math.PI / 2, 0, 0]}
               geometry={BasePlaneGeometry}
             >
@@ -584,12 +759,12 @@ const InfinityEdge2 = ({
             </mesh>
             <Watershape
               // geometry={BasePlaneGeometry}
-              width={width}
+              width={width + fillGab + offsetWaterWidth}
               height={LRdepth - LRwidth / 2}
               flowX={0}
               flowY={0}
               position={[
-                0,
+                offsetWaterPosition,
                 -LRheight / 2 + 0.1,
                 LRdepth / 2 - depth / 2 - LRwidth / 2 / 2,
               ]}
@@ -602,34 +777,38 @@ const InfinityEdge2 = ({
               material={water.material}
             /> */}
             {/* Left & Post */}
-            <mesh
-              geometry={leftGeometry}
-              position={[left[0], left[1], left[2]]}
-            >
-              <meshStandardMaterial
-                metalness={0.1}
-                roughness={0.16}
-                map={stoneTexture}
-                normalMap={stoneNormalTexture}
-              />
-            </mesh>
-            <mesh
-              geometry={leftPostGeometry}
-              rotation={[0, Math.PI / 2, 0]}
-              position={[
-                left[0],
-                left[1] + Math.abs(YPosition) / 2 + LRheight,
-                left[2] + LRdepth / 2 - LRwidth / 2,
-              ]}
-            >
-              <meshStandardMaterial
-                flatShading
-                metalness={0.1}
-                roughness={0.16}
-                map={stoneTexture}
-                normalMap={stoneNormalTexture}
-              />
-            </mesh>
+            {!removeArray[1] && (
+              <>
+                <mesh
+                  geometry={leftGeometry}
+                  position={[left[0], left[1], left[2]]}
+                >
+                  <meshStandardMaterial
+                    metalness={0.1}
+                    roughness={0.16}
+                    map={stoneTexture}
+                    normalMap={stoneNormalTexture}
+                  />
+                </mesh>
+                <mesh
+                  geometry={leftPostGeometry}
+                  rotation={[0, Math.PI / 2, 0]}
+                  position={[
+                    left[0],
+                    left[1] + Math.abs(YPosition) / 2 + LRheight,
+                    left[2] + LRdepth / 2 - LRwidth / 2,
+                  ]}
+                >
+                  <meshStandardMaterial
+                    flatShading
+                    metalness={0.1}
+                    roughness={0.16}
+                    map={stoneTexture}
+                    normalMap={stoneNormalTexture}
+                  />
+                </mesh>
+              </>
+            )}
             {/* Middle */}
             <mesh
               geometry={middleGeometry}
@@ -643,40 +822,44 @@ const InfinityEdge2 = ({
               />
             </mesh>
             {/* Right & Post*/}
-            <mesh
-              geometry={rightGeometry}
-              position={[right[0], right[1], right[2]]}
-            >
-              <meshStandardMaterial
-                metalness={0.2}
-                roughness={0.3}
-                map={stoneTexture}
-                normalMap={stoneNormalTexture}
-              />
-            </mesh>
-            <mesh
-              geometry={rightPostGeometry}
-              rotation={[0, Math.PI / 2, 0]}
-              position={[
-                right[0],
-                right[1] + Math.abs(YPosition) / 2 + LRheight,
-                right[2] + LRdepth / 2 - LRwidth / 2,
-              ]}
-            >
-              <meshStandardMaterial
-                flatShading
-                metalness={0.2}
-                roughness={0.3}
-                map={stoneTexture}
-                normalMap={stoneNormalTexture}
-              />
-            </mesh>
+            {!removeArray[0] && (
+              <>
+                <mesh
+                  geometry={rightGeometry}
+                  position={[right[0], right[1], right[2]]}
+                >
+                  <meshStandardMaterial
+                    metalness={0.2}
+                    roughness={0.3}
+                    map={stoneTexture}
+                    normalMap={stoneNormalTexture}
+                  />
+                </mesh>
+                <mesh
+                  geometry={rightPostGeometry}
+                  rotation={[0, Math.PI / 2, 0]}
+                  position={[
+                    right[0],
+                    right[1] + Math.abs(YPosition) / 2 + LRheight,
+                    right[2] + LRdepth / 2 - LRwidth / 2,
+                  ]}
+                >
+                  <meshStandardMaterial
+                    flatShading
+                    metalness={0.2}
+                    roughness={0.3}
+                    map={stoneTexture}
+                    normalMap={stoneNormalTexture}
+                  />
+                </mesh>
+              </>
+            )}
 
             {/* Waterfall */}
             {/* stone */}
             <mesh
               position={[
-                Waterfall[0] + Waterfall_Width / 2,
+                Waterfall[0] + Waterfall_Width / 2 + offsetWaterWallPosition,
                 Waterfall[1] + Math.abs(YPosition) / 2 + LRheight - height / 2,
                 Waterfall[2] + LRdepth / 2 - LRwidth / 2 - 0.003,
               ]}
@@ -718,9 +901,15 @@ const InfinityEdge2 = ({
           <Mask
             id={1}
             rotation={[-Math.PI / 2, 0, 0]}
-            position={[0, LRheight + height / 2 - 0.005, mask_WallZoffset]}
+            position={[
+              offsetMaskPosition,
+              LRheight + height / 2 - 0.005,
+              mask_WallZoffset,
+            ]}
           >
-            <planeGeometry args={[Waterfall_Width + 2 * LRwidth, LRdepth]} />
+            <planeGeometry
+              args={[Waterfall_Width + 2 * LRwidth + offsetMaskWidth, LRdepth]}
+            />
             {/* <meshBasicMaterial color={"salmon"}/> */}
           </Mask>
         </PivotControls>
@@ -735,44 +924,61 @@ const GetMask = ({
   width,
   height,
   depth,
+  offsetFrontWallWidthLeft,
+  offsetFrontWallWidthRight,
+  offsetFrontWallPositionLeft,
+  offsetFrontWallPositionRight,
+  side,
+  SideWallLeft,
+  SideWallRight,
 }: {
   width: number;
   height: number;
   depth: number;
+  offsetFrontWallWidthLeft: number;
+  offsetFrontWallWidthRight: number;
+  offsetFrontWallPositionLeft: number;
+  offsetFrontWallPositionRight: number;
+  SideWallLeft: number;
+  SideWallRight: number;
+  side: sides;
 }) => {
   const geometry = new THREE.BufferGeometry();
   const halfWidth = width / 2;
   const halfHeight = height / 2;
   const halfDepth = depth / 2;
-
+  const offsetBackFaceLeft =
+    offsetFrontWallWidthLeft > 0 || SideWallLeft == 0 ? -0.25 / 2 : 0;
+  const offsetBackFaceRight =
+    offsetFrontWallWidthRight > 0 || SideWallRight == 0 ? -0.25 / 2 : 0;
   // ------ ------- ------ //
   // Vertex positions (x, y, z)
   const vertices = [
     // Front face
-    -halfWidth,
+    -halfWidth - offsetFrontWallWidthLeft,
     halfHeight,
     halfDepth, // 0
-    halfWidth,
+    halfWidth + offsetFrontWallWidthRight,
     halfHeight,
     halfDepth, // 1
-    halfWidth,
+    halfWidth + offsetFrontWallWidthRight,
     -halfHeight,
     halfDepth, // 2
-    -halfWidth,
+    -halfWidth - offsetFrontWallWidthLeft,
     -halfHeight,
     halfDepth, // 3
 
     // Back face
-    halfWidth,
+    halfWidth + offsetBackFaceRight,
     halfHeight,
     -halfDepth, // 4
-    -halfWidth,
+    -halfWidth - offsetBackFaceLeft,
     halfHeight,
     -halfDepth, // 5
-    -halfWidth,
+    -halfWidth - offsetBackFaceLeft,
     -halfHeight,
     -halfDepth, // 6
-    halfWidth,
+    halfWidth + offsetBackFaceRight,
     -halfHeight,
     -halfDepth, // 7
 
@@ -805,32 +1011,32 @@ const GetMask = ({
     -halfDepth, // 15
 
     // Left face
-    -halfWidth,
-    halfHeight,
-    -halfDepth, // 16
-    -halfWidth,
-    halfHeight,
-    halfDepth, // 17
-    -halfWidth,
-    -halfHeight,
-    halfDepth, // 18
-    -halfWidth,
-    -halfHeight,
-    -halfDepth, // 19
+    (-halfWidth - offsetFrontWallWidthLeft) * SideWallLeft,
+    halfHeight * SideWallLeft,
+    -halfDepth * SideWallLeft, // 16
+    (-halfWidth - offsetFrontWallWidthLeft) * SideWallLeft,
+    halfHeight * SideWallLeft,
+    halfDepth * SideWallLeft, // 17
+    (-halfWidth - offsetFrontWallWidthLeft) * SideWallLeft,
+    -halfHeight * SideWallLeft,
+    halfDepth * SideWallLeft, // 18
+    (-halfWidth - offsetFrontWallWidthLeft) * SideWallLeft,
+    -halfHeight * SideWallLeft,
+    -halfDepth * SideWallLeft, // 19
 
     // Right face
-    halfWidth,
-    halfHeight,
-    halfDepth, // 20
-    halfWidth,
-    halfHeight,
-    -halfDepth, // 21
-    halfWidth,
-    -halfHeight,
-    -halfDepth, // 22
-    halfWidth,
-    -halfHeight,
-    halfDepth, // 23
+    (halfWidth + offsetFrontWallWidthRight) * SideWallRight,
+    halfHeight * SideWallRight,
+    halfDepth * SideWallRight, // 20
+    (halfWidth + offsetFrontWallWidthRight) * SideWallRight,
+    halfHeight * SideWallRight,
+    -halfDepth * SideWallRight, // 21
+    (halfWidth + offsetFrontWallWidthRight) * SideWallRight,
+    -halfHeight * SideWallRight,
+    -halfDepth * SideWallRight, // 22
+    (halfWidth + offsetFrontWallWidthRight) * SideWallRight,
+    -halfHeight * SideWallRight,
+    halfDepth * SideWallRight, // 23
   ];
   // Face indices (3 indices per triangle, forming 2 triangles per face)
   const Indices = [

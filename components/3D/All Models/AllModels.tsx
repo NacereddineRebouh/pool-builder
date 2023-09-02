@@ -56,9 +56,13 @@ export const AllModels = () => {
   const csg = useRef<CSGGeometryRef>(null);
   const csg2 = useRef<CSGGeometryRef>(null);
   const csg3 = useRef<CSGGeometryRef>(null); // pool
+
   return (
     <Fragment key={0}>
       {Pools.map((pool, poolIndex) => {
+        const edges = pool.childrens.filter(
+          (value) => value.shapeType === "InfinityEdge"
+        );
         switch (true) {
           case pool.poolType === "pool" || pool.poolType === "squarepool":
             return (
@@ -577,6 +581,7 @@ export const AllModels = () => {
                                 poolWidth={pool.sWidth}
                                 poolHeight={pool.sHeight}
                                 poolDepth={pool.sDepth}
+                                sides={edges}
                                 key={index}
                                 rotation={new THREE.Euler(...shape.rotation)}
                                 scale={new THREE.Vector3(...shape.scale)}
