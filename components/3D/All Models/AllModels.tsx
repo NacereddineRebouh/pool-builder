@@ -1983,24 +1983,6 @@ export const AllModels = () => {
                           }
                           return (
                             <Suspense>
-                              {/* <InfinityEdge
-                                model={shape}
-                                index={index}
-                                poolIndex={poolIndex}
-                                sPosition={shape.sPosition}
-                                sRotation={shape.sRotation}
-                                sScale={shape.sScale}
-                                poolWidth={pool.sWidth}
-                                poolHeight={poolHeight}
-                                pooltHeight={pool.stHeight}
-                                poolbHeight={pool.sbHeight}
-                                poolDepth={poolDepth}
-                                poolType={pool.poolType}
-                                key={index}
-                                rotation={new THREE.Euler(...shape.rotation)}
-                                scale={new THREE.Vector3(...shape.scale)}
-                                position={new THREE.Vector3(...pos)}
-                              /> */}
                               <InfinityEdge2
                                 model={shape}
                                 index={index}
@@ -2019,6 +2001,7 @@ export const AllModels = () => {
                                 poolbHeight={pool.sbHeight}
                                 poolType={pool.poolType}
                                 poolPosition={pool.sPosition}
+                                sides={edges}
                               />
                             </Suspense>
                           );

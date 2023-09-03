@@ -85,6 +85,7 @@ const InfinityEdge2 = ({
   let SideWallRight = 1;
   let SideWallLeft = 1;
   const removeArray = [false, false]; //Right, Left posts to remove LRdepth - LRwidth / 2 + LRwidth / 2
+  let removeLeft = false; //Right, Left posts to remove LRdepth - LRwidth / 2 + LRwidth / 2
   if (sides) {
     let filtered: ChildrensType[] = [];
     filtered = sides.filter((value, index) => {
@@ -175,27 +176,62 @@ const InfinityEdge2 = ({
         }
         break;
       case "Top":
-        if (
-          sides.filter((value, index) => value.side === Sides.Left).length > 0
-        ) {
-          offsetMiddleWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
-          offsetMiddlePosition = -(LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
-          fillGab = LRwidth;
-          SideWallRight = 0;
-          // offsetWaterPosition = -fillGab / 2;
-          removeArray[1] = true;
+        if (poolType === "lshape") {
+          //
+          SideWallLeft = 0;
+          if (
+            sides.filter((value, index) => value.side === Sides.Left).length > 0
+          ) {
+            offsetMiddleWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+            offsetMiddlePosition = -(LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+            fillGab = LRwidth;
+            SideWallRight = 0;
+            offsetRightWidth = LRwidth / 2;
+            offsetRightPosition = 0;
+            // offsetWaterPosition = -fillGab / 2;
+            removeArray[1] = true;
+          }
+
+          if (
+            sides.filter((value, index) => value.side === Sides.tLeft).length >
+            0
+          ) {
+            offsetMiddleWidth -= LRdepth - LRwidth;
+            offsetMiddlePosition -= (LRdepth - LRwidth) / 2;
+            fillGab = LRwidth;
+            SideWallLeft = 0;
+            offsetLeftWidth = -(LRdepth - LRwidth - LRwidth / 2 / 2);
+            offsetLeftPosition = -(LRdepth - LRwidth - LRwidth / 2 / 2) / 2;
+            offsetFrontWallWidthLeft = -LRdepth;
+
+            // offsetWaterPosition = fillGab / 2;
+            removeArray[0] = true;
+          }
+        } else {
+          if (
+            sides.filter((value, index) => value.side === Sides.Left).length > 0
+          ) {
+            offsetMiddleWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+            offsetMiddlePosition = -(LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+            fillGab = LRwidth;
+            SideWallRight = 0;
+            // offsetWaterPosition = -fillGab / 2;
+            removeArray[1] = true;
+          }
+
+          if (
+            sides.filter((value, index) => value.side === Sides.Right).length >
+            0
+          ) {
+            offsetMiddleWidth += LRdepth - LRwidth / 2 + LRwidth / 2;
+            offsetMiddlePosition += (LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+            fillGab = LRwidth;
+            SideWallLeft = 0;
+            // offsetWaterPosition = fillGab / 2;
+            removeArray[0] = true;
+          }
         }
 
-        if (
-          sides.filter((value, index) => value.side === Sides.Right).length > 0
-        ) {
-          offsetMiddleWidth += LRdepth - LRwidth / 2 + LRwidth / 2;
-          offsetMiddlePosition += (LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
-          fillGab = LRwidth;
-          SideWallLeft = 0;
-          // offsetWaterPosition = fillGab / 2;
-          removeArray[0] = true;
-        }
         break;
       case "Bottom":
         if (
@@ -209,7 +245,10 @@ const InfinityEdge2 = ({
           removeArray[0] = true;
         }
         if (
-          sides.filter((value, index) => value.side === Sides.Right).length > 0
+          sides.filter(
+            (value, index) =>
+              value.side === Sides.tRight || value.side === Sides.Right
+          ).length > 0
         ) {
           offsetMiddleWidth += LRdepth - LRwidth / 2 + LRwidth / 2;
           offsetMiddlePosition += -(LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
@@ -217,6 +256,122 @@ const InfinityEdge2 = ({
           SideWallRight = 0;
           // offsetWaterPosition = -fillGab / 2;
           removeArray[1] = true;
+        }
+        break;
+
+      // Lshape
+      case "tLeft":
+        let tleft = false;
+        SideWallRight = 0;
+        if (
+          sides.filter((value, index) => value.side === Sides.tTop).length > 0
+        ) {
+          tleft = true;
+          offsetRightWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetRightPosition = (LRdepth - LRwidth / 2 + LRwidth / 2) / 2; //x axis
+          offsetMiddleWidth = offsetRightWidth;
+          offsetMiddlePosition = offsetRightPosition;
+          offsetWaterWidth = offsetMiddleWidth;
+          offsetWaterPosition = offsetMiddlePosition;
+          offsetMaskWidth = LRdepth - LRwidth;
+          offsetMaskPosition = -(LRdepth - LRwidth) / 2;
+          offsetWaterWallWidth = LRwidth / 2;
+          offsetWaterWallPosition = LRwidth / 2;
+          offsetFrontWallWidthLeft = LRdepth - LRwidth;
+          offsetFrontWallPositionLeft = (LRdepth - LRwidth / 2) / 2;
+          removeArray[0] = true;
+        }
+        if (
+          sides.filter((value, index) => value.side === Sides.Top).length > 0
+        ) {
+          offsetLeftWidth = LRwidth / 2;
+          offsetLeftPosition = -(LRwidth / 2) / 2;
+          offsetMiddleWidth += -(LRdepth - LRwidth * 2);
+          offsetMiddlePosition += (LRdepth - LRwidth * 2) / 2;
+          offsetWaterWidth = offsetMiddleWidth;
+          offsetWaterPosition = offsetMiddlePosition;
+          offsetMaskWidth += LRdepth - LRwidth;
+          offsetMaskPosition += (LRdepth - LRwidth) / 2;
+          offsetWaterWallWidth += LRwidth / 2;
+          if (tleft) offsetWaterWallPosition = LRwidth / 2;
+
+          offsetFrontWallWidthRight = -(LRdepth - LRwidth + LRwidth + 0.01);
+          offsetFrontWallPositionRight +=
+            -(LRdepth - LRwidth / 2 + LRwidth) / 2;
+          SideWallRight = 0;
+          removeArray[1] = false;
+          removeLeft = true;
+        }
+        break;
+      case "tTop":
+        if (
+          sides.filter((value, index) => value.side === Sides.tRight).length > 0
+        ) {
+          offsetMiddleWidth = LRdepth - LRwidth / 2 + LRwidth / 2;
+          offsetMiddlePosition = (LRdepth - LRwidth / 2 + LRwidth / 2) / 2;
+          fillGab = LRwidth;
+          SideWallLeft = 0;
+          offsetMaskWidth = LRdepth - LRwidth;
+          offsetMaskPosition = -(LRdepth - LRwidth) / 2;
+          // offsetWaterPosition = fillGab / 2;
+          // offsetFrontWallWidthLeft = LRdepth - LRwidth;
+          // offsetFrontWallPositionLeft = (LRdepth - LRwidth / 2) / 2;
+          removeArray[0] = true;
+        }
+        if (
+          sides.filter((value, index) => value.side === Sides.tLeft).length > 0
+        ) {
+          offsetMiddleWidth += LRdepth - LRwidth;
+          offsetMiddlePosition += -(LRdepth - LRwidth) / 2;
+          fillGab = LRwidth;
+          SideWallRight = 0;
+          offsetMaskWidth += LRdepth - LRwidth;
+          offsetMaskPosition += (LRdepth - LRwidth) / 2;
+          // offsetWaterPosition = -fillGab / 2;
+          // offsetFrontWallWidthRight = LRdepth - LRwidth;
+          // offsetFrontWallPositionRight += -(LRdepth - LRwidth / 2) / 2;
+          removeArray[1] = true;
+        }
+        break;
+      case "tRight":
+        let bbottom =
+          sides.filter((value, index) => value.side === Sides.Bottom).length >
+          0;
+        if (
+          sides.filter((value, index) => value.side === Sides.tTop).length > 0
+        ) {
+          offsetLeftWidth = LRdepth - LRwidth;
+          offsetLeftPosition = -(LRdepth - LRwidth) / 2;
+          offsetMiddleWidth = offsetLeftWidth;
+          offsetWaterWidth = offsetMiddleWidth;
+          offsetMiddlePosition = offsetLeftPosition;
+          offsetWaterPosition = offsetMiddlePosition;
+          offsetMaskWidth = LRdepth - LRwidth;
+          offsetMaskPosition = (LRdepth - LRwidth) / 2;
+          offsetWaterWallWidth = LRwidth / 2;
+          if (bbottom) offsetWaterWallPosition = LRwidth / 2;
+
+          offsetFrontWallWidthRight = LRdepth - LRwidth;
+          offsetFrontWallPositionRight = (LRdepth - LRwidth / 2) / 2;
+          removeArray[1] = true;
+        }
+        if (
+          sides.filter((value, index) => value.side === Sides.Bottom).length > 0
+        ) {
+          offsetRightWidth = LRdepth - LRwidth;
+          offsetRightPosition = (LRdepth - LRwidth) / 2; //x axis
+          offsetMiddleWidth += offsetRightWidth;
+          offsetWaterWidth = offsetMiddleWidth;
+          offsetMiddlePosition += offsetRightPosition;
+          offsetWaterPosition = offsetMiddlePosition;
+          offsetMaskWidth += LRdepth - LRwidth;
+          offsetMaskPosition += -(LRdepth - LRwidth) / 2;
+          offsetWaterWallWidth += LRwidth / 2;
+          offsetWaterWallPosition = LRwidth / 2;
+
+          offsetFrontWallWidthLeft = LRdepth - LRwidth;
+          offsetFrontWallPositionLeft += -(LRdepth - LRwidth / 2) / 2;
+          removeArray[0] = true;
         }
         break;
     }
@@ -574,21 +729,23 @@ const InfinityEdge2 = ({
     width + offsetRightWidth + offsetLeftWidth,
     LRdepth - LRwidth / 2
   );
-  const leftGeometry = new THREE.BoxGeometry(LRwidth + 0.01, LRheight, LRdepth);
+  const leftGeometry = new THREE.BoxGeometry(LRwidth - 0.01, LRheight, LRdepth);
   const leftPostGeometry = new THREE.BoxGeometry(
     LRwidth,
-    Math.abs(YPosition) + LRheight,
-    LRwidth + 0.01
+    removeLeft
+      ? Math.abs(YPosition) + LRheight * 2 + 0.01
+      : Math.abs(YPosition) + LRheight + 0.01,
+    removeLeft ? LRwidth - 0.01 : LRwidth - 0.01
   );
   const rightGeometry = new THREE.BoxGeometry(
-    LRwidth + 0.01,
+    LRwidth - 0.01,
     LRheight,
     LRdepth
   );
   const rightPostGeometry = new THREE.BoxGeometry(
-    LRwidth,
-    Math.abs(YPosition) + LRheight,
-    LRwidth + 0.01
+    poolType === "lshape" ? LRwidth - 0.01 : LRwidth,
+    Math.abs(YPosition) + LRheight + 0.01,
+    poolType === "lshape" ? LRwidth - 0.01 : LRwidth
   );
   const middleGeometry = new THREE.BoxGeometry(
     width + offsetMiddleWidth,
@@ -770,32 +927,30 @@ const InfinityEdge2 = ({
               ]}
               rotation={[-Math.PI / 2, 0, 0]}
             />
-            {/* <mesh
-              position={[0, -LRheight / 2 + 0.1, LRdepth / 2 - depth / 2]}
-              rotation={[Math.PI / 2, 0, 0]}
-              geometry={water.geometry}
-              material={water.material}
-            /> */}
             {/* Left & Post */}
             {!removeArray[1] && (
               <>
-                <mesh
-                  geometry={leftGeometry}
-                  position={[left[0], left[1], left[2]]}
-                >
-                  <meshStandardMaterial
-                    metalness={0.1}
-                    roughness={0.16}
-                    map={stoneTexture}
-                    normalMap={stoneNormalTexture}
-                  />
-                </mesh>
+                {!removeLeft && (
+                  <mesh
+                    geometry={leftGeometry}
+                    position={[left[0], left[1], left[2]]}
+                  >
+                    <meshStandardMaterial
+                      metalness={0.1}
+                      roughness={0.16}
+                      map={stoneTexture}
+                      normalMap={stoneNormalTexture}
+                    />
+                  </mesh>
+                )}
                 <mesh
                   geometry={leftPostGeometry}
                   rotation={[0, Math.PI / 2, 0]}
                   position={[
                     left[0],
-                    left[1] + Math.abs(YPosition) / 2 + LRheight,
+                    removeLeft
+                      ? left[1] + Math.abs(YPosition) / 2 + LRheight / 2
+                      : left[1] + Math.abs(YPosition) / 2 + LRheight,
                     left[2] + LRdepth / 2 - LRwidth / 2,
                   ]}
                 >
@@ -893,7 +1048,6 @@ const InfinityEdge2 = ({
               rotation={[0, Math.PI, 0]}
               scaleArray={[1, 1, 1]}
               scale={0.3}
-              // scaleArray={[-1, 1, -1]}
             />
           </group>
           {/* mask -- stick to the ground*/}
