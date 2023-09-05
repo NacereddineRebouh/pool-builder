@@ -239,7 +239,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
             value="scene"
             icon={<MdOutlineGrid3X3 size="0.8rem" />}
           >
-            Scene
+            Elements
           </Tabs.Tab>
           <Tabs.Tab
             key={1}
@@ -315,7 +315,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
 
             {/* Transforms */}
             <div className="flex items-center justify-start gap-x-2 text-lg font-medium text-slate-50">
-              <div>Transforms</div>
+              <div>Switch to</div>
               <Checkbox
                 checked={Inches}
                 onChange={(e) => {

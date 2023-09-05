@@ -6,6 +6,7 @@ import box from "@/public/icons/cube.png";
 import cyl from "@/public/icons/cylinder.png";
 import plus from "@/public/icons/plus.png";
 import roundSteps from "@/public/icons/round-steps.png";
+import steps from "@/public/icons/steps.png";
 import waterblade from "@/public/icons/water-blade.png";
 import wallwater from "@/public/icons/waterjet.png";
 import infin from "@/public/icons/infinityEdge.png";
@@ -14,6 +15,7 @@ import fountain from "@/public/icons/fountain.png";
 import corner from "@/public/icons/corner-steps.png";
 import cornerRounded from "@/public/icons/corner-round-steps.png";
 import swimjet from "@/public/icons/swim-jet.png";
+import regjet from "@/public/icons/regularjet.png";
 import inset from "@/public/icons/insetStep.png";
 import Icon from "./Icon";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -105,7 +107,7 @@ const SideBar: React.FC<ISideBarProps> = () => {
           disabled={Pools.length>0 ?true: false} icon={corner.src} onPointerDown={(e)=>OnMouseDownHandler(e,"Steps")}/> */}
           <Icon
             disabled={Pools.length > 0 ? false : true}
-            icon={swimjet.src}
+            icon={regjet.src}
             ImageClassName={"!w-8 !h-8 self-center"}
             onPointerDown={(e) => OnMouseDownHandler(e, "RegularJets")}
           />
@@ -130,7 +132,7 @@ const SideBar: React.FC<ISideBarProps> = () => {
           />
           <Icon
             disabled={Pools.length > 0 ? false : true}
-            icon={roundSteps.src}
+            icon={steps.src}
             onPointerDown={(e) => OnMouseDownHandler(e, "Steps")}
           />
         </div>

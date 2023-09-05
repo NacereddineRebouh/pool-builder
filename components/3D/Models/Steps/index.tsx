@@ -32,6 +32,7 @@ interface Steps {
   intersecting: boolean;
 }
 import React from "react";
+import { CustomBoxGeometry } from "@/utils/getActiveAxis";
 export default function Steps({
   position,
   width = 6,
@@ -216,12 +217,21 @@ export default function Steps({
               break;
           }
           return (
-            <mesh key={idx} position={new THREE.Vector3(...newPosition)}>
+            <mesh
+              key={idx}
+              position={new THREE.Vector3(...newPosition)}
+              geometry={CustomBoxGeometry({
+                width: boxArgs[0],
+                height: boxArgs[1],
+                depth: boxArgs[2],
+              })}
+            >
               <boxGeometry args={[boxArgs[0], boxArgs[1], boxArgs[2]]} />
               <meshStandardMaterial
                 map={tileTexture}
                 metalness={0.2}
                 roughness={0.2}
+                side={2}
                 color={"lightblue"}
               />
             </mesh>

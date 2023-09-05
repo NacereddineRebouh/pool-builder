@@ -2635,7 +2635,7 @@ const Grid = ({
               // temp[ClosestIndex].used = true;
               // setfountain(temp)
               let rotation = 0;
-              let position = [0, -0.4 / 2 + 0.05, 0];
+              let position = [0, -0.4 / 2, 0];
               let side = sides.Left;
               switch (ClosestIndex) {
                 case 0:
@@ -2691,7 +2691,7 @@ const Grid = ({
               // temp[ClosestIndex].used = true;
               // setfountain(temp)
               let rotation = 0;
-              let position = [0, -0.4 / 2 + 0.05, 0];
+              let position = [0, -0.4 / 2, 0];
               let side = sides.Left;
               switch (ClosestIndex) {
                 case 0:
@@ -2921,7 +2921,7 @@ const Grid = ({
               // temp[ClosestIndex].used = true;
               // setfountain(temp)
               let rotation = 0;
-              let position = [0, -0.4 / 2 + 0.05, 0]; // box height/2 + border height
+              let position = [0, -0.4 / 2, 0]; // box height/2 + border height
               let side = sides.Left;
               switch (ClosestIndex) {
                 case 0:

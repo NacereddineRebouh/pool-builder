@@ -10,6 +10,7 @@ import {
   setTargetTitle,
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { CustomBoxGeometry } from "@/utils/getActiveAxis";
 import { useTexture } from "@react-three/drei";
 import { FC, Fragment, ReactElement, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
@@ -209,12 +210,21 @@ const SquareSteps: FC<squareStepsProps> = ({
               break;
           }
           return (
-            <mesh key={idx} position={new THREE.Vector3(...newPosition)}>
-              <boxGeometry args={[boxArgs[0], boxArgs[1], boxArgs[2]]} />
+            <mesh
+              key={idx}
+              position={new THREE.Vector3(...newPosition)}
+              geometry={CustomBoxGeometry({
+                width: boxArgs[0],
+                height: boxArgs[1],
+                depth: boxArgs[2],
+              })}
+            >
+              {/* <boxGeometry args={[boxArgs[0], boxArgs[1], boxArgs[2]]} /> */}
               <meshStandardMaterial
                 map={tileTexture}
                 color={"lightblue"}
                 metalness={0.2}
+                side={2}
                 roughness={0.2}
               />
             </mesh>
