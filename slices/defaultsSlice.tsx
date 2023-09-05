@@ -54,8 +54,8 @@ const initialState: Defaults = {
   },
   squarepool: {
     width: 2.5,
-    height: 2.5,
-    depth: 1.1,
+    height: 1.1,
+    depth: 2.5,
   },
   hottub: {
     width: 3,
