@@ -7,6 +7,7 @@ import cyl from "@/public/icons/cylinder.png";
 import plus from "@/public/icons/plus.png";
 import roundSteps from "@/public/icons/round-steps.png";
 import steps from "@/public/icons/steps.png";
+import light from "@/public/icons/light.jpg";
 import waterblade from "@/public/icons/water-blade.png";
 import wallwater from "@/public/icons/waterjet.png";
 import infin from "@/public/icons/infinityEdge.png";
@@ -139,8 +140,8 @@ const SideBar: React.FC<ISideBarProps> = () => {
         <div className="flex items-center justify-start gap-x-1">
           <Icon
             disabled={Pools.length > 0 ? false : true}
-            icon={inset.src}
-            onPointerDown={(e) => OnMouseDownHandler(e, "insetSteps")}
+            icon={light.src}
+            onPointerDown={(e) => OnMouseDownHandler(e, "light")}
           />
         </div>
       </IconMenu>

@@ -82,7 +82,6 @@ const PoolBool: FC<Props> = ({
   });
   const [Texture, setTexture] = useState(poolTexture);
   const [TextureStone, setTextureStone] = useState(poolOuterTexture);
-
   // ------ ------- ------ //
   // Vertex positions (x, y, z)
 
@@ -161,65 +160,16 @@ const PoolBool: FC<Props> = ({
     (value) => value.shapeType === "InfinityEdge"
   );
   const stencil = useMask(2, true);
-  // const WaterMaterial2 = new THREE.ShaderMaterial({
-  //   transparent: true,
-  //   uniforms: {
-  //     u_time: { value: 0 },
-  //     // palette: { value: ["#b8d0e1","#b8d0e1"] },
-  //     u_offset: { value: 20 },
-  //     diffuse: { value: new THREE.Color("black") },
 
-  //     fresnelColor: { value: new THREE.Color("lightblue") },
-  //     //   uAlpha: { value: 0.5 },
-  //   },
-  //   side: THREE.DoubleSide,
-  //   wireframe: false,
-  //   vertexShader: vShader,
-  //   fragmentShader:
-  //     "vec4 diffuseColor = vec4( diffuse, opacity );diffuseColor.rgb +=  ( 1.0 - -min(dot(vEye, normalize(vNN) ), 0.0) ) * fresnelColor; gl_FragColor=diffuseColor;",
+  // ------ ------- ------ //
+  const cornerHeight = 0.2;
+  const cornerHeightPosition = BenchYPosition + BenchHeight / 2 + cornerHeight;
+  const cornerHeightBottomPosition =
+    BenchYPosition - BenchHeight / 2 + cornerHeight;
+  const isoscelesGeometry = GetTriangle({ BenchDepth, cornerHeight });
+  const isoscelesGeometryBottom = GetTriangle({ BenchDepth, cornerHeight });
 
-  //   // Uniforms (will be applied to existing or added)
-  // });
-  // const params = useControls({
-  //   ior: 1.2,
-  //   thickness: 1.2,
-  //   transmission: 0.5,
-  //   roughness: 0.2,
-  // });
-  // const WaterMaterial = new THREE.MeshPhysicalMaterial(params);
-  // const SuperMaterial = extendMaterial(MeshStandardMaterial, {
-  //   uniforms: {
-  //     uTime: {
-  //       type: 'float',
-  //       value: 0
-  //     }
-  //   },
-  //   extensions: {
-  //     fragmentShader: {
-  //       map_fragment: `
-  //         #include <map_fragment>
-
-  //         diffuseColor.r += sin(uTime / 1000.);
-  //       `
-  //     },
-  //     vertexShader: {
-  //       headers: `
-  //         vec3 displace(vec3 pos) {
-  //           vec3 trans = vec3(pos);
-  //           trans.x += sin(trans.z + uTime / 1000.);
-  //           trans.y += cos(uTime / 1000.);
-
-  //           return trans;
-  //         }
-  //       `,
-  //       project_vertex: `
-  //         transformed.xyz = displace(transformed);
-
-  //         #include <project_vertex>
-  //       `
-  //     }
-  //   }
-  // })
+  // ------ ------- ------ //
   return (
     <PivotControls
       disableScaleAxes
@@ -316,13 +266,6 @@ const PoolBool: FC<Props> = ({
               rotation={[-Math.PI / 2, 0, 0]}
               position={[0, -0.06, 0]}
             />
-            {/* <mesh
-              rotation={[-Math.PI / 2, 0, 0]}
-              position={[0, -0.06, 0]}
-              material={WaterMaterial}
-            >
-              <planeGeometry args={[width, depth, 64, 64]} />
-            </mesh> */}
           </Suspense>
         )}
 
@@ -485,7 +428,193 @@ const PoolBool: FC<Props> = ({
             </mesh>
           )}
         </>
-
+        {/* BenchSeating steps */}
+        {/* topLeft: Math.PI / 2 + Math.PI / 4   */}
+        {/* topRight:-( Math.PI / 2 + Math.PI / 4) */}
+        {/* bottomRight: -Math.PI / 4  */}
+        {/* bottomLeft: Math.PI / 4  */}
+        {/* BenchSeating Top */}
+        <>
+          {pool?.BenchSeatings?.includes("left") &&
+            pool?.BenchSeatings?.includes("top") && (
+              <mesh
+                position={[
+                  -pool.sWidth / 2,
+                  cornerHeightPosition,
+                  -pool.sDepth / 2,
+                ]}
+                rotation-x={Math.PI / 2}
+                rotation-z={Math.PI / 2 + Math.PI / 4}
+                geometry={isoscelesGeometry}
+              >
+                <meshStandardMaterial
+                  color={"lightblue"}
+                  roughness={0.22}
+                  metalness={0.15}
+                  side={2}
+                  map={Texture}
+                  {...stencil}
+                />
+              </mesh>
+            )}
+          {pool?.BenchSeatings?.includes("left") &&
+            pool?.BenchSeatings?.includes("bottom") && (
+              <mesh
+                position={[
+                  -pool.sWidth / 2,
+                  cornerHeightPosition,
+                  pool.sDepth / 2,
+                ]}
+                rotation-x={Math.PI / 2}
+                rotation-z={Math.PI / 4}
+                geometry={isoscelesGeometry}
+              >
+                <meshStandardMaterial
+                  color={"lightblue"}
+                  roughness={0.22}
+                  metalness={0.15}
+                  side={2}
+                  map={Texture}
+                  {...stencil}
+                />
+              </mesh>
+            )}
+          {pool?.BenchSeatings?.includes("right") &&
+            pool?.BenchSeatings?.includes("top") && (
+              <mesh
+                position={[
+                  pool.sWidth / 2,
+                  cornerHeightPosition,
+                  -pool.sDepth / 2,
+                ]}
+                rotation-x={Math.PI / 2}
+                rotation-z={-(Math.PI / 2 + Math.PI / 4)}
+                geometry={isoscelesGeometry}
+              >
+                <meshStandardMaterial
+                  color={"lightblue"}
+                  roughness={0.22}
+                  metalness={0.15}
+                  side={2}
+                  map={Texture}
+                  {...stencil}
+                />
+              </mesh>
+            )}
+          {pool?.BenchSeatings?.includes("right") &&
+            pool?.BenchSeatings?.includes("bottom") && (
+              <mesh
+                position={[
+                  pool.sWidth / 2,
+                  cornerHeightPosition,
+                  pool.sDepth / 2,
+                ]}
+                rotation-x={Math.PI / 2}
+                rotation-z={-Math.PI / 4}
+                geometry={isoscelesGeometry}
+              >
+                <meshStandardMaterial
+                  color={"lightblue"}
+                  roughness={0.22}
+                  metalness={0.15}
+                  side={2}
+                  map={Texture}
+                  {...stencil}
+                />
+              </mesh>
+            )}
+        </>
+        {/* BenchSeating Bottom */}
+        <>
+          {pool?.BenchSeatings?.includes("left") &&
+            pool?.BenchSeatings?.includes("top") && (
+              <mesh //TopLeft
+                position={[
+                  -pool.sWidth / 2 + BenchDepth,
+                  cornerHeightBottomPosition,
+                  -pool.sDepth / 2 + BenchDepth,
+                ]}
+                rotation-x={Math.PI / 2}
+                rotation-z={Math.PI / 2 + Math.PI / 4}
+                geometry={isoscelesGeometry}
+              >
+                <meshStandardMaterial
+                  color={"lightblue"}
+                  roughness={0.22}
+                  metalness={0.15}
+                  side={2}
+                  map={Texture}
+                  {...stencil}
+                />
+              </mesh>
+            )}
+          {pool?.BenchSeatings?.includes("left") &&
+            pool?.BenchSeatings?.includes("bottom") && (
+              <mesh // bottomLeft
+                position={[
+                  -pool.sWidth / 2 + BenchDepth,
+                  cornerHeightBottomPosition,
+                  pool.sDepth / 2 - BenchDepth,
+                ]}
+                rotation-x={Math.PI / 2}
+                rotation-z={Math.PI / 4}
+                geometry={isoscelesGeometry}
+              >
+                <meshStandardMaterial
+                  color={"lightblue"}
+                  roughness={0.22}
+                  metalness={0.15}
+                  side={2}
+                  map={Texture}
+                  {...stencil}
+                />
+              </mesh>
+            )}
+          {pool?.BenchSeatings?.includes("right") &&
+            pool?.BenchSeatings?.includes("top") && (
+              <mesh // TopRight
+                position={[
+                  pool.sWidth / 2 - BenchDepth,
+                  cornerHeightBottomPosition,
+                  -pool.sDepth / 2 + BenchDepth,
+                ]}
+                rotation-x={Math.PI / 2}
+                rotation-z={-(Math.PI / 2 + Math.PI / 4)}
+                geometry={isoscelesGeometry}
+              >
+                <meshStandardMaterial
+                  color={"lightblue"}
+                  roughness={0.22}
+                  metalness={0.15}
+                  side={2}
+                  map={Texture}
+                  {...stencil}
+                />
+              </mesh>
+            )}
+          {pool?.BenchSeatings?.includes("right") &&
+            pool?.BenchSeatings?.includes("bottom") && (
+              <mesh //bottomRight
+                position={[
+                  pool.sWidth / 2 - BenchDepth,
+                  cornerHeightBottomPosition,
+                  pool.sDepth / 2 - BenchDepth,
+                ]}
+                rotation-x={Math.PI / 2}
+                rotation-z={-Math.PI / 4}
+                geometry={isoscelesGeometry}
+              >
+                <meshStandardMaterial
+                  color={"lightblue"}
+                  roughness={0.22}
+                  metalness={0.15}
+                  side={2}
+                  map={Texture}
+                  {...stencil}
+                />
+              </mesh>
+            )}
+        </>
         {/* Childrens */}
         {children}
       </group>
@@ -717,4 +846,26 @@ const GetGeometry = ({
   geometry.setIndex(indexAttribute);
   geometry.computeVertexNormals();
   return geometry;
+};
+const GetTriangle = ({
+  BenchDepth,
+  cornerHeight,
+}: {
+  BenchDepth: number;
+  cornerHeight: number;
+}) => {
+  const isoscelesGeometry = new THREE.ExtrudeGeometry(
+    new THREE.Shape([
+      new THREE.Vector2(0, 0), // Top vertex
+      new THREE.Vector2(-BenchDepth, -BenchDepth), // Bottom-left vertex
+      new THREE.Vector2(BenchDepth, -BenchDepth), // Bottom-right vertex
+      new THREE.Vector2(0, 0), // Close the shape by repeating the top vertex
+    ]),
+    {
+      depth: cornerHeight, // Extrusion depth
+      bevelEnabled: false, // Disable bevel
+    }
+  );
+  isoscelesGeometry.computeVertexNormals();
+  return isoscelesGeometry;
 };

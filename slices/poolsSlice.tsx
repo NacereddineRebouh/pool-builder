@@ -23,6 +23,7 @@ export interface ChildrensType {
   sHeight: number;
   depth: number;
   sDepth: number;
+  poolInitialHeight: number;
   side: sides;
 }
 export interface PoolType {

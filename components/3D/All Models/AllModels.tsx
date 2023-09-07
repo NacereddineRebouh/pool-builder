@@ -24,6 +24,7 @@ import { CSGGeometryRef } from "@react-three/csg";
 import PoolBool from "../Models/Pool/booleanPool";
 import { RegularJet } from "../Models/RegularJet/RegularJet";
 import InfinityEdge2 from "../Models/infinity Edge2";
+import { Light } from "../Models/Light/Light2";
 
 export const AllModels = () => {
   const Pools = useAppSelector(selectAllPools);
@@ -159,6 +160,15 @@ export const AllModels = () => {
                       const pos = [...shape.position];
                       const offsetWidth = pool.sWidth - pool.width;
                       const offsetHeight = pool.sHeight - pool.height;
+                      let newOffsetHeight = 0;
+                      if (shape.poolInitialHeight) {
+                        newOffsetHeight =
+                          pool.sHeight - shape.poolInitialHeight;
+                        console.log(
+                          "shape.poolInitialHeight:",
+                          shape.poolInitialHeight
+                        );
+                      }
                       const offsetDepth = pool.sDepth - pool.depth;
                       switch (shape.shapeType) {
                         case "SwimJet":
@@ -202,7 +212,6 @@ export const AllModels = () => {
                               />
                             </Suspense>
                           );
-
                         case "RegularJets":
                           switch (shape.side) {
                             case "Left":
@@ -318,7 +327,6 @@ export const AllModels = () => {
                               )}
                             </>
                           );
-
                         case "WallWaterfall":
                           switch (shape.side) {
                             case "Left":
@@ -682,6 +690,66 @@ export const AllModels = () => {
                               />
                             </Suspense>
                           );
+                        case "light":
+                          const benchWidth = 0.5;
+                          switch (shape.side) {
+                            case "Left":
+                              pos[0] =
+                                shape.position[0] -
+                                offsetWidth / 2 +
+                                (pool?.BenchSeatings?.includes("left")
+                                  ? benchWidth
+                                  : 0);
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2];
+                              break;
+                            case "Right":
+                              pos[0] =
+                                shape.position[0] +
+                                offsetWidth / 2 -
+                                (pool?.BenchSeatings?.includes("right")
+                                  ? benchWidth
+                                  : 0);
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2];
+                              break;
+                            case "Top":
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] =
+                                shape.position[2] -
+                                offsetDepth / 2 +
+                                (pool?.BenchSeatings?.includes("top")
+                                  ? benchWidth
+                                  : 0);
+                              break;
+                            case "Bottom":
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] =
+                                shape.position[2] +
+                                offsetDepth / 2 -
+                                (pool?.BenchSeatings?.includes("bottom")
+                                  ? benchWidth
+                                  : 0);
+                              break;
+                          }
+                          return (
+                            <Suspense>
+                              <Light
+                                model={shape}
+                                index={index}
+                                poolIndex={poolIndex}
+                                sPosition={shape.sPosition}
+                                sRotation={shape.sRotation}
+                                sScale={shape.sScale}
+                                key={index}
+                                rotation={new THREE.Euler(...shape.rotation)}
+                                scale={new THREE.Vector3(...shape.scale)}
+                                position={new THREE.Vector3(...pos)}
+                              />
+                            </Suspense>
+                          );
                       }
                     })}
                 </PoolBool>
@@ -716,6 +784,12 @@ export const AllModels = () => {
                       const offsetWidth = pool.sWidth - pool.width;
                       const offsetHeight = pool.sHeight - pool.height;
                       const offsetDepth = pool.sDepth - pool.depth;
+                      let newOffsetHeight = 0;
+                      if (shape.poolInitialHeight) {
+                        newOffsetHeight =
+                          pool.sHeight - shape.poolInitialHeight;
+                      }
+
                       switch (shape.shapeType) {
                         case "SwimJet":
                           switch (shape.side) {
@@ -870,6 +944,47 @@ export const AllModels = () => {
                                 />
                               )}
                             </>
+                          );
+                        case "light":
+                          switch (shape.side) {
+                            case "Left":
+                              //Topleft
+                              pos[0] = shape.position[0] - offsetWidth / 2;
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2];
+                              break;
+                            case "Right":
+                              pos[0] = shape.position[0] + offsetWidth / 2;
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2];
+                              break;
+                            case "Top":
+                              //bottom Left
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2] - offsetDepth / 2;
+                              break;
+                            case "Bottom":
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2] + offsetDepth / 2;
+                              break;
+                          }
+                          return (
+                            <Suspense>
+                              <Light
+                                model={shape}
+                                index={index}
+                                poolIndex={poolIndex}
+                                sPosition={shape.sPosition}
+                                sRotation={shape.sRotation}
+                                sScale={shape.sScale}
+                                key={index}
+                                rotation={new THREE.Euler(...shape.rotation)}
+                                scale={new THREE.Vector3(...shape.scale)}
+                                position={new THREE.Vector3(...pos)}
+                              />
+                            </Suspense>
                           );
                       }
                     })}
@@ -1104,6 +1219,11 @@ export const AllModels = () => {
                       const offsettHeight = pool.stHeight - pool.tHeight;
                       const offsetbHeight = pool.sbHeight - pool.bHeight;
                       const offsetDepth = pool.sDepth - pool.depth;
+                      let newOffsetHeight = 0;
+                      if (shape.poolInitialHeight) {
+                        newOffsetHeight = pool.sDepth - shape.poolInitialHeight;
+                      }
+
                       let poolHeight = pool.stHeight;
                       let poolDepth = pool.sDepth;
                       let poolWidth = pool.sWidth;
@@ -2002,6 +2122,65 @@ export const AllModels = () => {
                                 poolType={pool.poolType}
                                 poolPosition={pool.sPosition}
                                 sides={edges}
+                              />
+                            </Suspense>
+                          );
+                        case "light":
+                          switch (true) {
+                            case shape.side === "Left":
+                              //Topleft
+                              pos[0] =
+                                shape.position[0] -
+                                offsetbHeight +
+                                offsetWidth / 2;
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2];
+                              break;
+                            case shape.side === "tLeft":
+                              //Topleft
+                              pos[0] = shape.position[0] - offsetWidth / 2;
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2];
+                              break;
+                            case shape.side === "tRight":
+                              pos[0] = shape.position[0] + offsetWidth / 2;
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2];
+                              break;
+                            case shape.side === "Top":
+                              //bottom Left
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] = shape.position[2] - offsetWidth / 2;
+                              break;
+                            case shape.side === "tTop":
+                              //bottom Left
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1] - newOffsetHeight;
+                              pos[2] =
+                                shape.position[2] -
+                                offsettHeight +
+                                offsetWidth / 2;
+                              break;
+                            case shape.side === "Bottom":
+                              pos[0] = shape.position[0];
+                              pos[1] = shape.position[1] - offsetDepth;
+                              pos[2] = shape.position[2] + offsetWidth / 2;
+                              break;
+                          }
+                          return (
+                            <Suspense>
+                              <Light
+                                model={shape}
+                                index={index}
+                                poolIndex={poolIndex}
+                                sPosition={shape.sPosition}
+                                sRotation={shape.sRotation}
+                                sScale={shape.sScale}
+                                key={index}
+                                rotation={new THREE.Euler(...shape.rotation)}
+                                scale={new THREE.Vector3(...shape.scale)}
+                                position={new THREE.Vector3(...pos)}
                               />
                             </Suspense>
                           );

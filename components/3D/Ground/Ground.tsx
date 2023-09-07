@@ -283,19 +283,14 @@ const Grid = ({
   const boxHeight = poolheight;
   const boxDepth = 4 / 5;
 
-  const cornerHeight = 4;
-
   const swimJetBoxWidth = 3 / 3;
   const swimJetBoxHeight = poolheight / 3;
-  const swimJetBoxDepth = 4 / 3;
 
   const infinityEdgeBoxWidth = 1 / 5;
   const infinityEdgeBoxHeight = 1 / 5;
-  const infinityEdgeBoxDepth = pooldepth;
 
-  const waterFallBoxWidth = 3;
   const waterFallBoxHeight = 2 / 5;
-  const waterFallBoxDepth = 2;
+
   const [stairs, setstairs] = useState([
     {
       position: [-poolwidth / 2 + boxWidth / 2, -height + boxHeight / 2, 0],
@@ -427,6 +422,24 @@ const Grid = ({
     { position: [poolwidth / 2 + 2, 2 / 2, 0], used: false }, //right
     { position: [0, 2 / 2, -pooldepth / 2 - 2], used: false }, //top
     { position: [0, 2 / 2, pooldepth / 2 + 2], used: false }, //bottom
+  ]);
+  const [Light, setLight] = useState([
+    {
+      position: [-poolwidth / 2 + swimJetBoxWidth / 2, -poolheight, 0],
+      used: false,
+    }, //left
+    {
+      position: [poolwidth / 2 - swimJetBoxWidth / 2, -poolheight, 0],
+      used: false,
+    }, //right
+    {
+      position: [0, -poolheight, -pooldepth / 2 + swimJetBoxWidth / 2],
+      used: false,
+    }, //top
+    {
+      position: [0, -poolheight, pooldepth / 2 - swimJetBoxWidth / 2],
+      used: false,
+    }, //bottom
   ]);
 
   // -------------------- LSHAPE Model Positions -------------------- //
@@ -699,6 +712,46 @@ const Grid = ({
       used: false,
     }, //TOP - top
   ]);
+  const [LightLShape, setLightLShape] = useState([
+    {
+      position: [
+        LshapeBXPosition - lShapeTHeight / 2,
+        -lShapeDepth / 2 + 0.01,
+        0,
+      ],
+      used: false,
+    }, //BOTTOM - left
+    {
+      position: [LshapeBXPosition, -lShapeDepth / 2 + 0.01, -lShapeWidth / 2],
+      used: false,
+    }, //BOTTOM - top
+    {
+      position: [LshapeBXPosition, -lShapeDepth / 2 + 0.01, -lShapeWidth / 2],
+      used: false,
+    }, //BOTTOM - bottom
+    // ---------------------------------------------------------------------- //
+    {
+      position: [-lShapeWidth / 2, -lShapeDepth / 2 + 0.01, LshapeTZPosition],
+      used: false,
+    }, //TOP - left
+    {
+      position: [
+        lShapeWidth / 2 - swimJetBoxWidth / 2,
+        -lShapeDepth / 2 + 0.01,
+        LshapeTZPosition,
+      ],
+      used: false,
+    }, //TOP - right
+    {
+      position: [
+        0,
+        -lShapeDepth / 2 + 0.01,
+        LshapeTZPosition - lShapeTHeight / 2,
+      ],
+      used: false,
+    }, //TOP - top
+  ]);
+
   const [SnappingPosition, setSnappingPosition] = useState<{
     x: number;
     y: number;
@@ -1040,6 +1093,57 @@ const Grid = ({
                 used: false,
               }, //TOP - top
             ]);
+            setLightLShape([
+              {
+                position: [
+                  LshapeBXPosition - closestPool.bHeight / 2 + 0.01,
+                  -closestPool.sDepth + swimJetBoxWidth / 3,
+                  0,
+                ],
+                used: false,
+              }, //BOTTOM - left
+              {
+                position: [
+                  LshapeBXPosition - closestPool.width / 2,
+                  -closestPool.sDepth + swimJetBoxWidth / 3,
+                  -closestPool.width / 2 + 0.01,
+                ],
+                used: false,
+              }, //BOTTOM - top
+              {
+                position: [
+                  LshapeBXPosition,
+                  -closestPool.sDepth + swimJetBoxWidth / 3,
+                  closestPool.width / 2 - 0.01,
+                ],
+                used: false,
+              }, //BOTTOM - bottom
+              // ---------------------------------------------------------------------- //
+              {
+                position: [
+                  -closestPool.width / 2 + 0.01,
+                  -closestPool.sDepth + swimJetBoxWidth / 3,
+                  LshapeTZPosition - closestPool.width / 2,
+                ],
+                used: false,
+              }, //TOP - left
+              {
+                position: [
+                  closestPool.width / 2 - 0.01,
+                  -closestPool.sDepth + swimJetBoxWidth / 3,
+                  LshapeTZPosition,
+                ],
+                used: false,
+              }, //TOP - right
+              {
+                position: [
+                  0,
+                  -closestPool.sDepth + swimJetBoxWidth / 3,
+                  LshapeTZPosition - closestPool.tHeight / 2 + 0.01,
+                ],
+                used: false,
+              }, //TOP - top
+            ]);
             switch (true) {
               case type === "SquareSteps" ||
                 type === "RoundSteps" ||
@@ -1179,6 +1283,30 @@ const Grid = ({
                   pointer = {
                     x: res.closest.position[0],
                     y: res.closest.position[1],
+                    z: res.closest.position[2],
+                  };
+                  setSnappingPosition(pointer);
+                  pointer = {
+                    x: res.closestObj.position.x,
+                    y: res.closestObj.position.y,
+                    z: res.closestObj.position.z,
+                  };
+                }
+                break;
+              case type === "light":
+                const availableLight = LightLShape.filter(
+                  (obj) => obj.used === false
+                );
+                if (availableLight.length > 0) {
+                  const res = GetClosestLShape(
+                    availableLight,
+                    closestPool,
+                    setClosestIndex,
+                    e
+                  );
+                  pointer = {
+                    x: res.closest.position[0],
+                    y: res.closest.position[1] - 1,
                     z: res.closest.position[2],
                   };
                   setSnappingPosition(pointer);
@@ -1351,6 +1479,40 @@ const Grid = ({
               { position: [0, -0.5, -closestPool.depth / 2], used: false }, //top
               { position: [0, -0.5, closestPool.depth / 2], used: false }, //bottom
             ]);
+            setLight([
+              {
+                position: [
+                  -closestPool.width / 2 + 0.01,
+                  -closestPool.sHeight + swimJetBoxWidth / 3,
+                  0,
+                ],
+                used: false,
+              }, //left
+              {
+                position: [
+                  closestPool.width / 2 - 0.01,
+                  -closestPool.sHeight + swimJetBoxWidth / 3,
+                  0,
+                ],
+                used: false,
+              }, //right
+              {
+                position: [
+                  0,
+                  -closestPool.sHeight + swimJetBoxWidth / 3,
+                  -closestPool.depth / 2 + 0.01,
+                ],
+                used: false,
+              }, //top
+              {
+                position: [
+                  0,
+                  -closestPool.sHeight + swimJetBoxWidth / 3,
+                  closestPool.depth / 2 - 0.01,
+                ],
+                used: false,
+              }, //bottom
+            ]);
             switch (true) {
               case type === "SquareSteps" ||
                 type === "RoundSteps" ||
@@ -1504,6 +1666,37 @@ const Grid = ({
                     x: res.closestObj.position.x,
                     y: res.closestObj.position.y,
                     z: res.closestObj.position.z,
+                  };
+                }
+                break;
+              case type === "light":
+                const availableLights = Light.filter(
+                  (obj) => obj.used === false
+                );
+                if (Light.length > 0 && availableLights.length > 0) {
+                  const res = GetClosest(
+                    Light,
+                    closestPool,
+                    setClosestIndex,
+                    e
+                  );
+                  pointer = {
+                    x: res.closest.position[0],
+                    y: res.closest.position[1],
+                    z: res.closest.position[2],
+                  };
+                  setSnappingPosition(pointer);
+                  pointer = {
+                    x: res.closestObj.position.x,
+                    y: res.closestObj.position.y,
+                    z: res.closestObj.position.z,
+                  };
+                } else {
+                  setSnappingPosition(null);
+                  pointer = {
+                    x: 0,
+                    y: -5,
+                    z: 0,
                   };
                 }
                 break;
@@ -2090,7 +2283,6 @@ const Grid = ({
               );
             }
             break;
-
           case "RegularJets":
             if (SnappingPosition) {
               // const temp = stairs
@@ -2289,6 +2481,71 @@ const Grid = ({
               );
             }
             break;
+          case "light":
+            if (SnappingPosition) {
+              let side = sides.Left;
+              let rotation = 0;
+              let position = [0, 0, 0];
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = 0;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  rotation = 0; //180
+                  position[2] = 0;
+                  side = sides.Top;
+                  break;
+                case 2:
+                  rotation = Math.PI; //0
+                  position[2] = 0;
+                  side = sides.Bottom;
+                  break;
+
+                case 3:
+                  rotation = Math.PI / 2; //90
+                  position[0] = 0;
+                  side = sides.tLeft;
+                  break;
+                case 4:
+                  rotation = -Math.PI / 2; //0
+                  position[0] = 0;
+                  side = sides.tRight;
+                  break;
+                case 5:
+                  rotation = 0; //0
+                  position[2] = 0;
+                  side = sides.tTop;
+                  break;
+
+                default:
+                  break;
+              }
+              // setswimJet(temp)
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    poolInitialHeight: Pools[ClosestPoolIndex].sDepth,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y + position[1],
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [1, 1, 1],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
         }
       } else if (
         type != "pool" &&
@@ -2405,6 +2662,63 @@ const Grid = ({
                     sScale: [1, 1, 1],
                     sRotation: [0, 0, 0],
                     scale: [0.28, 0.28, 0.28],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
+          case "light":
+            if (SnappingPosition) {
+              // const temp = stairs
+              // temp[ClosestIndex].used = true;
+              let side = sides.Left;
+              let rotation = 0;
+              let position = [0, 0, 0];
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = 0;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  //right
+                  rotation = -Math.PI / 2; //-90
+                  position[0] = 0;
+                  side = sides.Right;
+                  break;
+                case 2:
+                  rotation = 0; //-90
+                  position[2] = 0;
+                  side = sides.Top;
+                  break;
+                case 3:
+                  rotation = Math.PI; //-90
+                  position[2] = 0;
+                  side = sides.Bottom;
+                  break;
+
+                default:
+                  break;
+              }
+              // setswimJet(temp)
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    poolInitialHeight: Pools[ClosestPoolIndex].sHeight,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y,
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.6, 0.6, 0.6],
                     side: side,
                   },
                 })
@@ -3126,7 +3440,7 @@ const Grid = ({
                   poolIndex: ClosestPoolIndex,
                   children: {
                     shapeType: type,
-                    rotation: [0, rotation, 0],
+                    rotation: [Math.PI / 2, rotation, 0],
                     position: [
                       SnappingPosition.x + position[0],
                       SnappingPosition.y + position[1],
@@ -3136,6 +3450,61 @@ const Grid = ({
                     sScale: [1, 1, 1],
                     sRotation: [0, 0, 0],
                     scale: [0.7, 0.7, 0.7],
+                    side: side,
+                  },
+                })
+              );
+            }
+            break;
+          case "light":
+            if (SnappingPosition) {
+              let side = sides.Left;
+              let rotation = 0;
+              let position = [0, 0, 0];
+              switch (ClosestIndex) {
+                case 0:
+                  //left
+                  rotation = Math.PI / 2; // 90
+                  position[0] = 0;
+                  side = sides.Left;
+                  break;
+                case 1:
+                  //right
+                  rotation = -Math.PI / 2; //-90
+                  position[0] = 0;
+                  side = sides.Right;
+                  break;
+                case 2:
+                  rotation = 0; //-90
+                  position[2] = 0;
+                  side = sides.Top;
+                  break;
+                case 3:
+                  rotation = Math.PI; //-90
+                  position[2] = 0;
+                  side = sides.Bottom;
+                  break;
+
+                default:
+                  break;
+              }
+              // setswimJet(temp)
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    poolInitialHeight: Pools[ClosestPoolIndex].sHeight,
+                    rotation: [0, rotation, 0],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y,
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    scale: [0.6, 0.6, 0.6],
                     side: side,
                   },
                 })
