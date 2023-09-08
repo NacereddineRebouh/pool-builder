@@ -6,7 +6,14 @@ import {
   inchesToMeters,
   metersToInches,
 } from "@/utils/getActiveAxis";
-import { Checkbox, Group, NumberInput, Radio } from "@mantine/core";
+import {
+  Button,
+  Checkbox,
+  Group,
+  Menu,
+  NumberInput,
+  Radio,
+} from "@mantine/core";
 import * as React from "react";
 import { useEffect, useState } from "react";
 
@@ -55,10 +62,12 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const [BenchSeatings, setBenchSeatings] = useState<string[]>([]);
+  const [CornerSteps, setCornerSteps] = useState<string[]>([]);
   const [enableWater, setEnableWater] = useState<boolean>(false);
   useEffect(() => {
     if (targetPool != null) {
       setBenchSeatings(pools[targetPool]?.BenchSeatings);
+      setCornerSteps(pools[targetPool]?.CornerSteps);
       setEnableWater(pools[targetPool]?.enableWater);
     }
   }, [pools, targetPool, targetModel]);
@@ -413,7 +422,7 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
         pools[targetPool].childrens.filter(
           (obj) => obj.shapeType === "RegularJets"
         ).length > 0 && (
-          <div className="my-1 flex w-full items-center justify-start gap-x-6">
+          <div className="my-2 flex w-full items-center justify-start gap-x-6">
             <div className="w-full self-start text-lg text-slate-50">
               RegularJets
             </div>
@@ -446,7 +455,7 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
         (pools[targetPool].poolType === "hottub" ||
           pools[targetPool].poolType === "pool" ||
           pools[targetPool].poolType === "squarepool") && (
-          <div className="my-1 flex w-full items-center justify-start gap-x-6">
+          <div className="my-2 flex w-full items-center justify-start gap-x-6">
             <div className="w-full self-start text-lg text-slate-50">
               BenchSeatings
             </div>
@@ -472,6 +481,132 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                   <Checkbox color="gray" value="bottom" label="Bottom" />
                 </Group>
               </Checkbox.Group>
+            </div>
+          </div>
+        )}
+      {/* Upper CornerSteps */}
+      {targetPool != null &&
+        pools[targetPool] &&
+        (pools[targetPool].poolType === "hottub" ||
+          pools[targetPool].poolType === "pool" ||
+          pools[targetPool].poolType === "squarepool") && (
+          <div className="my-2 flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              Upper Corner Steps
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2 text-slate-50">
+              <Menu closeOnItemClick={false}>
+                <Menu.Target>
+                  <Button color="gray">Menu</Button>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Checkbox.Group
+                    value={CornerSteps}
+                    onChange={(value) => {
+                      const pool = { ...pools[targetPool] };
+                      if (!IgnoreOrderCompare(value, pool.CornerSteps)) {
+                        console.log(pool.CornerSteps);
+                        console.log(value);
+                        pool.CornerSteps = value;
+                        dispatch(
+                          ReplacePool({ poolIndex: targetPool, pool: pool })
+                        );
+                      }
+                    }}
+                  >
+                    <Group>
+                      <Menu.Item className="font-medium text-slate-900">
+                        <div className="flex items-center justify-start gap-x-4">
+                          <Checkbox color="gray" value="topleft" />
+                          <p>TopLeft</p>
+                        </div>
+                      </Menu.Item>
+                      <Menu.Item className="font-medium text-slate-900">
+                        <div className="flex items-center justify-start gap-x-4">
+                          <Checkbox color="gray" value="topright" />
+                          <p>TopRight</p>
+                        </div>
+                      </Menu.Item>
+                      <Menu.Item className="font-medium text-slate-900">
+                        <div className="flex items-center justify-start gap-x-4">
+                          <Checkbox color="gray" value="bottomright" />
+                          <p>BottomRight</p>
+                        </div>
+                      </Menu.Item>
+                      <Menu.Item className="font-medium text-slate-900">
+                        <div className="flex items-center justify-start gap-x-4">
+                          <Checkbox color="gray" value="bottomleft" />
+                          <p>BottomLeft</p>
+                        </div>
+                      </Menu.Item>
+                    </Group>
+                  </Checkbox.Group>
+                </Menu.Dropdown>
+              </Menu>
+            </div>
+          </div>
+        )}
+      {/* Lower CornerSteps */}
+      {targetPool != null &&
+        pools[targetPool] &&
+        (pools[targetPool].poolType === "hottub" ||
+          pools[targetPool].poolType === "pool" ||
+          pools[targetPool].poolType === "squarepool") && (
+          <div className="my-2 flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              Lower Corner Steps
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2 text-slate-50">
+              <Menu closeOnItemClick={false}>
+                <Menu.Target>
+                  <Button color="gray">Menu2</Button>
+                </Menu.Target>
+
+                <Menu.Dropdown>
+                  <Checkbox.Group
+                    value={CornerSteps}
+                    onChange={(value) => {
+                      const pool = { ...pools[targetPool] };
+                      if (!IgnoreOrderCompare(value, pool.CornerSteps)) {
+                        console.log(pool.CornerSteps);
+                        console.log(value);
+                        pool.CornerSteps = value;
+                        dispatch(
+                          ReplacePool({ poolIndex: targetPool, pool: pool })
+                        );
+                      }
+                    }}
+                  >
+                    <Group>
+                      <Menu.Item className="font-medium text-slate-900">
+                        <div className="flex items-center justify-start gap-x-4">
+                          <Checkbox color="gray" value="lowertopleft" />
+                          <p>TopLeft</p>
+                        </div>
+                      </Menu.Item>
+                      <Menu.Item className="font-medium text-slate-900">
+                        <div className="flex items-center justify-start gap-x-4">
+                          <Checkbox color="gray" value="lowertopright" />
+                          <p>TopRight</p>
+                        </div>
+                      </Menu.Item>
+                      <Menu.Item className="font-medium text-slate-900">
+                        <div className="flex items-center justify-start gap-x-4">
+                          <Checkbox color="gray" value="lowerbottomright" />
+                          <p>BottomRight</p>
+                        </div>
+                      </Menu.Item>
+                      <Menu.Item className="font-medium text-slate-900">
+                        <div className="flex items-center justify-start gap-x-4">
+                          <Checkbox color="gray" value="lowerbottomleft" />
+                          <p>BottomLeft</p>
+                        </div>
+                      </Menu.Item>
+                    </Group>
+                  </Checkbox.Group>
+                </Menu.Dropdown>
+              </Menu>
             </div>
           </div>
         )}

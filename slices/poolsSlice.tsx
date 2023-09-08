@@ -48,6 +48,7 @@ export interface PoolType {
   bordersHeight: number;
   bordersDepth: number;
   BenchSeatings: string[];
+  CornerSteps: string[];
   enableWater: boolean;
   childrens: ChildrensType[];
 }

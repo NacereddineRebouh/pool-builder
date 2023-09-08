@@ -230,7 +230,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   }, [targetModel, pools]);
 
   return (
-    <div className="absolute right-0 top-0 flex h-screen w-[30%] min-w-[280px] select-none flex-col items-start justify-start bg-slate-950/90 p-2 px-4">
+    <div className="absolute right-0 top-0 flex h-screen w-[30%] min-w-[280px] select-none flex-col items-start justify-start overflow-y-scroll bg-slate-950/90 p-2 px-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-stone-600 scrollbar-track-rounded-full scrollbar-thumb-rounded-full">
       <Tabs variant="pills" defaultValue="defaults" className="w-full">
         <Tabs.List>
           <Tabs.Tab
@@ -251,14 +251,14 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
           </Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Panel key={0} value="scene" pt="xs">
-          <div className=" flex flex-col items-start justify-start gap-y-3">
+        <Tabs.Panel key={0} value="scene" pt="xs" className="">
+          <div className=" flex flex-col items-start justify-start gap-y-3 ">
             {/* Scene elements */}
             <div className="flex w-full flex-col items-start justify-start gap-y-2">
               <div className="text-lg font-medium text-slate-50">
                 Scene elements
               </div>
-              <div className="flex aspect-[3/2] max-h-60 w-full flex-col items-start justify-start gap-y-1 overflow-auto rounded-md bg-stone-200 p-1 text-slate-900 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-stone-600 scrollbar-track-rounded-full scrollbar-thumb-rounded-full">
+              <div className="flex aspect-[3/2] max-h-60 w-full flex-col items-start justify-start gap-y-1 overflow-auto rounded-md bg-stone-200 p-1 text-slate-900 ">
                 {/* scene elements */}
                 {pools.length > 0 &&
                   pools.map((pool, index) => {

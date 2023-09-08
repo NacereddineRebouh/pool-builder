@@ -1,15 +1,15 @@
-"use client"
-import CoordinatesProvider from '@/Context/CoordinateContext'
-import { store } from '@/store/store'
-import '@/styles/globals.css'
-import { Poppins } from 'next/font/google'
-import { Provider } from 'react-redux'
+"use client";
+import CoordinatesProvider from "@/Context/CoordinateContext";
+import { store } from "@/store/store";
+import "@/styles/globals.css";
+import { Poppins } from "next/font/google";
+import { Provider } from "react-redux";
 
 const pop = Poppins({
-  subsets: ['latin'],
-  display:"swap",
-  weight: ["100" , "200" , "300" , "400" , "500" , "600" , "700" , "800" , "900"]
-})
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
 
 // export const metadata = {
 //   title: 'Create Next App',
@@ -19,17 +19,17 @@ const pop = Poppins({
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={pop.className}>
+    <html lang="en" className={`overflow-hidden`}>
+      <body className={`${pop.className} overflow-hidden`}>
         <Provider store={store}>
           {/* <CoordinatesProvider> */}
-            {children}
+          {children}
           {/* </CoordinatesProvider> */}
         </Provider>
-        </body>
+      </body>
     </html>
-  )
+  );
 }

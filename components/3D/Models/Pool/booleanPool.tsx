@@ -435,7 +435,8 @@ const PoolBool: FC<Props> = ({
         {/* bottomLeft: Math.PI / 4  */}
         {/* BenchSeating Top */}
         <>
-          {pool?.BenchSeatings?.includes("left") &&
+          {pool?.CornerSteps?.includes("topleft") &&
+            pool?.BenchSeatings?.includes("left") &&
             pool?.BenchSeatings?.includes("top") && (
               <mesh
                 position={[
@@ -457,7 +458,8 @@ const PoolBool: FC<Props> = ({
                 />
               </mesh>
             )}
-          {pool?.BenchSeatings?.includes("left") &&
+          {pool?.CornerSteps?.includes("bottomleft") &&
+            pool?.BenchSeatings?.includes("left") &&
             pool?.BenchSeatings?.includes("bottom") && (
               <mesh
                 position={[
@@ -479,7 +481,8 @@ const PoolBool: FC<Props> = ({
                 />
               </mesh>
             )}
-          {pool?.BenchSeatings?.includes("right") &&
+          {pool?.CornerSteps?.includes("topright") &&
+            pool?.BenchSeatings?.includes("right") &&
             pool?.BenchSeatings?.includes("top") && (
               <mesh
                 position={[
@@ -501,7 +504,8 @@ const PoolBool: FC<Props> = ({
                 />
               </mesh>
             )}
-          {pool?.BenchSeatings?.includes("right") &&
+          {pool?.CornerSteps?.includes("bottomright") &&
+            pool?.BenchSeatings?.includes("right") &&
             pool?.BenchSeatings?.includes("bottom") && (
               <mesh
                 position={[
@@ -526,7 +530,8 @@ const PoolBool: FC<Props> = ({
         </>
         {/* BenchSeating Bottom */}
         <>
-          {pool?.BenchSeatings?.includes("left") &&
+          {pool?.CornerSteps?.includes("lowertopleft") &&
+            pool?.BenchSeatings?.includes("left") &&
             pool?.BenchSeatings?.includes("top") && (
               <mesh //TopLeft
                 position={[
@@ -548,7 +553,8 @@ const PoolBool: FC<Props> = ({
                 />
               </mesh>
             )}
-          {pool?.BenchSeatings?.includes("left") &&
+          {pool?.CornerSteps?.includes("lowerbottomleft") &&
+            pool?.BenchSeatings?.includes("left") &&
             pool?.BenchSeatings?.includes("bottom") && (
               <mesh // bottomLeft
                 position={[
@@ -570,7 +576,8 @@ const PoolBool: FC<Props> = ({
                 />
               </mesh>
             )}
-          {pool?.BenchSeatings?.includes("right") &&
+          {pool?.CornerSteps?.includes("lowertopright") &&
+            pool?.BenchSeatings?.includes("right") &&
             pool?.BenchSeatings?.includes("top") && (
               <mesh // TopRight
                 position={[
@@ -592,7 +599,8 @@ const PoolBool: FC<Props> = ({
                 />
               </mesh>
             )}
-          {pool?.BenchSeatings?.includes("right") &&
+          {pool?.CornerSteps?.includes("lowerbottomright") &&
+            pool?.BenchSeatings?.includes("right") &&
             pool?.BenchSeatings?.includes("bottom") && (
               <mesh //bottomRight
                 position={[
