@@ -9,10 +9,10 @@ import {
 } from "@/slices/targetSlice";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { PivotControls } from "@/components/UI/pivotControls";
-import { SingleRoundStep } from "./SingleRoundStep";
 import * as THREE from "three";
 import { ChildrensType, ReplaceChildren } from "@/slices/poolsSlice";
 import { sides } from "@/slices/defaultsSlice";
+import { GetTriangle } from "@/utils/getActiveAxis";
 
 interface Props {
   rotation: THREE.Euler;
@@ -23,6 +23,7 @@ interface Props {
   heightPerStep: number;
   width: number;
   side: sides;
+  Texture?: THREE.Texture;
   poolWidth: number;
   sPosition: number[];
   sRotation: number[];
@@ -30,29 +31,69 @@ interface Props {
   poolIndex: number;
   index: number;
   model: ChildrensType;
+  BenchSeatings: string[];
 }
 
-const RoundSteps: FC<Props> = ({
+const CornerSteps: FC<Props> = ({
   sPosition,
   sRotation,
   sScale,
   poolIndex,
+  poolHeight,
+  Texture: stepTexture,
   index,
   model,
   position,
+  poolWidth,
   rotation,
   scale,
-  gap,
-  side,
-  heightPerStep,
-  poolHeight,
+  BenchSeatings,
 }) => {
+  let visibility = false;
+  switch (true) {
+    case model.side === "Left" || model.side === "BottomLeft":
+      //Topleft
+      if (BenchSeatings?.includes("left") && BenchSeatings?.includes("top")) {
+        visibility = true;
+      }
+      break;
+    case model.side === "Right" || model.side === "BottomRight":
+      if (BenchSeatings?.includes("right") && BenchSeatings?.includes("top")) {
+        visibility = true;
+      }
+      break;
+    case model.side === "Top" || model.side === "BottomTop":
+      //bottom Left
+      if (
+        BenchSeatings?.includes("left") &&
+        BenchSeatings?.includes("bottom")
+      ) {
+        visibility = true;
+      }
+      break;
+    case model.side === "Bottom" || model.side === "BottomBottom":
+      if (
+        BenchSeatings?.includes("right") &&
+        BenchSeatings?.includes("bottom")
+      ) {
+        visibility = true;
+      }
+
+      break;
+  }
+  const [Texture, setTexture] = useState(stepTexture);
+
+  useEffect(() => {
+    if (Texture) {
+      Texture.wrapS = THREE.RepeatWrapping;
+      Texture.wrapT = THREE.RepeatWrapping;
+      Texture.repeat.set(1, 1);
+    }
+  }, [Texture]);
   const dispatch = useAppDispatch();
   const target = useAppSelector(selectTarget);
   const groupRef = useRef<THREE.Group>(null);
   const visible = useAppSelector(selectPivotVisibility);
-  const steps = Math.ceil(poolHeight / heightPerStep);
-  const stepsArray = new Array(steps).fill(0);
   const [Mat, setMat] = useState(new THREE.Matrix4());
   useEffect(() => {
     const position = new THREE.Vector3(
@@ -74,6 +115,17 @@ const RoundSteps: FC<Props> = ({
     );
     setMat(comb);
   }, [sScale, sPosition, sRotation]);
+
+  const BenchWidth = 0.5;
+  const BenchDepth = 0.5;
+  const BenchHeight = poolHeight - 0.65;
+  const BenchYPosition = -poolHeight + BenchHeight / 2;
+  const cornerHeight = 0.2;
+  const cornerHeightPosition = BenchYPosition + BenchHeight / 2 + cornerHeight;
+  const cornerHeightBottomPosition =
+    BenchYPosition - BenchHeight / 2 + cornerHeight;
+  const isoscelesGeometry = GetTriangle({ BenchDepth, cornerHeight });
+  const isoscelesGeometryBottom = GetTriangle({ BenchDepth, cornerHeight });
   return (
     <PivotControls
       disableScaleAxes
@@ -117,6 +169,7 @@ const RoundSteps: FC<Props> = ({
       lineWidth={2}
     >
       <group
+        visible={visibility}
         ref={groupRef}
         rotation={rotation}
         position={position}
@@ -132,21 +185,18 @@ const RoundSteps: FC<Props> = ({
           }
         }}
       >
-        {stepsArray.map((step, idx) => {
-          let newPosition = [0, -idx * heightPerStep, 0];
-          return (
-            <SingleRoundStep
-              key={idx}
-              scale={
-                new THREE.Vector3(0.16 + gap * idx, 1.24, 0.16 + gap * idx)
-              }
-              position={new THREE.Vector3(...newPosition)}
-            />
-          );
-        })}
+        <mesh geometry={isoscelesGeometry}>
+          <meshStandardMaterial
+            color={"lightblue"}
+            roughness={0.22}
+            metalness={0.15}
+            side={2}
+            map={Texture}
+          />
+        </mesh>
       </group>
     </PivotControls>
   );
 };
 
-export default RoundSteps;
+export default CornerSteps;

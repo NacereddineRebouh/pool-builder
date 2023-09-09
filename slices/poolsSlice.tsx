@@ -5,6 +5,10 @@ export enum sides {
   Bottom = "Bottom",
   Left = "Left",
   Right = "Right",
+  BottomTop = "BottomTop",
+  BottomBottom = "BottomBottom",
+  BottomLeft = "BottomLeft",
+  BottomRight = "BottomRight",
   tTop = "tTop",
   tLeft = "tLeft",
   tRight = "tRight",
@@ -44,7 +48,10 @@ export interface PoolType {
   sHeight: number;
   depth: number;
   sDepth: number;
-  nbSwimJet?: number;
+  nbSwimJetLeft?: number;
+  nbSwimJetRight?: number;
+  nbSwimJetTop?: number;
+  nbSwimJetBottom?: number;
   bordersHeight: number;
   bordersDepth: number;
   BenchSeatings: string[];

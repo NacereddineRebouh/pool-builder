@@ -167,7 +167,10 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
   const [bordersDepth, setbordersDepth] = useState<number | null>(null);
   const [bordersHeight, setbordersHeight] = useState<number | null>(null);
   const [depth, setDepth] = useState<number | null>(null);
-  const [nbSwimJet, setnbSwimJet] = useState<number | null>(null);
+  const [nbSwimJetLeft, setnbSwimJetLeft] = useState<number | null>(null);
+  const [nbSwimJetRight, setnbSwimJetRight] = useState<number | null>(null);
+  const [nbSwimJetTop, setnbSwimJetTop] = useState<number | null>(null);
+  const [nbSwimJetBottom, setnbSwimJetBottom] = useState<number | null>(null);
 
   // ----- Fetch props from models ------
   // setting dimension on Mount
@@ -182,7 +185,10 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
         setHeight(pools[targetPool]?.sHeight);
       }
 
-      setnbSwimJet(pools[targetPool]?.nbSwimJet ?? 1);
+      setnbSwimJetLeft(pools[targetPool]?.nbSwimJetLeft ?? 1);
+      setnbSwimJetRight(pools[targetPool]?.nbSwimJetRight ?? 1);
+      setnbSwimJetTop(pools[targetPool]?.nbSwimJetTop ?? 1);
+      setnbSwimJetBottom(pools[targetPool]?.nbSwimJetBottom ?? 1);
       setWidth(pools[targetPool]?.sWidth);
       setbordersDepth(pools[targetPool]?.bordersDepth);
       setbordersHeight(pools[targetPool]?.bordersHeight);
@@ -357,20 +363,17 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
                 inches={Inches}
                 defaults={Default}
                 width={width}
-                setWidth={setWidth}
                 depth={depth}
-                setDepth={setDepth}
                 height={height}
-                setHeight={setHeight}
                 targetPool={targetPool}
                 targetModel={targetModel}
                 pools={pools}
-                nbSwimjet={nbSwimJet}
-                setnbSwimjet={setnbSwimJet}
+                nbSwimJetLeft={nbSwimJetLeft}
+                nbSwimJetRight={nbSwimJetRight}
+                nbSwimJetTop={nbSwimJetTop}
+                nbSwimJetBottom={nbSwimJetBottom}
                 theight={theight}
-                settHeight={settHeight}
                 bheight={bheight}
-                setbHeight={setbHeight}
                 bordersDepth={bordersDepth}
                 bordersHeight={bordersHeight}
               />

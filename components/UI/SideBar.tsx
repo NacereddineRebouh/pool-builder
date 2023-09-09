@@ -7,6 +7,7 @@ import cyl from "@/public/icons/cylinder.png";
 import plus from "@/public/icons/plus.png";
 import roundSteps from "@/public/icons/round-steps.png";
 import steps from "@/public/icons/steps.png";
+import cornersteps from "@/public/icons/cornersteps.png";
 import light from "@/public/icons/light.jpg";
 import waterblade from "@/public/icons/water-blade.png";
 import wallwater from "@/public/icons/waterjet.png";
@@ -49,7 +50,7 @@ const SideBar: React.FC<ISideBarProps> = () => {
         icon={rectangle.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "pool")}
       />
-      <Icon
+      {/* <Icon
         disabled={Pools.length > 0}
         icon={cyl.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "cyl")}
@@ -58,7 +59,7 @@ const SideBar: React.FC<ISideBarProps> = () => {
         disabled={Pools.length > 0}
         icon={poolWithSteps.src}
         onPointerDown={(e) => OnMouseDownHandler(e, "hottub")}
-      />
+      /> */}
       <Icon
         disabled={Pools.length > 0}
         icon={LShape.src}
@@ -142,6 +143,11 @@ const SideBar: React.FC<ISideBarProps> = () => {
             disabled={Pools.length > 0 ? false : true}
             icon={light.src}
             onPointerDown={(e) => OnMouseDownHandler(e, "light")}
+          />
+          <Icon
+            disabled={Pools.length > 0 ? false : true}
+            icon={cornersteps.src}
+            onPointerDown={(e) => OnMouseDownHandler(e, "cornerStep")}
           />
         </div>
       </IconMenu>

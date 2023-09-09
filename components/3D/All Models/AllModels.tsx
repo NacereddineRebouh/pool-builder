@@ -1,6 +1,10 @@
 import { useAppSelector } from "@/store/hooks";
 import { selectPools, selectShapes } from "@/slices/shapesSlice";
-import { selectPools as selectAllPools } from "@/slices/poolsSlice";
+import {
+  ChildrensType,
+  PoolType,
+  selectPools as selectAllPools,
+} from "@/slices/poolsSlice";
 import * as THREE from "three";
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { Fragment, Suspense, useEffect, useRef, useState } from "react";
@@ -25,6 +29,7 @@ import PoolBool from "../Models/Pool/booleanPool";
 import { RegularJet } from "../Models/RegularJet/RegularJet";
 import InfinityEdge2 from "../Models/infinity Edge2";
 import { Light } from "../Models/Light/Light2";
+import CornerSteps from "../Models/CornerSteps/CornerSteps";
 
 export const AllModels = () => {
   const Pools = useAppSelector(selectAllPools);
@@ -67,7 +72,7 @@ export const AllModels = () => {
         switch (true) {
           case pool.poolType === "pool" || pool.poolType === "squarepool":
             return (
-              <Suspense>
+              <Suspense key={poolIndex}>
                 <PoolBool
                   key={poolIndex}
                   pool={pool}
@@ -197,7 +202,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <SwimJet
                                 model={shape}
                                 index={index}
@@ -238,94 +243,13 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <>
-                              {pool.nbSwimJet && pool.nbSwimJet > 0 ? (
-                                new Array(pool.nbSwimJet)
-                                  .fill(0)
-                                  .map((_, i) => {
-                                    const offsetPosition = [...pos];
-                                    if (pool.nbSwimJet) {
-                                      const resetZ =
-                                        offsetPosition[2] + pool.depth / 2;
-                                      const resetX =
-                                        offsetPosition[0] - pool.width / 2;
-                                      const offsetZ =
-                                        pool.depth / pool.nbSwimJet;
-                                      const initialZ =
-                                        pool.depth / pool.nbSwimJet / 2;
-
-                                      const offsetX =
-                                        pool.width / pool.nbSwimJet;
-                                      const initialX =
-                                        pool.width / pool.nbSwimJet / 2;
-
-                                      switch (shape.side) {
-                                        case "Left":
-                                          //Topleft
-                                          offsetPosition[0] = pos[0];
-                                          offsetPosition[1] = pos[1];
-                                          offsetPosition[2] =
-                                            resetZ - initialZ - i * offsetZ;
-                                          break;
-                                        case "Right":
-                                          offsetPosition[0] = pos[0];
-                                          offsetPosition[1] = pos[1];
-                                          offsetPosition[2] =
-                                            resetZ - initialZ - i * offsetZ;
-                                          break;
-                                        case "Top":
-                                          //bottom Left
-                                          offsetPosition[0] =
-                                            resetX + initialX + i * offsetX;
-                                          offsetPosition[1] = pos[1];
-                                          offsetPosition[2] = pos[2];
-                                          break;
-                                        case "Bottom":
-                                          offsetPosition[0] =
-                                            resetX + initialX + i * offsetX;
-                                          offsetPosition[1] = pos[1];
-                                          offsetPosition[2] = pos[2];
-                                          break;
-                                      }
-                                    }
-                                    return (
-                                      <Suspense key={i}>
-                                        <RegularJet
-                                          model={shape}
-                                          index={index}
-                                          poolIndex={poolIndex}
-                                          sPosition={shape.sPosition}
-                                          sRotation={shape.sRotation}
-                                          sScale={shape.sScale}
-                                          key={i}
-                                          rotation={
-                                            new THREE.Euler(...shape.rotation)
-                                          }
-                                          scale={
-                                            new THREE.Vector3(...shape.scale)
-                                          }
-                                          position={
-                                            new THREE.Vector3(...offsetPosition)
-                                          }
-                                        />
-                                      </Suspense>
-                                    );
-                                  })
-                              ) : (
-                                <RegularJet
-                                  model={shape}
-                                  index={index}
-                                  poolIndex={poolIndex}
-                                  sPosition={shape.sPosition}
-                                  sRotation={shape.sRotation}
-                                  sScale={shape.sScale}
-                                  key={index}
-                                  rotation={new THREE.Euler(...shape.rotation)}
-                                  scale={new THREE.Vector3(...shape.scale)}
-                                  position={new THREE.Vector3(...pos)}
-                                />
-                              )}
-                            </>
+                            <RegularJets
+                              pool={pool}
+                              shape={shape}
+                              pos={pos}
+                              index={index}
+                              poolIndex={poolIndex}
+                            />
                           );
                         case "WallWaterfall":
                           switch (shape.side) {
@@ -353,7 +277,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <WallWaterfall
                                 model={shape}
                                 index={index}
@@ -394,7 +318,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <Waterblade
                                 model={shape}
                                 index={index}
@@ -435,7 +359,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <Steps
                                 model={shape}
                                 index={index}
@@ -484,7 +408,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <CornerRoundSteps
                                 model={shape}
                                 index={index}
@@ -531,7 +455,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <RoundSteps
                                 key={index}
                                 model={shape}
@@ -578,7 +502,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <InfinityEdge2
                                 model={shape}
                                 index={index}
@@ -627,7 +551,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <Fountain
                                 model={shape}
                                 index={index}
@@ -668,7 +592,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <SquareSteps
                                 model={shape}
                                 gap={0.2}
@@ -735,7 +659,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <Light
                                 model={shape}
                                 index={index}
@@ -750,6 +674,77 @@ export const AllModels = () => {
                               />
                             </Suspense>
                           );
+                        case "cornerStep":
+                          switch (shape.side) {
+                            case "Left":
+                              //Topleft
+                              pos[0] = shape.position[0] - offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] - offsetDepth / 2;
+                              break;
+                            case "BottomLeft":
+                              //Topleft
+                              pos[0] = shape.position[0] - offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] - offsetDepth / 2;
+                              break;
+                            case "Right":
+                              pos[0] = shape.position[0] + offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] - offsetDepth / 2;
+                              break;
+                            case "BottomRight":
+                              pos[0] = shape.position[0] + offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] - offsetDepth / 2;
+                              break;
+                            case "Top":
+                              //bottom Left
+                              pos[0] = shape.position[0] - offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] + offsetDepth / 2;
+                              break;
+                            case "BottomTop":
+                              //bottom Left
+                              pos[0] = shape.position[0] - offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] + offsetDepth / 2;
+                              break;
+                            case "Bottom":
+                              pos[0] = shape.position[0] + offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] + offsetDepth / 2;
+                              break;
+                            case "BottomBottom":
+                              pos[0] = shape.position[0] + offsetWidth / 2;
+                              pos[1] = shape.position[1];
+                              pos[2] = shape.position[2] + offsetDepth / 2;
+                              break;
+                          }
+                          return (
+                            <Suspense key={index}>
+                              <CornerSteps
+                                BenchSeatings={pool.BenchSeatings}
+                                model={shape}
+                                index={index}
+                                poolIndex={poolIndex}
+                                key={index}
+                                rotation={new THREE.Euler(...shape.rotation)}
+                                sPosition={shape.sPosition}
+                                sRotation={shape.sRotation}
+                                scale={new THREE.Vector3(...shape.sScale)}
+                                position={new THREE.Vector3(...pos)}
+                                width={3}
+                                Texture={Texture?.clone()}
+                                poolHeight={pool.sHeight}
+                                poolWidth={pool.sWidth}
+                                side={shape.side}
+                                heightPerStep={0.2}
+                                gap={0.2}
+                                sScale={[1, 1, 1]}
+                              />
+                            </Suspense>
+                          );
                       }
                     })}
                 </PoolBool>
@@ -758,7 +753,7 @@ export const AllModels = () => {
 
           case pool.poolType === "hottub":
             return (
-              <Suspense>
+              <Suspense key={poolIndex}>
                 <Hottub
                   key={poolIndex}
                   pool={pool}
@@ -856,94 +851,13 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <>
-                              {pool.nbSwimJet && pool.nbSwimJet > 0 ? (
-                                new Array(pool.nbSwimJet)
-                                  .fill(0)
-                                  .map((_, i) => {
-                                    const offsetPosition = [...pos];
-                                    if (pool.nbSwimJet) {
-                                      const resetZ =
-                                        offsetPosition[2] + pool.depth / 2;
-                                      const resetX =
-                                        offsetPosition[0] - pool.width / 2;
-                                      const offsetZ =
-                                        pool.depth / pool.nbSwimJet;
-                                      const initialZ =
-                                        pool.depth / pool.nbSwimJet / 2;
-
-                                      const offsetX =
-                                        pool.width / pool.nbSwimJet;
-                                      const initialX =
-                                        pool.width / pool.nbSwimJet / 2;
-
-                                      switch (shape.side) {
-                                        case "Left":
-                                          //Topleft
-                                          offsetPosition[0] = pos[0];
-                                          offsetPosition[1] = pos[1];
-                                          offsetPosition[2] =
-                                            resetZ - initialZ - i * offsetZ;
-                                          break;
-                                        case "Right":
-                                          offsetPosition[0] = pos[0];
-                                          offsetPosition[1] = pos[1];
-                                          offsetPosition[2] =
-                                            resetZ - initialZ - i * offsetZ;
-                                          break;
-                                        case "Top":
-                                          //bottom Left
-                                          offsetPosition[0] =
-                                            resetX + initialX + i * offsetX;
-                                          offsetPosition[1] = pos[1];
-                                          offsetPosition[2] = pos[2];
-                                          break;
-                                        case "Bottom":
-                                          offsetPosition[0] =
-                                            resetX + initialX + i * offsetX;
-                                          offsetPosition[1] = pos[1];
-                                          offsetPosition[2] = pos[2];
-                                          break;
-                                      }
-                                    }
-                                    return (
-                                      <Suspense key={i}>
-                                        <RegularJet
-                                          model={shape}
-                                          index={index}
-                                          poolIndex={poolIndex}
-                                          sPosition={shape.sPosition}
-                                          sRotation={shape.sRotation}
-                                          sScale={shape.sScale}
-                                          key={i}
-                                          rotation={
-                                            new THREE.Euler(...shape.rotation)
-                                          }
-                                          scale={
-                                            new THREE.Vector3(...shape.scale)
-                                          }
-                                          position={
-                                            new THREE.Vector3(...offsetPosition)
-                                          }
-                                        />
-                                      </Suspense>
-                                    );
-                                  })
-                              ) : (
-                                <RegularJet
-                                  model={shape}
-                                  index={index}
-                                  poolIndex={poolIndex}
-                                  sPosition={shape.sPosition}
-                                  sRotation={shape.sRotation}
-                                  sScale={shape.sScale}
-                                  key={index}
-                                  rotation={new THREE.Euler(...shape.rotation)}
-                                  scale={new THREE.Vector3(...shape.scale)}
-                                  position={new THREE.Vector3(...pos)}
-                                />
-                              )}
-                            </>
+                            <RegularJets
+                              pool={pool}
+                              shape={shape}
+                              pos={pos}
+                              index={index}
+                              poolIndex={poolIndex}
+                            />
                           );
                         case "light":
                           switch (shape.side) {
@@ -971,7 +885,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <Light
                                 model={shape}
                                 index={index}
@@ -979,7 +893,6 @@ export const AllModels = () => {
                                 sPosition={shape.sPosition}
                                 sRotation={shape.sRotation}
                                 sScale={shape.sScale}
-                                key={index}
                                 rotation={new THREE.Euler(...shape.rotation)}
                                 scale={new THREE.Vector3(...shape.scale)}
                                 position={new THREE.Vector3(...pos)}
@@ -995,7 +908,7 @@ export const AllModels = () => {
 
           case pool.poolType === "lshape":
             return (
-              <Suspense>
+              <Suspense key={poolIndex}>
                 <LShape
                   StoneTexture={TextureStone?.clone()}
                   index={poolIndex}
@@ -1314,7 +1227,7 @@ export const AllModels = () => {
                             //   break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <Steps
                                 model={shape}
                                 index={index}
@@ -1405,7 +1318,7 @@ export const AllModels = () => {
                             // break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <RoundSteps
                                 key={index}
                                 model={shape}
@@ -1491,7 +1404,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <SquareSteps
                                 model={shape}
                                 gap={0.2}
@@ -1592,7 +1505,7 @@ export const AllModels = () => {
                             //   break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <CornerRoundSteps
                                 model={shape}
                                 index={index}
@@ -1657,7 +1570,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <Fountain
                                 model={shape}
                                 index={index}
@@ -1716,7 +1629,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <WallWaterfall
                                 model={shape}
                                 index={index}
@@ -1775,7 +1688,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <Waterblade
                                 model={shape}
                                 index={index}
@@ -1834,7 +1747,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <SwimJet
                                 model={shape}
                                 index={index}
@@ -1893,156 +1806,21 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <>
-                                {pool.nbSwimJet && pool.nbSwimJet > 0 ? (
-                                  new Array(pool.nbSwimJet)
-                                    .fill(0)
-                                    .map((_, i) => {
-                                      const offsetPosition = [...pos];
-                                      if (pool.nbSwimJet) {
-                                        const resetZ =
-                                          offsetPosition[2] + pool.sWidth / 2;
-                                        const resetZtLeft =
-                                          offsetPosition[2] -
-                                          (pool.stHeight - pool.sWidth) / 2;
-                                        const offsetZtLeft =
-                                          (pool.stHeight - pool.sWidth) /
-                                          pool.nbSwimJet;
-                                        const initialZtLeft =
-                                          (pool.stHeight - pool.sWidth) /
-                                          pool.nbSwimJet /
-                                          2;
-                                        const resetZtRight =
-                                          offsetPosition[2] - pool.stHeight / 2;
-                                        const offsetZtRight =
-                                          pool.stHeight / pool.nbSwimJet;
-                                        const initialZtRight =
-                                          pool.stHeight / pool.nbSwimJet / 2;
-                                        const offsetZ =
-                                          pool.sWidth / pool.nbSwimJet;
-                                        const initialZ =
-                                          pool.sWidth / pool.nbSwimJet / 2;
-
-                                        const resetX =
-                                          offsetPosition[0] -
-                                          (pool.sbHeight - pool.sWidth) / 2;
-                                        const resetXtTop =
-                                          offsetPosition[0] - pool.sWidth / 2;
-                                        const resetXBottom =
-                                          offsetPosition[0] - pool.sbHeight / 2;
-                                        const offsetX =
-                                          (pool.sbHeight - pool.sWidth) /
-                                          pool.nbSwimJet;
-                                        const offsetXtTop =
-                                          pool.sWidth / pool.nbSwimJet;
-                                        const initialX =
-                                          (pool.sbHeight - pool.sWidth) /
-                                          pool.nbSwimJet /
-                                          2;
-                                        const initialXtTop =
-                                          pool.sWidth / pool.nbSwimJet / 2;
-                                        const offsetXBottom =
-                                          pool.sbHeight / pool.nbSwimJet;
-                                        const initialXBottom =
-                                          pool.sbHeight / pool.nbSwimJet / 2;
-
-                                        switch (shape.side) {
-                                          case "Left":
-                                            //Topleft
-                                            offsetPosition[0] = pos[0];
-                                            offsetPosition[1] = pos[1];
-                                            offsetPosition[2] =
-                                              resetZ - initialZ - i * offsetZ;
-                                            break;
-                                          case "Top":
-                                            //bottom Left
-                                            offsetPosition[0] =
-                                              resetX + initialX + i * offsetX;
-                                            offsetPosition[1] = pos[1];
-                                            offsetPosition[2] = pos[2];
-                                            break;
-                                          case "Bottom":
-                                            offsetPosition[0] =
-                                              resetXBottom +
-                                              initialXBottom +
-                                              i * offsetXBottom;
-                                            offsetPosition[1] = pos[1];
-                                            offsetPosition[2] = pos[2];
-                                            break;
-                                          case "tTop":
-                                            //bottom Left
-                                            offsetPosition[0] =
-                                              resetXtTop +
-                                              initialXtTop +
-                                              i * offsetXtTop;
-                                            offsetPosition[1] = pos[1];
-                                            offsetPosition[2] = pos[2];
-                                            break;
-                                          case "tLeft":
-                                            //bottom Left
-                                            offsetPosition[0] = pos[0];
-                                            offsetPosition[1] = pos[1];
-                                            offsetPosition[2] =
-                                              resetZtLeft +
-                                              initialZtLeft +
-                                              i * offsetZtLeft;
-                                            break;
-                                          case "tRight":
-                                            //bottom Left
-                                            offsetPosition[0] = pos[0];
-
-                                            offsetPosition[1] = pos[1];
-                                            offsetPosition[2] =
-                                              resetZtRight +
-                                              initialZtRight +
-                                              i * offsetZtRight;
-                                            break;
-                                        }
-                                      }
-                                      return (
-                                        <Suspense key={i}>
-                                          <RegularJet
-                                            model={shape}
-                                            index={index}
-                                            poolIndex={poolIndex}
-                                            sPosition={shape.sPosition}
-                                            sRotation={shape.sRotation}
-                                            sScale={shape.sScale}
-                                            key={i}
-                                            offset={-0.1}
-                                            rotation={
-                                              new THREE.Euler(...shape.rotation)
-                                            }
-                                            scale={
-                                              new THREE.Vector3(...shape.scale)
-                                            }
-                                            position={
-                                              new THREE.Vector3(
-                                                ...offsetPosition
-                                              )
-                                            }
-                                          />
-                                        </Suspense>
-                                      );
-                                    })
-                                ) : (
-                                  <RegularJet
-                                    model={shape}
-                                    index={index}
-                                    poolIndex={poolIndex}
-                                    sPosition={shape.sPosition}
-                                    sRotation={shape.sRotation}
-                                    sScale={shape.sScale}
-                                    key={index}
-                                    offset={-0.09}
-                                    rotation={
-                                      new THREE.Euler(...shape.rotation)
-                                    }
-                                    scale={new THREE.Vector3(...shape.scale)}
-                                    position={new THREE.Vector3(...pos)}
-                                  />
-                                )}
+                                <RegularJet
+                                  model={shape}
+                                  index={index}
+                                  poolIndex={poolIndex}
+                                  sPosition={shape.sPosition}
+                                  sRotation={shape.sRotation}
+                                  sScale={shape.sScale}
+                                  key={index}
+                                  offset={-0.09}
+                                  rotation={new THREE.Euler(...shape.rotation)}
+                                  scale={new THREE.Vector3(...shape.scale)}
+                                  position={new THREE.Vector3(...pos)}
+                                />
                               </>
                             </Suspense>
                           );
@@ -2102,7 +1880,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <InfinityEdge2
                                 model={shape}
                                 index={index}
@@ -2169,7 +1947,7 @@ export const AllModels = () => {
                               break;
                           }
                           return (
-                            <Suspense>
+                            <Suspense key={index}>
                               <Light
                                 model={shape}
                                 index={index}
@@ -2196,5 +1974,321 @@ export const AllModels = () => {
         }
       })}
     </Fragment>
+  );
+};
+
+const RegularJets = ({
+  pool,
+  shape,
+  pos,
+  index,
+  poolIndex,
+}: {
+  pool: PoolType;
+  shape: ChildrensType;
+  pos: number[];
+  index: number;
+  poolIndex: number;
+}) => {
+  return (
+    <>
+      {/* RegularJets Left */}
+      {pool.nbSwimJetLeft && pool.nbSwimJetLeft > 0 && shape.side == "Left" ? (
+        new Array(pool.nbSwimJetLeft).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJetLeft) {
+            const resetZ = offsetPosition[2] + pool.depth / 2;
+            const resetX = offsetPosition[0] - pool.width / 2;
+            const offsetZ = pool.depth / pool.nbSwimJetLeft;
+            const initialZ = pool.depth / pool.nbSwimJetLeft / 2;
+
+            const offsetX = pool.width / pool.nbSwimJetLeft;
+            const initialX = pool.width / pool.nbSwimJetLeft / 2;
+
+            switch (shape.side) {
+              case "Left":
+                //Topleft
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
+                break;
+              case "Right":
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
+                break;
+              case "Top":
+                //bottom Left
+                offsetPosition[0] = resetX + initialX + i * offsetX;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+              case "Bottom":
+                offsetPosition[0] = resetX + initialX + i * offsetX;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+            }
+          }
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "Left" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+
+      {/* RegularJets Right */}
+      {pool.nbSwimJetRight &&
+      pool.nbSwimJetRight > 0 &&
+      shape.side == "Right" ? (
+        new Array(pool.nbSwimJetRight).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJetRight) {
+            const resetZ = offsetPosition[2] + pool.depth / 2;
+            const resetX = offsetPosition[0] - pool.width / 2;
+            const offsetZ = pool.depth / pool.nbSwimJetRight;
+            const initialZ = pool.depth / pool.nbSwimJetRight / 2;
+
+            const offsetX = pool.width / pool.nbSwimJetRight;
+            const initialX = pool.width / pool.nbSwimJetRight / 2;
+
+            switch (shape.side) {
+              case "Left":
+                //Topleft
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
+                break;
+              case "Right":
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
+                break;
+              case "Top":
+                //bottom Left
+                offsetPosition[0] = resetX + initialX + i * offsetX;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+              case "Bottom":
+                offsetPosition[0] = resetX + initialX + i * offsetX;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+            }
+          }
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "Right" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+      {/* RegularJets Top */}
+      {pool.nbSwimJetTop && pool.nbSwimJetTop > 0 && shape.side == "Top" ? (
+        new Array(pool.nbSwimJetTop).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJetTop) {
+            const resetZ = offsetPosition[2] + pool.depth / 2;
+            const resetX = offsetPosition[0] - pool.width / 2;
+            const offsetZ = pool.depth / pool.nbSwimJetTop;
+            const initialZ = pool.depth / pool.nbSwimJetTop / 2;
+
+            const offsetX = pool.width / pool.nbSwimJetTop;
+            const initialX = pool.width / pool.nbSwimJetTop / 2;
+
+            switch (shape.side) {
+              case "Left":
+                //Topleft
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
+                break;
+              case "Right":
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
+                break;
+              case "Top":
+                //bottom Left
+                offsetPosition[0] = resetX + initialX + i * offsetX;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+              case "Bottom":
+                offsetPosition[0] = resetX + initialX + i * offsetX;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+            }
+          }
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "Top" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+      {/* RegularJets Bottom */}
+      {pool.nbSwimJetBottom &&
+      pool.nbSwimJetBottom > 0 &&
+      shape.side == "Bottom" ? (
+        new Array(pool.nbSwimJetBottom).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJetBottom) {
+            const resetZ = offsetPosition[2] + pool.depth / 2;
+            const resetX = offsetPosition[0] - pool.width / 2;
+            const offsetZ = pool.depth / pool.nbSwimJetBottom;
+            const initialZ = pool.depth / pool.nbSwimJetBottom / 2;
+
+            const offsetX = pool.width / pool.nbSwimJetBottom;
+            const initialX = pool.width / pool.nbSwimJetBottom / 2;
+
+            switch (shape.side) {
+              case "Left":
+                //Topleft
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
+                break;
+              case "Right":
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
+                break;
+              case "Top":
+                //bottom Left
+                offsetPosition[0] = resetX + initialX + i * offsetX;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+              case "Bottom":
+                offsetPosition[0] = resetX + initialX + i * offsetX;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+            }
+          }
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "Bottom" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+    </>
   );
 };

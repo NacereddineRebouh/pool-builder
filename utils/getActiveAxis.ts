@@ -1,5 +1,11 @@
 import { sides } from "@/slices/defaultsSlice";
-import { BufferAttribute, BufferGeometry } from "three";
+import {
+  BufferAttribute,
+  BufferGeometry,
+  ExtrudeGeometry,
+  Shape,
+  Vector2,
+} from "three";
 
 export function getActiveAxis(params: sides): [boolean, boolean, boolean] {
   let pos: [boolean, boolean, boolean] = [true, true, true];
@@ -13,7 +19,7 @@ export function getActiveAxis(params: sides): [boolean, boolean, boolean] {
     case "Right":
       pos[0] = false;
       pos[1] = true;
-      pos[2] = true
+      pos[2] = true;
       break;
     case "Top":
       //bottom Left
@@ -290,3 +296,26 @@ export function CustomBoxGeometry({
   geometry.computeVertexNormals();
   return geometry;
 }
+
+export const GetTriangle = ({
+  BenchDepth,
+  cornerHeight,
+}: {
+  BenchDepth: number;
+  cornerHeight: number;
+}) => {
+  const isoscelesGeometry = new ExtrudeGeometry(
+    new Shape([
+      new Vector2(0, 0), // Top vertex
+      new Vector2(-BenchDepth, -BenchDepth), // Bottom-left vertex
+      new Vector2(BenchDepth, -BenchDepth), // Bottom-right vertex
+      new Vector2(0, 0), // Close the shape by repeating the top vertex
+    ]),
+    {
+      depth: cornerHeight, // Extrusion depth
+      bevelEnabled: false, // Disable bevel
+    }
+  );
+  isoscelesGeometry.computeVertexNormals();
+  return isoscelesGeometry;
+};

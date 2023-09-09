@@ -162,12 +162,12 @@ const PoolBool: FC<Props> = ({
   const stencil = useMask(2, true);
 
   // ------ ------- ------ //
-  const cornerHeight = 0.2;
-  const cornerHeightPosition = BenchYPosition + BenchHeight / 2 + cornerHeight;
-  const cornerHeightBottomPosition =
-    BenchYPosition - BenchHeight / 2 + cornerHeight;
-  const isoscelesGeometry = GetTriangle({ BenchDepth, cornerHeight });
-  const isoscelesGeometryBottom = GetTriangle({ BenchDepth, cornerHeight });
+  // const cornerHeight = 0.2;
+  // const cornerHeightPosition = BenchYPosition + BenchHeight / 2 + cornerHeight;
+  // const cornerHeightBottomPosition =
+  //   BenchYPosition - BenchHeight / 2 + cornerHeight;
+  // const isoscelesGeometry = GetTriangle({ BenchDepth, cornerHeight });
+  // const isoscelesGeometryBottom = GetTriangle({ BenchDepth, cornerHeight });
 
   // ------ ------- ------ //
   return (
@@ -433,8 +433,8 @@ const PoolBool: FC<Props> = ({
         {/* topRight:-( Math.PI / 2 + Math.PI / 4) */}
         {/* bottomRight: -Math.PI / 4  */}
         {/* bottomLeft: Math.PI / 4  */}
-        {/* BenchSeating Top */}
-        <>
+        {/* BenchSeating steps Top */}
+        {/* <>
           {pool?.CornerSteps?.includes("topleft") &&
             pool?.BenchSeatings?.includes("left") &&
             pool?.BenchSeatings?.includes("top") && (
@@ -527,9 +527,9 @@ const PoolBool: FC<Props> = ({
                 />
               </mesh>
             )}
-        </>
-        {/* BenchSeating Bottom */}
-        <>
+        </> */}
+        {/* BenchSeating steps Bottom */}
+        {/* <>
           {pool?.CornerSteps?.includes("lowertopleft") &&
             pool?.BenchSeatings?.includes("left") &&
             pool?.BenchSeatings?.includes("top") && (
@@ -622,7 +622,7 @@ const PoolBool: FC<Props> = ({
                 />
               </mesh>
             )}
-        </>
+        </> */}
         {/* Childrens */}
         {children}
       </group>
@@ -854,26 +854,4 @@ const GetGeometry = ({
   geometry.setIndex(indexAttribute);
   geometry.computeVertexNormals();
   return geometry;
-};
-const GetTriangle = ({
-  BenchDepth,
-  cornerHeight,
-}: {
-  BenchDepth: number;
-  cornerHeight: number;
-}) => {
-  const isoscelesGeometry = new THREE.ExtrudeGeometry(
-    new THREE.Shape([
-      new THREE.Vector2(0, 0), // Top vertex
-      new THREE.Vector2(-BenchDepth, -BenchDepth), // Bottom-left vertex
-      new THREE.Vector2(BenchDepth, -BenchDepth), // Bottom-right vertex
-      new THREE.Vector2(0, 0), // Close the shape by repeating the top vertex
-    ]),
-    {
-      depth: cornerHeight, // Extrusion depth
-      bevelEnabled: false, // Disable bevel
-    }
-  );
-  isoscelesGeometry.computeVertexNormals();
-  return isoscelesGeometry;
 };

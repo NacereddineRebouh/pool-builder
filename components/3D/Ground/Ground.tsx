@@ -44,6 +44,15 @@ const Grid = ({
   lineWidth?: number;
   height?: number;
 }) => {
+  const [SnappingPosition, setSnappingPosition] = useState<{
+    x: number;
+    y: number;
+    z: number;
+  } | null>(null);
+  const [ClosestIndex, setClosestIndex] = useState(0);
+  const [ClosestPoolIndex, setClosestPoolIndex] = useState(0);
+  const [ClosestPoolType, setClosestPoolType] = useState<string>("");
+
   const help = useAppSelector((state: RootState) => state.helper);
   const type = useAppSelector((state: RootState) => state.helper.type);
   const visibility = useAppSelector(
@@ -441,62 +450,67 @@ const Grid = ({
       used: false,
     }, //bottom
   ]);
-  const BenchHeight = poolheight - 0.65;
-  let BenchYPosition = -poolheight + BenchHeight / 2;
+  const poolHeight = Pools[ClosestPoolIndex]
+    ? Pools[ClosestPoolIndex].height
+    : poolheight;
+  const BenchHeight = poolHeight - 0.65;
+  let BenchYPosition = -poolHeight + BenchHeight / 2;
   const cornerHeight = 0.2;
   const BenchDepth = 0.5;
   let cornerHeightPosition = BenchYPosition + BenchHeight / 2 + cornerHeight;
   const cornerHeightBottomPosition =
     BenchYPosition - BenchHeight / 2 + cornerHeight;
-  // const [CornerStep, setCornerStep] = useState([
-  //   {
-  //     position: [-poolwidth / 2, cornerHeightPosition, -pooldepth / 2],
-  //     used: false,
-  //   }, //left (TopLeft)
-  //   {
-  //     position: [-poolwidth / 2,
-  //     cornerHeightPosition,
-  //     pooldepth / 2],
-  //     used: false,
-  //   }, //right (TopRight)
-  //   {
-  //     position: [ poolwidth / 2,
-  //     cornerHeightPosition,
-  //     pooldepth / 2],
-  //     used: false,
-  //   }, //top (BottomRight)
-  //   {
-  //     position: [ -poolwidth / 2,
-  //     cornerHeightPosition,
-  //     pooldepth / 2],
-  //     used: false,
-  //   }, //bottom (BottomLeft)
-  //   // ------ ------ ------ //
-  //   {
-  //     position: [ -poolwidth / 2 + BenchDepth,
-  //     cornerHeightBottomPosition,
-  //     -pooldepth / 2 + BenchDepth],
-  //     used: false,
-  //   }, //bottomleft (TopLeft)
-  //   {
-  //     position: [ poolwidth / 2 - BenchDepth,
-  //     cornerHeightBottomPosition,
-  //     -pooldepth / 2 + BenchDepth],
-  //     used: false,
-  //   }, //bottomright (TopRight)
-  //   {
-  //     position: [poolwidth / 2 - BenchDepth,
-  //     cornerHeightBottomPosition,
-  //     pooldepth / 2 - BenchDepth,],
-  //     used: false,
-  //   }, //bottomtop (BottomRight)
-  //   {
-  //     position: [ -poolwidth / 2 + BenchDepth,
-  //     cornerHeightBottomPosition,
-  //     pooldepth / 2 - BenchDepth],
-  //     used: false,
-  //   }, //bottombottom (BottomLeft)
-  // ]);
+  const [CornerStep, setCornerStep] = useState([
+    {
+      position: [-poolwidth / 2, cornerHeightPosition, -pooldepth / 2],
+      used: false,
+    }, //left (TopLeft)
+    {
+      position: [poolwidth / 2, cornerHeightPosition, -pooldepth / 2],
+      used: false,
+    }, //right (TopRight)
+    {
+      position: [poolwidth / 2, cornerHeightPosition, pooldepth / 2],
+      used: false,
+    }, //top (BottomRight)
+    {
+      position: [-poolwidth / 2, cornerHeightPosition, pooldepth / 2],
+      used: false,
+    }, //bottom (BottomLeft)
+    // ------ ------ ------ //
+    {
+      position: [
+        -poolwidth / 2 + BenchDepth,
+        cornerHeightBottomPosition,
+        -pooldepth / 2 + BenchDepth,
+      ],
+      used: false,
+    }, //bottomleft (TopLeft)
+    {
+      position: [
+        poolwidth / 2 - BenchDepth,
+        cornerHeightBottomPosition,
+        -pooldepth / 2 + BenchDepth,
+      ],
+      used: false,
+    }, //bottomright (TopRight)
+    {
+      position: [
+        poolwidth / 2 - BenchDepth,
+        cornerHeightBottomPosition,
+        pooldepth / 2 - BenchDepth,
+      ],
+      used: false,
+    }, //bottomtop (BottomRight)
+    {
+      position: [
+        -poolwidth / 2 + BenchDepth,
+        cornerHeightBottomPosition,
+        pooldepth / 2 - BenchDepth,
+      ],
+      used: false,
+    }, //bottombottom (BottomLeft)
+  ]);
 
   // -------------------- LSHAPE Model Positions -------------------- //
   const [stairsLShape, setstairsLShape] = useState([
@@ -808,14 +822,6 @@ const Grid = ({
     }, //TOP - top
   ]);
 
-  const [SnappingPosition, setSnappingPosition] = useState<{
-    x: number;
-    y: number;
-    z: number;
-  } | null>(null);
-  const [ClosestIndex, setClosestIndex] = useState(0);
-  const [ClosestPoolIndex, setClosestPoolIndex] = useState(0);
-  const [ClosestPoolType, setClosestPoolType] = useState<string>("");
   // ------- //
   const OnPointerMoveHandler = (e: ThreeEvent<PointerEvent>) => {
     let pointer = { x: e.point.x, y: e.point.y, z: e.point.z };
@@ -1570,55 +1576,75 @@ const Grid = ({
               }, //bottom
             ]);
             BenchYPosition = -closestPool.sHeight + BenchHeight / 2;
-            // setCornerStep([
-            //   {
-            //     position: [-closestPool.width / 2, cornerHeightPosition, -closestPool.sHeight / 2],
-            //     used: false,
-            //   }, //left (TopLeft)
-            //   {
-            //     position: [-closestPool.width / 2,
-            //     cornerHeightPosition,
-            //     closestPool.sHeight / 2],
-            //     used: false,
-            //   }, //right (TopRight)
-            //   {
-            //     position: [ closestPool.width / 2,
-            //     cornerHeightPosition,
-            //     closestPool.sHeight / 2],
-            //     used: false,
-            //   }, //top (BottomRight)
-            //   {
-            //     position: [ -closestPool.width / 2,
-            //     cornerHeightPosition,
-            //     closestPool.sHeight / 2],
-            //     used: false,
-            //   }, //bottom (BottomLeft)
-            //   // ------ ------ ------ //
-            //   {
-            //     position: [ -closestPool.width / 2 + BenchDepth,
-            //     cornerHeightBottomPosition,
-            //     -closestPool.sHeight / 2 + BenchDepth],
-            //     used: false,
-            //   }, //bottomleft (TopLeft)
-            //   {
-            //     position: [ closestPool.width / 2 - BenchDepth,
-            //     cornerHeightBottomPosition,
-            //     -closestPool.sHeight / 2 + BenchDepth],
-            //     used: false,
-            //   }, //bottomright (TopRight)
-            //   {
-            //     position: [closestPool.width / 2 - BenchDepth,
-            //     cornerHeightBottomPosition,
-            //     closestPool.sHeight / 2 - BenchDepth,],
-            //     used: false,
-            //   }, //bottomtop (BottomRight)
-            //   {
-            //     position: [ -closestPool.width / 2 + BenchDepth,
-            //     cornerHeightBottomPosition,
-            //     closestPool.sHeight / 2 - BenchDepth],
-            //     used: false,
-            //   }, //bottombottom (BottomLeft)
-            // ]);
+            setCornerStep([
+              {
+                position: [
+                  -closestPool.width / 2,
+                  cornerHeightPosition,
+                  -closestPool.depth / 2,
+                ],
+                used: false,
+              }, //left (TopLeft)
+              {
+                position: [
+                  closestPool.width / 2,
+                  cornerHeightPosition,
+                  -closestPool.depth / 2,
+                ],
+                used: false,
+              }, //right (TopRight)
+
+              {
+                position: [
+                  -closestPool.width / 2,
+                  cornerHeightPosition,
+                  closestPool.depth / 2,
+                ],
+                used: false,
+              }, //bottom (BottomLeft)
+              {
+                position: [
+                  closestPool.width / 2,
+                  cornerHeightPosition,
+                  closestPool.depth / 2,
+                ],
+                used: false,
+              }, //top (BottomRight)
+              // ------ ------ ------ //
+              {
+                position: [
+                  -closestPool.width / 2 + BenchDepth,
+                  cornerHeightBottomPosition,
+                  -closestPool.depth / 2 + BenchDepth,
+                ],
+                used: false,
+              }, //bottomleft (TopLeft)
+              {
+                position: [
+                  closestPool.width / 2 - BenchDepth,
+                  cornerHeightBottomPosition,
+                  -closestPool.depth / 2 + BenchDepth,
+                ],
+                used: false,
+              }, //bottomright (TopRight)
+
+              {
+                position: [
+                  -closestPool.width / 2 + BenchDepth,
+                  cornerHeightBottomPosition,
+                  closestPool.depth / 2 - BenchDepth,
+                ],
+                used: false,
+              }, //bottombottom (BottomLeft)
+              {
+                position: [
+                  closestPool.width / 2 - BenchDepth,
+                  cornerHeightBottomPosition,
+                  closestPool.depth / 2 - BenchDepth,
+                ],
+                used: false,
+              }, //bottomtop (BottomRight)
+            ]);
             switch (true) {
               case type === "SquareSteps" ||
                 type === "RoundSteps" ||
@@ -1806,37 +1832,37 @@ const Grid = ({
                   };
                 }
                 break;
-              // case type === "cornerStep":
-              //   const availableCornerStep = CornerStep.filter(
-              //     (obj) => obj.used === false
-              //   );
-              //   if (CornerStep.length > 0 && availableCornerStep.length > 0) {
-              //     const res = GetClosestCornerStep(
-              //       CornerStep,
-              //       closestPool,
-              //       setClosestIndex,
-              //       e
-              //     );
-              //     pointer = {
-              //       x: res.closest.position[0],
-              //       y: res.closest.position[1],
-              //       z: res.closest.position[2],
-              //     };
-              //     setSnappingPosition(pointer);
-              //     pointer = {
-              //       x: res.closestObj.position.x,
-              //       y: res.closestObj.position.y,
-              //       z: res.closestObj.position.z,
-              //     };
-              //   } else {
-              //     setSnappingPosition(null);
-              //     pointer = {
-              //       x: 0,
-              //       y: -5,
-              //       z: 0,
-              //     };
-              //   }
-              //   break;
+              case type === "cornerStep":
+                const availableCornerStep = CornerStep.filter(
+                  (obj) => obj.used === false
+                );
+                if (CornerStep.length > 0 && availableCornerStep.length > 0) {
+                  const res = GetClosestCornerStep(
+                    CornerStep,
+                    closestPool,
+                    setClosestIndex,
+                    e
+                  );
+                  pointer = {
+                    x: res.closest.position[0],
+                    y: res.closest.position[1],
+                    z: res.closest.position[2],
+                  };
+                  setSnappingPosition(pointer);
+                  pointer = {
+                    x: res.closestObj.position.x,
+                    y: res.closestObj.position.y,
+                    z: res.closestObj.position.z,
+                  };
+                } else {
+                  setSnappingPosition(null);
+                  pointer = {
+                    x: 0,
+                    y: -5,
+                    z: 0,
+                  };
+                }
+                break;
             }
           }
         }
@@ -3648,67 +3674,77 @@ const Grid = ({
               );
             }
             break;
-          // case "cornerStep":
-          //     if (SnappingPosition) {
-          //       let rotation = 0;
-          //       let position = [0, 0, 0];
-          //       let side = sides.Left;
-          //       switch (ClosestIndex) {
-          //         case 0:
+          case "cornerStep":
+            if (SnappingPosition) {
+              let rotationx = 0;
+              let rotationy = 0;
+              let rotationz = 0;
+              let position = [0, 0, 0];
+              let side = sides.Left;
+              switch (ClosestIndex) {
+                case 0:
+                  side = sides.Left; // topleft
+                  rotationx = Math.PI / 2;
+                  rotationz = Math.PI / 2 + Math.PI / 4;
+                  break;
+                case 1:
+                  side = sides.Right; // topright
+                  rotationx = Math.PI / 2;
+                  rotationz = -(Math.PI / 2 + Math.PI / 4);
+                  break;
+                case 2:
+                  side = sides.Top; // Bottomleft
+                  rotationx = Math.PI / 2;
+                  rotationz = Math.PI / 4;
+                  break;
+                case 3:
+                  side = sides.Bottom; // Bottomright
+                  rotationx = Math.PI / 2;
+                  rotationz = -Math.PI / 4;
+                  break;
 
-          //           side = sides.Left;
-          //           break;
-          //         case 1:
-
-          //           side = sides.Right;
-          //           break;
-          //         case 2:
-
-          //           side = sides.Top;
-          //           break;
-          //         case 3:
-
-          //           side = sides.Bottom;
-          //           break;
-
-          //         case 4:
-
-          //           side = sides.BottomLeft;
-          //           break;
-          //         case 5:
-
-          //           side = sides.BottomRight;
-          //           break;
-          //         case 6:
-
-          //           side = sides.BottomTop;
-          //           break;
-          //         case 7:
-
-          //           side = sides.BottomBottom;
-          //           break;
-          //       }
-          //       dispatch(
-          //         addChildren({
-          //           poolIndex: ClosestPoolIndex,
-          //           children: {
-          //             shapeType: type,
-          //             rotation: [0, rotation, 0],
-          //             position: [
-          //               SnappingPosition.x + position[0],
-          //               SnappingPosition.y + position[1],
-          //               SnappingPosition.z + position[2],
-          //             ],
-          //             sPosition: [0, 0, 0],
-          //             sScale: [1, 1, 1],
-          //             sRotation: [0, 0, 0],
-          //             side: side,
-          //             scale: [1, 1, 1],
-          //           },
-          //         })
-          //       );
-          //     }
-          //     break;
+                case 4:
+                  side = sides.BottomLeft; //BOTTOM topleft
+                  rotationx = Math.PI / 2;
+                  rotationz = Math.PI / 2 + Math.PI / 4;
+                  break;
+                case 5:
+                  side = sides.BottomRight; //BOTTOM topright
+                  rotationx = Math.PI / 2;
+                  rotationz = -(Math.PI / 2 + Math.PI / 4);
+                  break;
+                case 6:
+                  side = sides.BottomTop; //BOTTOM Bottomleft
+                  rotationx = Math.PI / 2;
+                  rotationz = Math.PI / 4;
+                  break;
+                case 7:
+                  side = sides.BottomBottom; //BOTTOM Bottomright
+                  rotationx = Math.PI / 2;
+                  rotationz = -Math.PI / 4;
+                  break;
+              }
+              dispatch(
+                addChildren({
+                  poolIndex: ClosestPoolIndex,
+                  children: {
+                    shapeType: type,
+                    rotation: [rotationx, rotationy, rotationz],
+                    position: [
+                      SnappingPosition.x + position[0],
+                      SnappingPosition.y + position[1],
+                      SnappingPosition.z + position[2],
+                    ],
+                    sPosition: [0, 0, 0],
+                    sScale: [1, 1, 1],
+                    sRotation: [0, 0, 0],
+                    side: side,
+                    scale: [1, 1, 1],
+                  },
+                })
+              );
+            }
+            break;
         }
       }
     }
@@ -4047,152 +4083,152 @@ function GetClosestCorner(
     closestObj: closestObj,
   };
 }
-// function GetClosestCornerStep(
-//   availableCorner: {
-//     position: number[];
-//     used: boolean;
-//   }[],
-//   closestPool: PoolType,
-//   setClosestIndex: React.Dispatch<React.SetStateAction<number>>,
-//   e: ThreeEvent<PointerEvent>
-// ) {
-//   const pos = [
-//     closestPool.sPosition[0] + availableCorner[0].position[0],
-//     closestPool.sPosition[1] + availableCorner[0].position[1],
-//     closestPool.sPosition[2] + availableCorner[0].position[2],
-//   ];
-//   let obj2 = new THREE.Object3D();
-//   obj2.position.copy(
-//     new THREE.Vector3(
-//       closestPool.sPosition[0] + availableCorner[0].position[0],
-//       closestPool.sPosition[1] + availableCorner[0].position[1],
-//       closestPool.sPosition[2] + availableCorner[0].position[2]
-//     )
-//   );
-//   let offsetHelperPos = { ...obj2.position };
-//   const offsetWidth = closestPool.sWidth - closestPool.width;
-//   const offsetHeight = closestPool.sHeight - closestPool.height;
-//   const offsetDepth = closestPool.sDepth - closestPool.depth;
-//   offsetHelperPos.x -= offsetWidth / 2;
-//   offsetHelperPos.z -= offsetDepth / 2;
-//   obj2.position.copy(
-//     new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
-//   );
-//   if (
-//     closestPool.sRotation[0] != 0 ||
-//     closestPool.sRotation[1] != 0 ||
-//     closestPool.sRotation[2] != 0
-//   ) {
-//     obj2 = RotateAroundPoint2(
-//       closestPool.sRotation,
-//       [obj2.position.x, obj2.position.y, obj2.position.z],
-//       closestPool.sPosition
-//     );
-//   }
-//   let closestObj = {
-//     used: false,
-//     position: {
-//       x: obj2.position.x,
-//       y: obj2.position.y,
-//       z: obj2.position.z,
-//     },
-//   };
-//   let closest = availableCorner[0];
-//   let closestindex = 0;
-//   setClosestIndex(0);
-//   let newdist = Math.sqrt(
-//     Math.pow(e.point.x - obj2.position.x, 2) +
-//       Math.pow(e.point.y - obj2.position.y, 2) +
-//       Math.pow(e.point.z - obj2.position.z, 2)
-//   );
-//   availableCorner.map((corner, index) => {
-//     const pos = [
-//       closestPool.sPosition[0] + corner.position[0],
-//       closestPool.sPosition[1] + corner.position[1],
-//       closestPool.sPosition[2] + corner.position[2],
-//     ];
-//     obj2.position.copy(
-//       new THREE.Vector3(
-//         closestPool.sPosition[0] + corner.position[0],
-//         closestPool.sPosition[1] + corner.position[1],
-//         closestPool.sPosition[2] + corner.position[2]
-//       )
-//     );
+function GetClosestCornerStep(
+  availableCorner: {
+    position: number[];
+    used: boolean;
+  }[],
+  closestPool: PoolType,
+  setClosestIndex: React.Dispatch<React.SetStateAction<number>>,
+  e: ThreeEvent<PointerEvent>
+) {
+  const pos = [
+    closestPool.sPosition[0] + availableCorner[0].position[0],
+    closestPool.sPosition[1] + availableCorner[0].position[1],
+    closestPool.sPosition[2] + availableCorner[0].position[2],
+  ];
+  let obj2 = new THREE.Object3D();
+  obj2.position.copy(
+    new THREE.Vector3(
+      closestPool.sPosition[0] + availableCorner[0].position[0],
+      closestPool.sPosition[1] + availableCorner[0].position[1],
+      closestPool.sPosition[2] + availableCorner[0].position[2]
+    )
+  );
+  let offsetHelperPos = { ...obj2.position };
+  const offsetWidth = closestPool.sWidth - closestPool.width;
+  const offsetHeight = closestPool.sHeight - closestPool.height;
+  const offsetDepth = closestPool.sDepth - closestPool.depth;
+  offsetHelperPos.x -= offsetWidth / 2;
+  offsetHelperPos.z -= offsetDepth / 2;
+  obj2.position.copy(
+    new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
+  );
+  if (
+    closestPool.sRotation[0] != 0 ||
+    closestPool.sRotation[1] != 0 ||
+    closestPool.sRotation[2] != 0
+  ) {
+    obj2 = RotateAroundPoint2(
+      closestPool.sRotation,
+      [obj2.position.x, obj2.position.y, obj2.position.z],
+      closestPool.sPosition
+    );
+  }
+  let closestObj = {
+    used: false,
+    position: {
+      x: obj2.position.x,
+      y: obj2.position.y,
+      z: obj2.position.z,
+    },
+  };
+  let closest = availableCorner[0];
+  let closestindex = 0;
+  setClosestIndex(0);
+  let newdist = Math.sqrt(
+    Math.pow(e.point.x - obj2.position.x, 2) +
+      Math.pow(e.point.y - obj2.position.y, 2) +
+      Math.pow(e.point.z - obj2.position.z, 2)
+  );
+  availableCorner.map((corner, index) => {
+    const pos = [
+      closestPool.sPosition[0] + corner.position[0],
+      closestPool.sPosition[1] + corner.position[1],
+      closestPool.sPosition[2] + corner.position[2],
+    ];
+    obj2.position.copy(
+      new THREE.Vector3(
+        closestPool.sPosition[0] + corner.position[0],
+        closestPool.sPosition[1] + corner.position[1],
+        closestPool.sPosition[2] + corner.position[2]
+      )
+    );
 
-//     offsetHelperPos = { ...obj2.position };
-//     switch (true) {
-//       case index===0 || index===4:
-//         //Topleft
-//         offsetHelperPos.x -= offsetWidth / 2;
-//         offsetHelperPos.z -= offsetDepth / 2;
-//         break;
-//       case index===1 || index===5:
-//         offsetHelperPos.z -= offsetDepth / 2;
-//         offsetHelperPos.x += offsetWidth / 2;
-//         break;
-//       case index===2 || index===6:
-//         //bottom Left
-//         offsetHelperPos.x -= offsetWidth / 2;
-//         offsetHelperPos.z += offsetDepth / 2;
-//         break;
-//       case index===3 || index===7:
-//         offsetHelperPos.x += offsetWidth / 2;
-//         offsetHelperPos.z += offsetDepth / 2;
-//         break;
-//     }
-//     obj2.position.copy(
-//       new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
-//     );
-//     if (
-//       closestPool.sRotation[0] != 0 ||
-//       closestPool.sRotation[1] != 0 ||
-//       closestPool.sRotation[2] != 0
-//     )
-//       obj2 = RotateAroundPoint2(
-//         closestPool.sRotation,
-//         [obj2.position.x, obj2.position.y, obj2.position.z],
-//         closestPool.sPosition
-//       );
-//     const temp = Math.sqrt(
-//       Math.pow(e.point.x - obj2.position.x, 2) +
-//         Math.pow(e.point.y - obj2.position.y, 2) +
-//         Math.pow(e.point.z - obj2.position.z, 2)
-//     );
-//     if (temp < newdist) {
-//       newdist = temp;
-//       closest = corner;
-//       closestObj = {
-//         used: false,
-//         position: {
-//           x: obj2.position.x,
-//           y: obj2.position.y,
-//           z: obj2.position.z,
-//         },
-//       };
-//       setClosestIndex(index);
-//       closestindex = index;
-//     }
-//   });
-//   return {
-//     ClosestIndex: closestindex,
-//     closest: closest,
-//     closestObj: closestObj,
-//   };
-//   // pointer = {
-//   //   x: closest.position[0],
-//   //   y: closest.position[1],
-//   //   z: closest.position[2],
-//   // };
-//   // setSnappingPosition(pointer);
-//   // pointer = {
-//   //   x:
-//   //     closestObj.position.x,
-//   //   y:
-//   //     closestObj.position.y,
-//   //   z:
-//   //     closestObj.position.z,
-//   // };
-// }
+    offsetHelperPos = { ...obj2.position };
+    switch (true) {
+      case index === 0 || index === 4:
+        //Topleft
+        offsetHelperPos.x -= offsetWidth / 2;
+        offsetHelperPos.z -= offsetDepth / 2;
+        break;
+      case index === 1 || index === 5:
+        offsetHelperPos.z -= offsetDepth / 2;
+        offsetHelperPos.x += offsetWidth / 2;
+        break;
+      case index === 2 || index === 6:
+        //bottom Left
+        offsetHelperPos.x -= offsetWidth / 2;
+        offsetHelperPos.z += offsetDepth / 2;
+        break;
+      case index === 3 || index === 7:
+        offsetHelperPos.x += offsetWidth / 2;
+        offsetHelperPos.z += offsetDepth / 2;
+        break;
+    }
+    obj2.position.copy(
+      new THREE.Vector3(offsetHelperPos.x, offsetHelperPos.y, offsetHelperPos.z)
+    );
+    if (
+      closestPool.sRotation[0] != 0 ||
+      closestPool.sRotation[1] != 0 ||
+      closestPool.sRotation[2] != 0
+    )
+      obj2 = RotateAroundPoint2(
+        closestPool.sRotation,
+        [obj2.position.x, obj2.position.y, obj2.position.z],
+        closestPool.sPosition
+      );
+    const temp = Math.sqrt(
+      Math.pow(e.point.x - obj2.position.x, 2) +
+        Math.pow(e.point.y - obj2.position.y, 2) +
+        Math.pow(e.point.z - obj2.position.z, 2)
+    );
+    if (temp < newdist) {
+      newdist = temp;
+      closest = corner;
+      closestObj = {
+        used: false,
+        position: {
+          x: obj2.position.x,
+          y: obj2.position.y,
+          z: obj2.position.z,
+        },
+      };
+      setClosestIndex(index);
+      closestindex = index;
+    }
+  });
+  return {
+    ClosestIndex: closestindex,
+    closest: closest,
+    closestObj: closestObj,
+  };
+  // pointer = {
+  //   x: closest.position[0],
+  //   y: closest.position[1],
+  //   z: closest.position[2],
+  // };
+  // setSnappingPosition(pointer);
+  // pointer = {
+  //   x:
+  //     closestObj.position.x,
+  //   y:
+  //     closestObj.position.y,
+  //   z:
+  //     closestObj.position.z,
+  // };
+}
 
 // -------------------  LSHAPE  -------------------
 function GetClosestLShape(
