@@ -354,7 +354,9 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                   ? inches
                     ? metersToInches(bordersDepth)
                     : bordersDepth
-                  : metersToInches(0.25)
+                  : inches
+                  ? metersToInches(0.25)
+                  : 0.25
               }
             />
             <div className="mx-1 font-medium text-slate-50">
@@ -398,7 +400,9 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
                   ? inches
                     ? metersToInches(bordersHeight)
                     : bordersHeight
-                  : metersToInches(0.05)
+                  : inches
+                  ? metersToInches(0.05)
+                  : 0.05
               }
             />
             <div className="mx-1 font-medium text-slate-50">
