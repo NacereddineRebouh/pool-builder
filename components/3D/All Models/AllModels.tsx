@@ -169,10 +169,6 @@ export const AllModels = () => {
                       if (shape.poolInitialHeight) {
                         newOffsetHeight =
                           pool.sHeight - shape.poolInitialHeight;
-                        console.log(
-                          "shape.poolInitialHeight:",
-                          shape.poolInitialHeight
-                        );
                       }
                       const offsetDepth = pool.sDepth - pool.depth;
                       switch (shape.shapeType) {
@@ -1808,18 +1804,12 @@ export const AllModels = () => {
                           return (
                             <Suspense key={index}>
                               <>
-                                <RegularJet
-                                  model={shape}
+                                <RegularJets
+                                  pool={pool}
+                                  shape={shape}
+                                  pos={pos}
                                   index={index}
                                   poolIndex={poolIndex}
-                                  sPosition={shape.sPosition}
-                                  sRotation={shape.sRotation}
-                                  sScale={shape.sScale}
-                                  key={index}
-                                  offset={-0.09}
-                                  rotation={new THREE.Euler(...shape.rotation)}
-                                  scale={new THREE.Vector3(...shape.scale)}
-                                  position={new THREE.Vector3(...pos)}
                                 />
                               </>
                             </Suspense>
@@ -1993,17 +1983,16 @@ const RegularJets = ({
   return (
     <>
       {/* RegularJets Left */}
-      {pool.nbSwimJetLeft && pool.nbSwimJetLeft > 0 && shape.side == "Left" ? (
+      {pool.nbSwimJetLeft &&
+      pool.nbSwimJetLeft > 0 &&
+      shape.side == "Left" &&
+      pool.poolType !== "lshape" ? (
         new Array(pool.nbSwimJetLeft).fill(0).map((_, i) => {
           const offsetPosition = [...pos];
           if (pool.nbSwimJetLeft) {
             const resetZ = offsetPosition[2] + pool.depth / 2;
-            const resetX = offsetPosition[0] - pool.width / 2;
             const offsetZ = pool.depth / pool.nbSwimJetLeft;
             const initialZ = pool.depth / pool.nbSwimJetLeft / 2;
-
-            const offsetX = pool.width / pool.nbSwimJetLeft;
-            const initialX = pool.width / pool.nbSwimJetLeft / 2;
 
             switch (shape.side) {
               case "Left":
@@ -2011,22 +2000,6 @@ const RegularJets = ({
                 offsetPosition[0] = pos[0];
                 offsetPosition[1] = pos[1];
                 offsetPosition[2] = resetZ - initialZ - i * offsetZ;
-                break;
-              case "Right":
-                offsetPosition[0] = pos[0];
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
-                break;
-              case "Top":
-                //bottom Left
-                offsetPosition[0] = resetX + initialX + i * offsetX;
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = pos[2];
-                break;
-              case "Bottom":
-                offsetPosition[0] = resetX + initialX + i * offsetX;
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = pos[2];
                 break;
             }
           }
@@ -2049,7 +2022,7 @@ const RegularJets = ({
         })
       ) : (
         <>
-          {shape.side == "Left" && (
+          {shape.side == "Left" && pool.poolType !== "lshape" && (
             <RegularJet
               model={shape}
               index={index}
@@ -2058,6 +2031,65 @@ const RegularJets = ({
               sRotation={shape.sRotation}
               sScale={shape.sScale}
               key={index}
+              offset={pool.poolType === "lshape" ? -0.1 : undefined}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+      {/* RegularJets Left Lshape*/}
+      {pool.nbSwimJetLeft &&
+      pool.nbSwimJetLeft > 0 &&
+      shape.side == "Left" &&
+      pool.poolType === "lshape" ? (
+        new Array(pool.nbSwimJetLeft).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJetLeft) {
+            const resetZ = offsetPosition[2] + pool.sWidth / 2;
+            const offsetZ = pool.sWidth / pool.nbSwimJetLeft;
+            const initialZ = pool.sWidth / pool.nbSwimJetLeft / 2;
+
+            switch (shape.side) {
+              case "Left":
+                //Topleft
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
+                break;
+            }
+          }
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                offset={-0.1}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "Left" && pool.poolType === "lshape" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              offset={-0.1}
               rotation={new THREE.Euler(...shape.rotation)}
               scale={new THREE.Vector3(...shape.scale)}
               position={new THREE.Vector3(...pos)}
@@ -2074,35 +2106,14 @@ const RegularJets = ({
           const offsetPosition = [...pos];
           if (pool.nbSwimJetRight) {
             const resetZ = offsetPosition[2] + pool.depth / 2;
-            const resetX = offsetPosition[0] - pool.width / 2;
             const offsetZ = pool.depth / pool.nbSwimJetRight;
             const initialZ = pool.depth / pool.nbSwimJetRight / 2;
 
-            const offsetX = pool.width / pool.nbSwimJetRight;
-            const initialX = pool.width / pool.nbSwimJetRight / 2;
-
             switch (shape.side) {
-              case "Left":
-                //Topleft
-                offsetPosition[0] = pos[0];
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
-                break;
               case "Right":
                 offsetPosition[0] = pos[0];
                 offsetPosition[1] = pos[1];
                 offsetPosition[2] = resetZ - initialZ - i * offsetZ;
-                break;
-              case "Top":
-                //bottom Left
-                offsetPosition[0] = resetX + initialX + i * offsetX;
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = pos[2];
-                break;
-              case "Bottom":
-                offsetPosition[0] = resetX + initialX + i * offsetX;
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = pos[2];
                 break;
             }
           }
@@ -2142,37 +2153,20 @@ const RegularJets = ({
         </>
       )}
       {/* RegularJets Top */}
-      {pool.nbSwimJetTop && pool.nbSwimJetTop > 0 && shape.side == "Top" ? (
+      {pool.nbSwimJetTop &&
+      pool.nbSwimJetTop > 0 &&
+      shape.side == "Top" &&
+      pool.poolType !== "lshape" ? (
         new Array(pool.nbSwimJetTop).fill(0).map((_, i) => {
           const offsetPosition = [...pos];
           if (pool.nbSwimJetTop) {
-            const resetZ = offsetPosition[2] + pool.depth / 2;
             const resetX = offsetPosition[0] - pool.width / 2;
-            const offsetZ = pool.depth / pool.nbSwimJetTop;
-            const initialZ = pool.depth / pool.nbSwimJetTop / 2;
-
             const offsetX = pool.width / pool.nbSwimJetTop;
             const initialX = pool.width / pool.nbSwimJetTop / 2;
 
             switch (shape.side) {
-              case "Left":
-                //Topleft
-                offsetPosition[0] = pos[0];
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
-                break;
-              case "Right":
-                offsetPosition[0] = pos[0];
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
-                break;
               case "Top":
                 //bottom Left
-                offsetPosition[0] = resetX + initialX + i * offsetX;
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = pos[2];
-                break;
-              case "Bottom":
                 offsetPosition[0] = resetX + initialX + i * offsetX;
                 offsetPosition[1] = pos[1];
                 offsetPosition[2] = pos[2];
@@ -2198,7 +2192,7 @@ const RegularJets = ({
         })
       ) : (
         <>
-          {shape.side == "Top" && (
+          {shape.side == "Top" && pool.poolType !== "lshape" && (
             <RegularJet
               model={shape}
               index={index}
@@ -2214,39 +2208,79 @@ const RegularJets = ({
           )}
         </>
       )}
-      {/* RegularJets Bottom */}
-      {pool.nbSwimJetBottom &&
-      pool.nbSwimJetBottom > 0 &&
-      shape.side == "Bottom" ? (
-        new Array(pool.nbSwimJetBottom).fill(0).map((_, i) => {
+      {/* RegularJets Top */}
+      {pool.nbSwimJetTop &&
+      pool.nbSwimJetTop > 0 &&
+      shape.side == "Top" &&
+      pool.poolType === "lshape" ? (
+        new Array(pool.nbSwimJetTop).fill(0).map((_, i) => {
           const offsetPosition = [...pos];
-          if (pool.nbSwimJetBottom) {
-            const resetZ = offsetPosition[2] + pool.depth / 2;
-            const resetX = offsetPosition[0] - pool.width / 2;
-            const offsetZ = pool.depth / pool.nbSwimJetBottom;
-            const initialZ = pool.depth / pool.nbSwimJetBottom / 2;
-
-            const offsetX = pool.width / pool.nbSwimJetBottom;
-            const initialX = pool.width / pool.nbSwimJetBottom / 2;
+          if (pool.nbSwimJetTop) {
+            const resetX =
+              offsetPosition[0] - (pool.sbHeight - pool.sWidth) / 2;
+            const offsetX = (pool.sbHeight - pool.sWidth) / pool.nbSwimJetTop;
+            const initialX =
+              (pool.sbHeight - pool.sWidth) / pool.nbSwimJetTop / 2;
 
             switch (shape.side) {
-              case "Left":
-                //Topleft
-                offsetPosition[0] = pos[0];
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
-                break;
-              case "Right":
-                offsetPosition[0] = pos[0];
-                offsetPosition[1] = pos[1];
-                offsetPosition[2] = resetZ - initialZ - i * offsetZ;
-                break;
               case "Top":
                 //bottom Left
                 offsetPosition[0] = resetX + initialX + i * offsetX;
                 offsetPosition[1] = pos[1];
                 offsetPosition[2] = pos[2];
                 break;
+            }
+          }
+
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                offset={-0.1}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "Top" && pool.poolType === "lshape" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              offset={-0.1}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+      {/* RegularJets Bottom */}
+      {pool.nbSwimJetBottom &&
+      pool.nbSwimJetBottom > 0 &&
+      shape.side == "Bottom" &&
+      pool.poolType !== "lshape" ? (
+        new Array(pool.nbSwimJetBottom).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJetBottom) {
+            const resetX = offsetPosition[0] - pool.width / 2;
+            const offsetX = pool.width / pool.nbSwimJetBottom;
+            const initialX = pool.width / pool.nbSwimJetBottom / 2;
+            switch (shape.side) {
               case "Bottom":
                 offsetPosition[0] = resetX + initialX + i * offsetX;
                 offsetPosition[1] = pos[1];
@@ -2273,7 +2307,7 @@ const RegularJets = ({
         })
       ) : (
         <>
-          {shape.side == "Bottom" && (
+          {shape.side == "Bottom" && pool.poolType !== "lshape" && (
             <RegularJet
               model={shape}
               index={index}
@@ -2282,6 +2316,235 @@ const RegularJets = ({
               sRotation={shape.sRotation}
               sScale={shape.sScale}
               key={index}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+      {/* RegularJets Bottom Lshape*/}
+      {pool.nbSwimJetBottom &&
+      pool.nbSwimJetBottom > 0 &&
+      shape.side == "Bottom" &&
+      pool.poolType === "lshape" ? (
+        new Array(pool.nbSwimJetBottom).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJetBottom) {
+            const resetXBottom = offsetPosition[0] - pool.sbHeight / 2;
+            const offsetXBottom = pool.sbHeight / pool.nbSwimJetBottom;
+            const initialXBottom = pool.sbHeight / pool.nbSwimJetBottom / 2;
+            switch (shape.side) {
+              case "Bottom":
+                offsetPosition[0] =
+                  resetXBottom + initialXBottom + i * offsetXBottom;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+            }
+          }
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                offset={-0.1}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "Bottom" && pool.poolType === "lshape" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              offset={-0.1}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+
+      {/* RegularJets tTop */}
+      {pool.nbSwimJettTop && pool.nbSwimJettTop > 0 && shape.side == "tTop" ? (
+        new Array(pool.nbSwimJettTop).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJettTop) {
+            const resetXtTop = offsetPosition[0] - pool.sWidth / 2;
+            const offsetXtTop = pool.sWidth / pool.nbSwimJettTop;
+            const initialXtTop = pool.sWidth / pool.nbSwimJettTop / 2;
+            switch (shape.side) {
+              case "tTop":
+                //bottom Left
+                offsetPosition[0] = resetXtTop + initialXtTop + i * offsetXtTop;
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] = pos[2];
+                break;
+            }
+          }
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                offset={pool.poolType === "lshape" ? -0.1 : undefined}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "tTop" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              offset={pool.poolType === "lshape" ? -0.1 : undefined}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+      {/* RegularJets tLeft */}
+      {pool.nbSwimJettLeft &&
+      pool.nbSwimJettLeft > 0 &&
+      shape.side == "tLeft" ? (
+        new Array(pool.nbSwimJettLeft).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJettLeft) {
+            const resetZtLeft =
+              offsetPosition[2] - (pool.stHeight - pool.sWidth) / 2;
+            const offsetZtLeft =
+              (pool.stHeight - pool.sWidth) / pool.nbSwimJettLeft;
+            const initialZtLeft =
+              (pool.stHeight - pool.sWidth) / pool.nbSwimJettLeft / 2;
+            switch (shape.side) {
+              case "tLeft":
+                //bottom Left
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] =
+                  resetZtLeft + initialZtLeft + i * offsetZtLeft;
+                break;
+            }
+          }
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                offset={pool.poolType === "lshape" ? -0.1 : undefined}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "tLeft" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              offset={pool.poolType === "lshape" ? -0.1 : undefined}
+              rotation={new THREE.Euler(...shape.rotation)}
+              scale={new THREE.Vector3(...shape.scale)}
+              position={new THREE.Vector3(...pos)}
+            />
+          )}
+        </>
+      )}
+      {/* RegularJets tRight */}
+      {pool.nbSwimJettRight &&
+      pool.nbSwimJettRight > 0 &&
+      shape.side == "tRight" ? (
+        new Array(pool.nbSwimJettRight).fill(0).map((_, i) => {
+          const offsetPosition = [...pos];
+          if (pool.nbSwimJettRight) {
+            const resetZtRight = offsetPosition[2] - pool.stHeight / 2;
+            const offsetZtRight = pool.stHeight / pool.nbSwimJettRight;
+            const initialZtRight = pool.stHeight / pool.nbSwimJettRight / 2;
+            switch (shape.side) {
+              case "tRight":
+                //bottom Left
+                offsetPosition[0] = pos[0];
+                offsetPosition[1] = pos[1];
+                offsetPosition[2] =
+                  resetZtRight + initialZtRight + i * offsetZtRight;
+                break;
+            }
+          }
+          return (
+            <Suspense key={i}>
+              <RegularJet
+                model={shape}
+                index={index}
+                poolIndex={poolIndex}
+                sPosition={shape.sPosition}
+                sRotation={shape.sRotation}
+                sScale={shape.sScale}
+                key={i}
+                offset={pool.poolType === "lshape" ? -0.1 : undefined}
+                rotation={new THREE.Euler(...shape.rotation)}
+                scale={new THREE.Vector3(...shape.scale)}
+                position={new THREE.Vector3(...offsetPosition)}
+              />
+            </Suspense>
+          );
+        })
+      ) : (
+        <>
+          {shape.side == "tRight" && (
+            <RegularJet
+              model={shape}
+              index={index}
+              poolIndex={poolIndex}
+              sPosition={shape.sPosition}
+              sRotation={shape.sRotation}
+              sScale={shape.sScale}
+              key={index}
+              offset={pool.poolType === "lshape" ? -0.1 : undefined}
               rotation={new THREE.Euler(...shape.rotation)}
               scale={new THREE.Vector3(...shape.scale)}
               position={new THREE.Vector3(...pos)}

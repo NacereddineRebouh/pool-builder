@@ -52,6 +52,9 @@ export interface PoolType {
   nbSwimJetRight?: number;
   nbSwimJetTop?: number;
   nbSwimJetBottom?: number;
+  nbSwimJettTop?: number;
+  nbSwimJettRight?: number;
+  nbSwimJettLeft?: number;
   bordersHeight: number;
   bordersDepth: number;
   BenchSeatings: string[];

@@ -141,13 +141,21 @@ const SideBar: React.FC<ISideBarProps> = () => {
         <div className="flex items-center justify-start gap-x-1">
           <Icon
             disabled={Pools.length > 0 ? false : true}
-            icon={light.src}
-            onPointerDown={(e) => OnMouseDownHandler(e, "light")}
+            icon={inset.src}
+            onPointerDown={(e) => OnMouseDownHandler(e, "insetSteps")}
           />
+
           <Icon
             disabled={Pools.length > 0 ? false : true}
             icon={cornersteps.src}
             onPointerDown={(e) => OnMouseDownHandler(e, "cornerStep")}
+          />
+        </div>
+        <div className="flex items-center justify-start gap-x-1">
+          <Icon
+            disabled={Pools.length > 0 ? false : true}
+            icon={light.src}
+            onPointerDown={(e) => OnMouseDownHandler(e, "light")}
           />
         </div>
       </IconMenu>

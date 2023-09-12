@@ -34,6 +34,9 @@ interface IPropertiesProps {
   nbSwimJetRight: number | null;
   nbSwimJetTop: number | null;
   nbSwimJetBottom: number | null;
+  nbSwimJettTop: number | null;
+  nbSwimJettLeft: number | null;
+  nbSwimJettRight: number | null;
 }
 
 const Properties2: React.FunctionComponent<IPropertiesProps> = ({
@@ -52,6 +55,9 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
   nbSwimJetRight,
   nbSwimJetTop,
   nbSwimJetBottom,
+  nbSwimJettTop,
+  nbSwimJettLeft,
+  nbSwimJettRight,
 }) => {
   const dispatch = useAppDispatch();
   const [BenchSeatings, setBenchSeatings] = useState<string[]>([]);
@@ -419,6 +425,9 @@ const Properties2: React.FunctionComponent<IPropertiesProps> = ({
         nbSwimJetRight={nbSwimJetRight}
         nbSwimJetTop={nbSwimJetTop}
         nbSwimJetBottom={nbSwimJetBottom}
+        nbSwimJettTop={nbSwimJettTop}
+        nbSwimJettLeft={nbSwimJettLeft}
+        nbSwimJettRight={nbSwimJettRight}
       />
       {/* BenchSeating */}
       {targetPool != null &&
@@ -619,6 +628,9 @@ const RegularJets = ({
   nbSwimJetRight,
   nbSwimJetTop,
   nbSwimJetBottom,
+  nbSwimJettTop,
+  nbSwimJettLeft,
+  nbSwimJettRight,
 }: {
   targetPool: number | null;
   pool: PoolType[];
@@ -626,6 +638,9 @@ const RegularJets = ({
   nbSwimJetRight: number | null;
   nbSwimJetTop: number | null;
   nbSwimJetBottom: number | null;
+  nbSwimJettTop: number | null;
+  nbSwimJettLeft: number | null;
+  nbSwimJettRight: number | null;
 }) => {
   const dispatch = useAppDispatch();
   return (
@@ -668,7 +683,8 @@ const RegularJets = ({
         pool[targetPool] &&
         pool[targetPool].childrens.filter(
           (obj) => obj.shapeType === "RegularJets"
-        ).length > 0 && (
+        ).length > 0 &&
+        pool[targetPool].poolType !== "lshape" && (
           <div className="my-2 flex w-full items-center justify-start gap-x-6">
             <div className="w-full self-start text-lg text-slate-50">
               RegularJets Right
@@ -758,6 +774,108 @@ const RegularJets = ({
                 className="max-w-[80px] bg-transparent text-slate-50"
                 step={1}
                 value={nbSwimJetBottom ? nbSwimJetBottom : 0}
+              />
+            </div>
+          </div>
+        )}
+
+      {/* nbSwimjet tTop */}
+      {targetPool != null &&
+        pool[targetPool] &&
+        pool[targetPool].childrens.filter(
+          (obj) => obj.shapeType === "RegularJets"
+        ).length > 0 &&
+        pool[targetPool].poolType === "lshape" && (
+          <div className="my-2 flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              RegularJets tTop
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2">
+              <NumberInput
+                type="number"
+                onChange={(e) => {
+                  if (targetPool != null && pool[targetPool]) {
+                    const temppool = { ...pool[targetPool] };
+                    if (+e != temppool.nbSwimJettTop) {
+                      temppool.nbSwimJettTop = +e; // Assign the updated array back to pool.sRotation
+                      dispatch(
+                        ReplacePool({ poolIndex: targetPool, pool: temppool })
+                      );
+                    }
+                  }
+                }}
+                name="nbSwimJettTop"
+                className="max-w-[80px] bg-transparent text-slate-50"
+                step={1}
+                value={nbSwimJettTop ? nbSwimJettTop : 0}
+              />
+            </div>
+          </div>
+        )}
+      {/* nbSwimjet tLeft */}
+      {targetPool != null &&
+        pool[targetPool] &&
+        pool[targetPool].childrens.filter(
+          (obj) => obj.shapeType === "RegularJets"
+        ).length > 0 &&
+        pool[targetPool].poolType === "lshape" && (
+          <div className="my-2 flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              RegularJets tLeft
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2">
+              <NumberInput
+                type="number"
+                onChange={(e) => {
+                  if (targetPool != null && pool[targetPool]) {
+                    const temppool = { ...pool[targetPool] };
+                    if (+e != temppool.nbSwimJettLeft) {
+                      temppool.nbSwimJettLeft = +e; // Assign the updated array back to pool.sRotation
+                      dispatch(
+                        ReplacePool({ poolIndex: targetPool, pool: temppool })
+                      );
+                    }
+                    // setdepth(e.currentTarget.value as unknown as number)
+                  }
+                }}
+                name="nbSwimJettLeft"
+                className="max-w-[80px] bg-transparent text-slate-50"
+                step={1}
+                value={nbSwimJettLeft ? nbSwimJettLeft : 0}
+              />
+            </div>
+          </div>
+        )}
+      {/* nbSwimjet tRight */}
+      {targetPool != null &&
+        pool[targetPool] &&
+        pool[targetPool].childrens.filter(
+          (obj) => obj.shapeType === "RegularJets"
+        ).length > 0 &&
+        pool[targetPool].poolType === "lshape" && (
+          <div className="my-2 flex w-full items-center justify-start gap-x-6">
+            <div className="w-full self-start text-lg text-slate-50">
+              RegularJets tRight
+            </div>
+            <div className="flex w-full items-center justify-start gap-x-2">
+              <NumberInput
+                type="number"
+                onChange={(e) => {
+                  if (targetPool != null && pool[targetPool]) {
+                    const temppool = { ...pool[targetPool] };
+                    if (+e != temppool.nbSwimJettRight) {
+                      temppool.nbSwimJettRight = +e; // Assign the updated array back to pool.sRotation
+                      dispatch(
+                        ReplacePool({ poolIndex: targetPool, pool: temppool })
+                      );
+                    }
+                    // setdepth(e.currentTarget.value as unknown as number)
+                  }
+                }}
+                name="nbSwimJettRight"
+                className="max-w-[80px] bg-transparent text-slate-50"
+                step={1}
+                value={nbSwimJettRight ? nbSwimJettRight : 0}
               />
             </div>
           </div>
