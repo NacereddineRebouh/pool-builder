@@ -1773,12 +1773,12 @@ export const AllModels = () => {
                               //Topleft
                               pos[0] = shape.position[0] - offsetWidth / 2;
                               pos[1] = shape.position[1];
-                              pos[2] = shape.position[2];
+                              pos[2] = shape.position[2] - offsettHeight / 2;
                               break;
                             case shape.side === "tRight":
                               pos[0] = shape.position[0] + offsetWidth / 2;
                               pos[1] = shape.position[1];
-                              pos[2] = shape.position[2];
+                              pos[2] = shape.position[2] - offsettHeight / 2;
                               break;
                             case shape.side === "Top":
                               //bottom Left
@@ -1990,9 +1990,9 @@ const RegularJets = ({
         new Array(pool.nbSwimJetLeft).fill(0).map((_, i) => {
           const offsetPosition = [...pos];
           if (pool.nbSwimJetLeft) {
-            const resetZ = offsetPosition[2] + pool.depth / 2;
-            const offsetZ = pool.depth / pool.nbSwimJetLeft;
-            const initialZ = pool.depth / pool.nbSwimJetLeft / 2;
+            const resetZ = offsetPosition[2] + pool.sDepth / 2;
+            const offsetZ = pool.sDepth / pool.nbSwimJetLeft;
+            const initialZ = pool.sDepth / pool.nbSwimJetLeft / 2;
 
             switch (shape.side) {
               case "Left":
@@ -2105,9 +2105,9 @@ const RegularJets = ({
         new Array(pool.nbSwimJetRight).fill(0).map((_, i) => {
           const offsetPosition = [...pos];
           if (pool.nbSwimJetRight) {
-            const resetZ = offsetPosition[2] + pool.depth / 2;
-            const offsetZ = pool.depth / pool.nbSwimJetRight;
-            const initialZ = pool.depth / pool.nbSwimJetRight / 2;
+            const resetZ = offsetPosition[2] + pool.sDepth / 2;
+            const offsetZ = pool.sDepth / pool.nbSwimJetRight;
+            const initialZ = pool.sDepth / pool.nbSwimJetRight / 2;
 
             switch (shape.side) {
               case "Right":
@@ -2160,9 +2160,9 @@ const RegularJets = ({
         new Array(pool.nbSwimJetTop).fill(0).map((_, i) => {
           const offsetPosition = [...pos];
           if (pool.nbSwimJetTop) {
-            const resetX = offsetPosition[0] - pool.width / 2;
-            const offsetX = pool.width / pool.nbSwimJetTop;
-            const initialX = pool.width / pool.nbSwimJetTop / 2;
+            const resetX = offsetPosition[0] - pool.sWidth / 2;
+            const offsetX = pool.sWidth / pool.nbSwimJetTop;
+            const initialX = pool.sWidth / pool.nbSwimJetTop / 2;
 
             switch (shape.side) {
               case "Top":
@@ -2277,9 +2277,9 @@ const RegularJets = ({
         new Array(pool.nbSwimJetBottom).fill(0).map((_, i) => {
           const offsetPosition = [...pos];
           if (pool.nbSwimJetBottom) {
-            const resetX = offsetPosition[0] - pool.width / 2;
-            const offsetX = pool.width / pool.nbSwimJetBottom;
-            const initialX = pool.width / pool.nbSwimJetBottom / 2;
+            const resetX = offsetPosition[0] - pool.sWidth / 2;
+            const offsetX = pool.sWidth / pool.nbSwimJetBottom;
+            const initialX = pool.sWidth / pool.nbSwimJetBottom / 2;
             switch (shape.side) {
               case "Bottom":
                 offsetPosition[0] = resetX + initialX + i * offsetX;

@@ -192,7 +192,7 @@ const RightSideBar: React.FC<ISideBarProps> = () => {
       setnbSwimJetRight(pools[targetPool]?.nbSwimJetRight ?? 1);
       setnbSwimJetTop(pools[targetPool]?.nbSwimJetTop ?? 1);
       setnbSwimJetBottom(pools[targetPool]?.nbSwimJetBottom ?? 1);
-      setnbSwimJettTop(pools[targetPool]?.nbSwimJetTop ?? 1);
+      setnbSwimJettTop(pools[targetPool]?.nbSwimJettTop ?? 1);
       setnbSwimJettLeft(pools[targetPool]?.nbSwimJettLeft ?? 1);
       setnbSwimJettRight(pools[targetPool]?.nbSwimJettRight ?? 1);
       setWidth(pools[targetPool]?.sWidth);
