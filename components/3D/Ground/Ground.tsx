@@ -3603,7 +3603,7 @@ const Grid = ({
                   poolIndex: ClosestPoolIndex,
                   children: {
                     shapeType: type,
-                    rotation: [Math.PI / 2, rotation, 0],
+                    rotation: [0, rotation, 0],
                     position: [
                       SnappingPosition.x + position[0],
                       SnappingPosition.y + position[1],
